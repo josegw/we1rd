@@ -240,7 +240,39 @@ if(!tipo){ mostrarError("Selecciona Debe o Haber."); return; }
 if(!monto || monto<=0){ mostrarError("El monto debe ser mayor a 0."); return; }
 
 polizaActual.push({cuenta,tipo,monto});
+
 document.getElementById("monto").value="";
+
+renderPreviewPoliza();
+}
+
+function renderPreviewPoliza(){
+let html=`<table>
+<tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>`;
+
+let totalDebe=0;
+let totalHaber=0;
+
+polizaActual.forEach(m=>{
+html+=`<tr>
+<td class="${m.tipo==='Debe'?'debe':'haber'}">${m.cuenta}</td>
+<td>${m.tipo==='Debe'?formato(m.monto):''}</td>
+<td>${m.tipo==='Haber'?formato(m.monto):''}</td>
+</tr>`;
+
+if(m.tipo==="Debe") totalDebe+=m.monto;
+else totalHaber+=m.monto;
+});
+
+html+=`<tr>
+<th>Total</th>
+<th>${formato(totalDebe)}</th>
+<th>${formato(totalHaber)}</th>
+</tr>`;
+
+html+="</table>";
+
+document.getElementById("previewPoliza").innerHTML=html;
 }
 
 function finalizarPoliza(){
