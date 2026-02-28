@@ -55,9 +55,7 @@ cursor:pointer;
 border:none;
 }
 
-button:hover{
-opacity:0.9;
-}
+button:hover{opacity:0.9;}
 
 table{
 width:100%;
@@ -71,32 +69,23 @@ padding:8px;
 text-align:center;
 }
 
-th{
-background:#e5e7eb;
+th{background:#e5e7eb;}
+
+.debe{text-align:left;padding-left:20px;}
+.haber{text-align:right;padding-right:20px;}
+
+.saldo-deudor{color:var(--rojo);font-weight:bold;}
+.saldo-acreedor{color:var(--verde);font-weight:bold;}
+
+.hidden{display:none;}
+
+.tabs button{
+margin:5px 5px 5px 0;
+background:#374151;
 }
 
-.debe{
-text-align:left;
-padding-left:20px;
-}
-
-.haber{
-text-align:right;
-padding-right:20px;
-}
-
-.saldo-deudor{
-color:var(--rojo);
-font-weight:bold;
-}
-
-.saldo-acreedor{
-color:var(--verde);
-font-weight:bold;
-}
-
-.hidden{
-display:none;
+.tabs button.active{
+background:var(--azul);
 }
 
 .alert{
@@ -107,16 +96,12 @@ background:var(--rojo);
 color:white;
 padding:15px;
 border-radius:8px;
-box-shadow:0 4px 10px rgba(0,0,0,0.2);
 z-index:9999;
 }
 
 @media(max-width:768px){
-table{
-font-size:13px;
-display:block;
-overflow-x:auto;
-}
+table{font-size:13px;display:block;overflow-x:auto;}
+.tabs{display:flex;flex-wrap:wrap;}
 }
 </style>
 </head>
@@ -156,18 +141,32 @@ overflow-x:auto;
 
 <button onclick="agregarMovimiento()">Agregar Movimiento</button>
 <button onclick="finalizarPoliza()">Finalizar Póliza</button>
+
+<h4>Vista previa de póliza actual</h4>
+<div id="previewPoliza"></div>
 </div>
 
 <div class="card">
 <button onclick="cerrarEjercicio()">Cerrar Ejercicio</button>
 </div>
 
-<div id="diario" class="card"></div>
-<div id="tcuentas" class="card"></div>
-<div id="balanza" class="card"></div>
-
+<div class="card">
+<h3>Libro Diario</h3>
+<div class="tabs" id="tabsPolizas"></div>
+<div id="visorPoliza"></div>
 </div>
 
+<div class="card">
+<h3>Cuentas T</h3>
+<div id="tcuentas"></div>
+</div>
+
+<div class="card">
+<h3>Balanza de Comprobación</h3>
+<div id="balanza"></div>
+</div>
+
+</div>
 </div>
 
 <script>
@@ -181,7 +180,7 @@ const alerta=document.createElement("div");
 alerta.className="alert";
 alerta.innerText=msg;
 document.body.appendChild(alerta);
-setTimeout(()=>{alerta.remove();},3000);
+setTimeout(()=>alerta.remove(),3000);
 }
 
 function formato(num){
@@ -191,17 +190,8 @@ return Number(num).toLocaleString("es-MX",{minimumFractionDigits:2});
 function iniciar(){
 const empresa=document.getElementById("empresa").value.trim();
 const fecha=document.getElementById("fecha").value;
-
-if(!empresa){
-mostrarError("Debes ingresar el nombre de la empresa.");
-return;
-}
-
-if(!fecha){
-mostrarError("Debes seleccionar la fecha.");
-return;
-}
-
+if(!empresa){mostrarError("Ingresa el nombre de la empresa.");return;}
+if(!fecha){mostrarError("Selecciona la fecha.");return;}
 document.getElementById("inicio").classList.add("hidden");
 document.getElementById("sistema").classList.remove("hidden");
 renderSelectCuentas();
@@ -210,21 +200,13 @@ renderSelectCuentas();
 function renderSelectCuentas(){
 const select=document.getElementById("cuenta");
 select.innerHTML='<option value="">Selecciona cuenta</option>';
-cuentas.forEach(c=>{
-select.innerHTML+=`<option>${c}</option>`;
-});
+cuentas.forEach(c=>select.innerHTML+=`<option>${c}</option>`);
 }
 
 function agregarCuenta(){
 const nombre=document.getElementById("nuevaCuenta").value.trim();
-if(!nombre){
-mostrarError("Escribe el nombre de la cuenta.");
-return;
-}
-if(cuentas.includes(nombre)){
-mostrarError("La cuenta ya existe.");
-return;
-}
+if(!nombre){mostrarError("Escribe el nombre.");return;}
+if(cuentas.includes(nombre)){mostrarError("La cuenta ya existe.");return;}
 cuentas.push(nombre);
 document.getElementById("nuevaCuenta").value="";
 renderSelectCuentas();
@@ -235,23 +217,19 @@ const cuenta=document.getElementById("cuenta").value;
 const tipo=document.getElementById("tipo").value;
 const monto=parseFloat(document.getElementById("monto").value);
 
-if(!cuenta){ mostrarError("Selecciona una cuenta."); return; }
-if(!tipo){ mostrarError("Selecciona Debe o Haber."); return; }
-if(!monto || monto<=0){ mostrarError("El monto debe ser mayor a 0."); return; }
+if(!cuenta){mostrarError("Selecciona una cuenta.");return;}
+if(!tipo){mostrarError("Selecciona Debe o Haber.");return;}
+if(!monto||monto<=0){mostrarError("El monto debe ser mayor a 0.");return;}
 
 polizaActual.push({cuenta,tipo,monto});
-
 document.getElementById("monto").value="";
-
-renderPreviewPoliza();
+renderPreview();
 }
 
-function renderPreviewPoliza(){
+function renderPreview(){
 let html=`<table>
 <tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>`;
-
-let totalDebe=0;
-let totalHaber=0;
+let d=0,h=0;
 
 polizaActual.forEach(m=>{
 html+=`<tr>
@@ -259,57 +237,47 @@ html+=`<tr>
 <td>${m.tipo==='Debe'?formato(m.monto):''}</td>
 <td>${m.tipo==='Haber'?formato(m.monto):''}</td>
 </tr>`;
-
-if(m.tipo==="Debe") totalDebe+=m.monto;
-else totalHaber+=m.monto;
+if(m.tipo==="Debe") d+=m.monto; else h+=m.monto;
 });
 
-html+=`<tr>
-<th>Total</th>
-<th>${formato(totalDebe)}</th>
-<th>${formato(totalHaber)}</th>
-</tr>`;
-
-html+="</table>";
-
+html+=`<tr><th>Total</th><th>${formato(d)}</th><th>${formato(h)}</th></tr></table>`;
 document.getElementById("previewPoliza").innerHTML=html;
 }
 
 function finalizarPoliza(){
-if(polizaActual.length===0){
-mostrarError("La póliza no tiene movimientos.");
-return;
-}
+if(polizaActual.length===0){mostrarError("La póliza está vacía.");return;}
 
-let totalDebe=0,totalHaber=0;
-polizaActual.forEach(m=>{
-if(m.tipo==="Debe") totalDebe+=m.monto;
-else totalHaber+=m.monto;
-});
-
-if(totalDebe!==totalHaber){
-mostrarError("La póliza no está cuadrada.");
-return;
-}
+let d=0,h=0;
+polizaActual.forEach(m=>{if(m.tipo==="Debe")d+=m.monto;else h+=m.monto;});
+if(d!==h){mostrarError("La póliza no está cuadrada.");return;}
 
 polizas.push({numero:numeroPoliza,movimientos:polizaActual});
 numeroPoliza++;
 polizaActual=[];
+document.getElementById("previewPoliza").innerHTML="";
 renderTodo();
 }
 
 function renderTodo(){
-renderDiario();
+renderTabs();
 renderCuentasT();
 renderBalanza();
 }
 
-function renderDiario(){
-let html="";
+function renderTabs(){
+let tabs="";
 polizas.forEach(p=>{
-html+=`<h4>Póliza ${p.numero}</h4><table>
+tabs+=`<button onclick="verPoliza(${p.numero})">Póliza ${p.numero}</button>`;
+});
+document.getElementById("tabsPolizas").innerHTML=tabs;
+if(polizas.length>0) verPoliza(polizas[polizas.length-1].numero);
+}
+
+function verPoliza(num){
+const poliza=polizas.find(p=>p.numero===num);
+let html=`<table>
 <tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>`;
-p.movimientos.forEach(m=>{
+poliza.movimientos.forEach(m=>{
 html+=`<tr>
 <td class="${m.tipo==='Debe'?'debe':'haber'}">${m.cuenta}</td>
 <td>${m.tipo==='Debe'?formato(m.monto):''}</td>
@@ -317,29 +285,51 @@ html+=`<tr>
 </tr>`;
 });
 html+="</table>";
-});
-document.getElementById("diario").innerHTML=html;
+document.getElementById("visorPoliza").innerHTML=html;
 }
 
 function renderCuentasT(){
 let cuentasT={};
+
 polizas.forEach(p=>{
 p.movimientos.forEach(m=>{
-if(!cuentasT[m.cuenta]) cuentasT[m.cuenta]={debe:0,haber:0};
-cuentasT[m.cuenta][m.tipo.toLowerCase()]+=m.monto;
+if(!cuentasT[m.cuenta])cuentasT[m.cuenta]={debe:[],haber:[]};
+cuentasT[m.cuenta][m.tipo.toLowerCase()].push({monto:m.monto,poliza:p.numero});
 });
 });
+
 let html="";
+
 for(let c in cuentasT){
-let d=cuentasT[c].debe;
-let h=cuentasT[c].haber;
-let saldo=d-h;
+let dTotal=0,hTotal=0;
 html+=`<h4>${c}</h4>
-Debe: ${formato(d)} | Haber: ${formato(h)}<br>
-${saldo>0?'<span class="saldo-deudor">Saldo Deudor: '+formato(saldo)+'</span>':
-saldo<0?'<span class="saldo-acreedor">Saldo Acreedor: '+formato(Math.abs(saldo))+'</span>':''}
-<hr>`;
+<table>
+<tr><th>Debe</th><th>Haber</th></tr>
+<tr><td>`;
+
+cuentasT[c].debe.forEach(m=>{
+dTotal+=m.monto;
+html+=`P${m.poliza}: ${formato(m.monto)}<br>`;
+});
+
+html+=`<strong>Total: ${formato(dTotal)}</strong></td><td>`;
+
+cuentasT[c].haber.forEach(m=>{
+hTotal+=m.monto;
+html+=`P${m.poliza}: ${formato(m.monto)}<br>`;
+});
+
+html+=`<strong>Total: ${formato(hTotal)}</strong></td></tr></table>`;
+
+let saldo=dTotal-hTotal;
+if(saldo>0){
+html+=`<p class="saldo-deudor">Saldo Deudor: ${formato(saldo)}</p>`;
+}else if(saldo<0){
+html+=`<p class="saldo-acreedor">Saldo Acreedor: ${formato(Math.abs(saldo))}</p>`;
 }
+html+="<hr>";
+}
+
 document.getElementById("tcuentas").innerHTML=html;
 }
 
@@ -347,13 +337,15 @@ function renderBalanza(){
 let cuentasT={};
 polizas.forEach(p=>{
 p.movimientos.forEach(m=>{
-if(!cuentasT[m.cuenta]) cuentasT[m.cuenta]={debe:0,haber:0};
+if(!cuentasT[m.cuenta])cuentasT[m.cuenta]={debe:0,haber:0};
 cuentasT[m.cuenta][m.tipo.toLowerCase()]+=m.monto;
 });
 });
+
 let html=`<table>
 <tr><th>Folio</th><th>Cuenta</th><th>Debe</th><th>Haber</th><th>Saldo Deudor</th><th>Saldo Acreedor</th></tr>`;
 let i=1;
+
 for(let c in cuentasT){
 let d=cuentasT[c].debe;
 let h=cuentasT[c].haber;
@@ -373,11 +365,8 @@ document.getElementById("balanza").innerHTML=html;
 }
 
 function cerrarEjercicio(){
-if(polizas.length===0){
-mostrarError("No hay pólizas registradas.");
-return;
-}
-if(!confirm("¿Deseas cerrar el ejercicio?")) return;
+if(polizas.length===0){mostrarError("No hay pólizas registradas.");return;}
+if(!confirm("¿Deseas cerrar el ejercicio?"))return;
 location.reload();
 }
 </script>
