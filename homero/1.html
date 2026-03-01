@@ -198,7 +198,8 @@ return Number(num).toLocaleString("es-MX",{minimumFractionDigits:2});
 }
 
 function formatearFecha(fechaISO){
-const fecha=new Date(fechaISO);
+const [anio,mes,dia]=fechaISO.split("-");
+const fecha=new Date(anio, mes-1, dia); // evita desfase por zona horaria
 return fecha.toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
 }
 
