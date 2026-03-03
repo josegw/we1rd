@@ -555,9 +555,29 @@ reader.readAsText(file);
 function cerrarEjercicio(){
 if(polizas.length===0){mostrarError("No hay pólizas registradas.");return;}
 if(!confirm("¿Deseas cerrar el ejercicio?"))return;
-/* exportar todo en .wtf antes de recargar */
-exportarWTFF();
-location.reload();
+
+const datos={
+empresa:document.getElementById("empresa").value,
+fecha:document.getElementById("fecha").value,
+polizas,
+cuentas,
+numeroPoliza
+};
+
+const blob=new Blob([JSON.stringify(datos)],{type:"application/json"});
+const url=URL.createObjectURL(blob);
+
+const enlace=document.createElement("a");
+enlace.href=url;
+enlace.download="ejercicio.wtf";
+enlace.innerText="Descargar archivo del ejercicio";
+enlace.style.display="block";
+enlace.style.marginTop="15px";
+enlace.style.fontWeight="bold";
+
+document.querySelector(".container").appendChild(enlace);
+
+mostrarError("Toca el enlace para descargar el archivo.");
 }
 </script>
 
