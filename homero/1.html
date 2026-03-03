@@ -556,8 +556,10 @@ function cerrarEjercicio(){
 if(polizas.length===0){mostrarError("No hay pólizas registradas.");return;}
 if(!confirm("¿Deseas cerrar el ejercicio?"))return;
 
+const nombreEmpresa=document.getElementById("empresa").value.trim() || "ejercicio";
+
 const datos={
-empresa:document.getElementById("empresa").value,
+empresa:nombreEmpresa,
 fecha:document.getElementById("fecha").value,
 polizas,
 cuentas,
@@ -567,17 +569,55 @@ numeroPoliza
 const blob=new Blob([JSON.stringify(datos)],{type:"application/json"});
 const url=URL.createObjectURL(blob);
 
+const modal=document.createElement("div");
+modal.style.position="fixed";
+modal.style.top="0";
+modal.style.left="0";
+modal.style.width="100%";
+modal.style.height="100%";
+modal.style.background="rgba(0,0,0,0.5)";
+modal.style.display="flex";
+modal.style.justifyContent="center";
+modal.style.alignItems="center";
+modal.style.zIndex="10000";
+
+const ventana=document.createElement("div");
+ventana.style.background="white";
+ventana.style.padding="25px";
+ventana.style.borderRadius="10px";
+ventana.style.textAlign="center";
+ventana.style.minWidth="280px";
+ventana.style.position="relative";
+
+const cerrar=document.createElement("span");
+cerrar.innerHTML="✖";
+cerrar.style.position="absolute";
+cerrar.style.top="10px";
+cerrar.style.right="15px";
+cerrar.style.cursor="pointer";
+cerrar.style.fontWeight="bold";
+cerrar.onclick=function(){location.reload();};
+
+const titulo=document.createElement("h3");
+titulo.innerText="Ejercicio finalizado";
+
 const enlace=document.createElement("a");
 enlace.href=url;
-enlace.download="ejercicio.wtf";
-enlace.innerText="Descargar archivo del ejercicio";
-enlace.style.display="block";
+enlace.download=nombreEmpresa + ".json";
+enlace.innerText="Descargar archivo";
+enlace.style.display="inline-block";
 enlace.style.marginTop="15px";
-enlace.style.fontWeight="bold";
+enlace.style.padding="10px 15px";
+enlace.style.background="#1e3a8a";
+enlace.style.color="white";
+enlace.style.borderRadius="6px";
+enlace.style.textDecoration="none";
 
-document.querySelector(".container").appendChild(enlace);
-
-mostrarError("Toca el enlace para descargar el archivo.");
+ventana.appendChild(cerrar);
+ventana.appendChild(titulo);
+ventana.appendChild(enlace);
+modal.appendChild(ventana);
+document.body.appendChild(modal);
 }
 </script>
 
