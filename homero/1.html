@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Contable</title>
+
+<style>
+:root{
+--azul:#1e3a8a;
+--gris:#f3f4f6;
+--verde:#16a34a;
+--rojo:#dc2626;
+}
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:var(--gris);
+}
+
+header{
+background:var(--azul);
+color:white;
+padding:15px;
+text-align:center;
+font-size:20px;
+}
+
+.container{
+padding:20px;
+max-width:1200px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+input, select, button{
+padding:8px;
+margin:5px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+background:var(--azul);
+color:white;
+cursor:pointer;
+border:none;
+}
+
+button:hover{opacity:0.9;}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th, td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+
+th{background:#e5e7eb;}
+
+.debe{text-align:left;padding-left:20px;}
+.haber{text-align:right;padding-right:20px;}
+
+.saldo-deudor{color:var(--rojo);font-weight:bold;}
+.saldo-acreedor{color:var(--verde);font-weight:bold;}
+
+.hidden{display:none;}
+
+.tabs button{
+margin:5px 5px 5px 0;
+background:#374151;
+}
+
+.tabs button.active{
+background:var(--azul);
+box-shadow:0 0 0 2px #000 inset;
+}
+
+.alert{
+position:fixed;
+top:20px;
+right:20px;
+background:var(--rojo);
+color:white;
+padding:15px;
+border-radius:8px;
+z-index:9999;
+}
+
+.btn-eliminar{
+background:var(--rojo);
+padding:4px 8px;
+border-radius:4px;
+cursor:pointer;
+}
+
+.btn-editar{
+background:#f59e0b;
+padding:6px 10px;
+border-radius:6px;
+margin-top:10px;
+cursor:pointer;
+}
+
+@media(max-width:768px){
+table{font-size:13px;display:block;overflow-x:auto;}
+.tabs{display:flex;flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<header>TCN</header>
+
+<div class="container">
+
+<div id="inicio" class="card">
+<h3>Nuevo Ejercicio</h3>
+<input type="text" id="empresa" placeholder="Nombre de la empresa">
+<input type="date" id="fecha">
+<button onclick="iniciar()">Iniciar</button>
+
+<hr>
+<h4>Cargar Ejercicio (.wtf)</h4>
+<input type="file" id="cargarArchivo" accept=".wtf">
+<button onclick="cargarWTFF()">Cargar Archivo</button>
+</div>
+
+<div id="sistema" class="hidden">
+
+<div class="card">
+<h3>Nueva Cuenta</h3>
+<input type="text" id="nuevaCuenta" placeholder="Nombre de la nueva cuenta">
+<button onclick="agregarCuenta()">Agregar Cuenta</button>
+</div>
+
+<div class="card">
+<h3>Nueva Póliza</h3>
+
+<select id="cuenta"></select>
+
+<select id="tipo">
+<option value="">Tipo</option>
+<option value="Debe">Debe</option>
+<option value="Haber">Haber</option>
+</select>
+
+<input type="number" id="monto" placeholder="Monto">
+
+<input type="date" id="fechaPoliza">
+
+<button onclick="agregarMovimiento()">Agregar Movimiento</button>
+<button onclick="finalizarPoliza()">Finalizar Póliza</button>
+
+<h4>Vista previa de póliza actual</h4>
+<div id="previewPoliza"></div>
+</div>
+
+<div class="card">
+<button onclick="cerrarEjercicio()">Cerrar Ejercicio</button>
+</div>
+
+<div class="card">
+<h3>Libro Diario</h3>
+<div class="tabs" id="tabsPolizas"></div>
+<div id="visorPoliza"></div>
+</div>
+
+<div class="card">
+<h3>Cuentas T</h3>
+<div id="tcuentas"></div>
+</div>
+
+<div class="card">
+<h3>Balanza de Comprobación</h3>
+<div id="balanza"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let polizas=[];
+let polizaActual=[];
+let numeroPoliza=1;
+let cuentas=["Acreedores Diversos","Caja","Bancos","Documentos por Cobrar","Documentos por Pagar","Deudores Diversos","Mobiliario y Equipo","Clientes","Mercancías","Proveedores","Papelería y Útiles","Capital"];
+let editandoPoliza=null;
+let polizaActivaVista=null;
+
+/* ===================== FUNCIONES ORIGINALES ===================== */
+
+function mostrarError(msg){
+const alerta=document.createElement("div");
+alerta.className="alert";
+alerta.innerText=msg;
+document.body.appendChild(alerta);
+setTimeout(()=>alerta.remove(),3000);
+}
+
+function formato(num){
+return "$ "+Number(num).toLocaleString("es-MX",{minimumFractionDigits:2});
+}
+
+function formatearFecha(fechaISO){
+const [anio,mes,dia]=fechaISO.split("-");
+const fecha=new Date(anio, mes-1, dia);
+return fecha.toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+}
+
+function iniciar(){
+const empresa=document.getElementById("empresa").value.trim();
+const fecha=document.getElementById("fecha").value;
+if(!empresa){mostrarError("Ingresa el nombre de la empresa.");return;}
+if(!fecha){mostrarError("Selecciona la fecha.");return;}
+document.getElementById("inicio").classList.add("hidden");
+document.getElementById("sistema").classList.remove("hidden");
+renderSelectCuentas();
+}
+
+/* ===================== NUEVAS FUNCIONES AGREGADAS ===================== */
+
+function exportarWTFF(){
+const data={
+empresa:document.getElementById("empresa").value,
+fecha:document.getElementById("fecha").value,
+polizas,
+numeroPoliza,
+cuentas
+};
+
+const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+const a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="ejercicio_contable.wtf";
+a.click();
+}
+
+function cargarWTFF(){
+const file=document.getElementById("cargarArchivo").files[0];
+if(!file){mostrarError("Selecciona un archivo.");return;}
+
+const reader=new FileReader();
+reader.onload=function(e){
+try{
+const data=JSON.parse(e.target.result);
+
+if(!data.polizas||!data.cuentas||!data.numeroPoliza){
+mostrarError("Archivo dañado o inválido.");
+return;
+}
+
+polizas=data.polizas;
+cuentas=data.cuentas;
+numeroPoliza=data.numeroPoliza;
+
+document.getElementById("empresa").value=data.empresa||"";
+document.getElementById("fecha").value=data.fecha||"";
+
+document.getElementById("inicio").classList.add("hidden");
+document.getElementById("sistema").classList.remove("hidden");
+
+renderSelectCuentas();
+renderTodo();
+
+}catch{
+mostrarError("El archivo está corrupto.");
+}
+};
+reader.readAsText(file);
+}
+
+/* ===================== SOLO MODIFICACIÓN EN ESTAS DOS ===================== */
+
+function renderTabs(){
+let tabs="";
+polizas.forEach(p=>{
+tabs+=`<button class="${polizaActivaVista===p.numero?'active':''}" onclick="verPoliza(${p.numero})">Póliza ${p.numero}</button>`;
+});
+document.getElementById("tabsPolizas").innerHTML=tabs;
+if(polizas.length>0 && polizaActivaVista===null){
+verPoliza(polizas[polizas.length-1].numero);
+}
+}
+
+function verPoliza(num){
+polizaActivaVista=num;
+const poliza=polizas.find(p=>p.numero===num);
+
+let html=`<table>
+<tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>
+<tr>
+<td colspan="3" style="font-weight:bold; text-align:center;">
+${formatearFecha(poliza.fecha)}
+</td>
+</tr>`;
+
+poliza.movimientos.forEach(m=>{
+html+=`<tr>
+<td class="${m.tipo==='Debe'?'debe':'haber'}">${m.cuenta}</td>
+<td>${m.tipo==='Debe'?formato(m.monto):''}</td>
+<td>${m.tipo==='Haber'?formato(m.monto):''}</td>
+</tr>`;
+});
+
+html+=`</table>
+<button class="btn-editar" onclick="editarPoliza(${poliza.numero})">Editar Póliza</button>`;
+
+document.getElementById("visorPoliza").innerHTML=html;
+renderTabs();
+}
+
+function cerrarEjercicio(){
+if(polizas.length===0){mostrarError("No hay pólizas registradas.");return;}
+if(!confirm("¿Deseas cerrar el ejercicio?"))return;
+exportarWTFF();
+location.reload();
+}
+
+</script>
+</body>
+</html>
