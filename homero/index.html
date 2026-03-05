@@ -202,6 +202,45 @@ let editandoPoliza=null;
 /* Añadido: variable para saber cuál pestaña está activa (no modifica lógica existente) */
 let polizaActiva = null;
 
+function guardarAuto(){
+const datos={
+empresa:document.getElementById("empresa")?.value || "",
+fecha:document.getElementById("fecha")?.value || "",
+polizas,
+cuentas,
+numeroPoliza
+};
+localStorage.setItem("ejercicio_contable_auto", JSON.stringify(datos));
+}
+
+function cargarAuto(){
+
+const guardado = localStorage.getItem("ejercicio_contable_auto");
+if(!guardado) return;
+
+try{
+
+const data = JSON.parse(guardado);
+
+polizas = data.polizas || [];
+cuentas = data.cuentas || cuentas;
+numeroPoliza = data.numeroPoliza || 1;
+
+document.getElementById("empresa").value = data.empresa || "";
+document.getElementById("fecha").value = data.fecha || "";
+
+document.getElementById("inicio").classList.add("hidden");
+document.getElementById("sistema").classList.remove("hidden");
+
+renderSelectCuentas();
+renderTodo();
+
+}catch(e){
+console.log("Error cargando guardado automático");
+}
+
+}
+
 function mostrarError(msg){
 const alerta=document.createElement("div");
 alerta.className="alert";
@@ -329,7 +368,12 @@ renderPreview();
 window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function renderTodo(){renderTabs();renderCuentasT();renderBalanza();}
+function renderTodo(){
+renderTabs();
+renderCuentasT();
+renderBalanza();
+guardarAuto();
+}
 
 /* Modificación mínima en renderTabs: añadí data-num al botón para permitir resaltar el activo */
 function renderTabs(){
@@ -608,7 +652,10 @@ cerrar.style.top="10px";
 cerrar.style.right="15px";
 cerrar.style.cursor="pointer";
 cerrar.style.fontWeight="bold";
-cerrar.onclick=function(){location.reload();};
+cerrar.onclick=function(){
+localStorage.removeItem("ejercicio_contable_auto");
+location.reload();
+};
 
 const titulo=document.createElement("h3");
 titulo.innerText="Ejercicio finalizado";
@@ -631,6 +678,9 @@ ventana.appendChild(enlace);
 modal.appendChild(ventana);
 document.body.appendChild(modal);
 }
+
+window.onload = cargarAuto;
+   
 </script>
 
 </body>
