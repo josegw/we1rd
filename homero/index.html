@@ -517,7 +517,17 @@ a.click();
    Si es válido, restaura estado y permite continuar editando. */
 function cargarWTFF(){
 const file = document.getElementById("cargarArchivo").files[0];
-if(!file){mostrarError("Selecciona un archivo."); return;}
+if (!file) {
+    mostrarError("Selecciona un archivo.");
+    return;
+}
+
+/* 🔒 Validación estricta solo .wtf */
+if (!file.name.toLowerCase().endsWith(".wtf")) {
+    mostrarError("Solo se permiten archivos .wtf");
+    document.getElementById("cargarArchivo").value = "";
+    return;
+}
 const reader = new FileReader();
 reader.onload = function(e){
 try{
