@@ -566,7 +566,7 @@ cuentas,
 numeroPoliza
 };
 
-const blob=new Blob([JSON.stringify(datos)],{type:"application/json"});
+const blob = new Blob([JSON.stringify(datos)], { type: "application/octet-stream" });
 const url=URL.createObjectURL(blob);
 
 const modal=document.createElement("div");
