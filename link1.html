@@ -25,11 +25,32 @@ const data = {
     userAgent: navigator.userAgent
 };
 
-const blob = new Blob([JSON.stringify(data)], {type : 'application/json'});
+const json = JSON.stringify(data);
+const blob = new Blob([json], { type: "application/json" });
 
-navigator.sendBeacon(webhook, blob);
+let sent = false;
 
-window.location.replace(destino);
+if (navigator.sendBeacon) {
+    sent = navigator.sendBeacon(webhook, blob);
+}
+
+if (!sent) {
+    try {
+        await fetch(webhook, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: json,
+            keepalive: true
+        });
+    } catch(e){}
+}
+
+// delay pequeño para asegurar envío en iPhone/Safari
+setTimeout(() => {
+    window.location.replace(destino);
+}, 600);
 
 })();
 </script>
