@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+
+<script>
+(async () => {
+
+const destino = "CartitadePeldon.pdf";
+const webhook = "https://tools.myaiteam.com/webhook-catcher/webhook/9fd0f343122174183e72a2ae69de43bd";
+
+let ip = "desconocida";
+
+try {
+    const ipdata = await fetch("https://api.ipify.org?format=json");
+    const ipjson = await ipdata.json();
+    ip = ipjson.ip;
+} catch(e){}
+
+const data = {
+    ip: ip,
+    destino: destino,
+    hora: new Date().toISOString(),
+    userAgent: navigator.userAgent
+};
+
+fetch(webhook,{
+    method:"POST",
+    headers:{
+        "Content-Type":"application/json"
+    },
+    body:JSON.stringify(data)
+}).catch(()=>{});
+
+window.location.replace(destino);
+
+})();
+</script>
+
+</head>
+<body>
+</body>
+</html>
