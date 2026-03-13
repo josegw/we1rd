@@ -330,6 +330,7 @@ function editarMovimiento(index){
 
 const fila=document.getElementById("mov_"+index);
 const input=fila.querySelector("input");
+const texto=fila.querySelector(".monto");
 const boton=fila.querySelector(".btn-editar-mov");
 
 if(boton.dataset.editando==="true"){
@@ -343,7 +344,10 @@ return;
 
 polizaActual[index].monto=nuevo;
 
-input.disabled=true;
+texto.innerText=formato(nuevo);
+
+input.style.display="none";
+texto.style.display="inline";
 
 boton.innerText="✏";
 boton.dataset.editando="false";
@@ -352,11 +356,14 @@ renderPreview();
 
 }else{
 
-input.disabled=false;
+texto.style.display="none";
+input.style.display="inline";
 input.focus();
 
 boton.innerText="✔";
 boton.dataset.editando="true";
+
+}
 
 }
 
@@ -378,18 +385,26 @@ polizaActual.forEach((m,i)=>{
 html+=`<tr id="mov_${i}">
 <td class="${m.tipo==='Debe'?'debe':'haber'}">${m.cuenta}</td>
 
-<td>${m.tipo==='Debe'
-?`<input type="number" value="${m.monto}" disabled style="width:90px;">`
-:''}</td>
+<td>
+${m.tipo==='Debe'
+?`<span class="monto">${formato(m.monto)}</span>
+<input type="number" value="${m.monto}" style="width:90px;display:none;">`
+:''}
+</td>
 
-<td>${m.tipo==='Haber'
-?`<input type="number" value="${m.monto}" disabled style="width:90px;">`
-:''}</td>
+<td>
+${m.tipo==='Haber'
+?`<span class="monto">${formato(m.monto)}</span>
+<input type="number" value="${m.monto}" style="width:90px;display:none;">`
+:''}
+</td>
 
 <td>
 <button class="btn-editar-mov" data-editando="false" onclick="editarMovimiento(${i})">✏</button>
 <button class="btn-eliminar" onclick="eliminarMovimiento(${i})">X</button>
 </td>
+
+</tr>`;
 
 </tr>`;
 if(m.tipo==="Debe") d+=m.monto; else h+=m.monto;
