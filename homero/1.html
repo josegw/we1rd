@@ -367,8 +367,6 @@ boton.dataset.editando="true";
 
 }
 
-}
-
 function renderPreview(){
 const fechaPoliza=document.getElementById("fechaPoliza").value;
 
@@ -403,8 +401,6 @@ ${m.tipo==='Haber'
 <button class="btn-editar-mov" data-editando="false" onclick="editarMovimiento(${i})">✏</button>
 <button class="btn-eliminar" onclick="eliminarMovimiento(${i})">X</button>
 </td>
-
-</tr>`;
 
 </tr>`;
 if(m.tipo==="Debe") d+=m.monto; else h+=m.monto;
