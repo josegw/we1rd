@@ -701,8 +701,7 @@ numeroPoliza
 };
 
 const contenido = JSON.stringify(datos);
-const bytes = new Uint8Array([...contenido].map(c => c.charCodeAt(0)));
-const blob = new Blob([bytes], { type: "application/octet-stream" });
+const blob = new Blob([contenido], { type: "application/json;charset=utf-8" });
 const url = URL.createObjectURL(blob);
 
 const modal=document.createElement("div");
