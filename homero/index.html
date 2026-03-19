@@ -222,8 +222,14 @@ try{
 
 const data = JSON.parse(guardado);
 
-polizas = data.polizas || [];
-cuentas = data.cuentas || cuentas;
+// Validaciones seguras
+if(!data || !Array.isArray(data.polizas) || !Array.isArray(data.cuentas)){
+console.log("Datos inválidos en almacenamiento");
+return;
+}
+
+polizas = data.polizas;
+cuentas = data.cuentas.length ? data.cuentas : cuentas;
 numeroPoliza = data.numeroPoliza || 1;
 
 document.getElementById("empresa").value = data.empresa || "";
@@ -237,7 +243,7 @@ renderTodo();
 actualizarTitulo();
 
 }catch(e){
-console.log("Error cargando guardado automático");
+console.log("Error cargando guardado automático", e);
 }
 
 }
@@ -273,18 +279,26 @@ empresa + " — " + formatearFecha(fecha);
 function iniciar(){
 const empresa=document.getElementById("empresa").value.trim();
 const fecha=document.getElementById("fecha").value;
+
 if(!empresa){mostrarError("Ingresa el nombre de la empresa.");return;}
 if(!fecha){mostrarError("Selecciona la fecha.");return;}
+
 document.getElementById("inicio").classList.add("hidden");
 document.getElementById("sistema").classList.remove("hidden");
+
 renderSelectCuentas();
+renderTodo();
 actualizarTitulo();
 }
 
 function renderSelectCuentas(){
 const select=document.getElementById("cuenta");
 select.innerHTML='<option value="">Selecciona cuenta</option>';
-cuentas.forEach(c=>select.innerHTML+=`<option>${c}</option>`);
+if(!cuentas || cuentas.length === 0) return;
+
+cuentas.forEach(c=>{
+select.innerHTML += `<option>${c}</option>`;
+});
 }
 
 function agregarCuenta(){
@@ -730,7 +744,7 @@ try{
 const data = JSON.parse(e.target.result);
 
 /* Validación mínima para asegurar que no esté dañado */
-if(!data.polizas || !data.cuentas || (typeof data.numeroPoliza === "undefined")){
+if(!data || !Array.isArray(data.polizas) || !Array.isArray(data.cuentas)){
 mostrarError("Archivo dañado o inválido.");
 return;
 }
