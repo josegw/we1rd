@@ -519,8 +519,15 @@ let dTotal=0;
 let hTotal=0;
 
 html+=`
-<div style="display:inline-block; margin:20px; vertical-align:top;">
-<h4 style="text-align:center;">${c}</h4>
+<div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+<h4 style="text-align:center; margin:0;">${c}</h4>
+
+<button onclick="copiarCuentaT('${c}')"
+style="font-size:12px; padding:3px 6px; border-radius:4px;">
+📋
+</button>
+
+</div>
 
 <div style="display:flex; justify-content:center; font-weight:bold;">
 <div style="width:120px; text-align:left;">Debe</div>
@@ -618,6 +625,70 @@ html+=`<tr style="font-weight:bold; background:#f9fafb;">
 
 html+="</table>";
 document.getElementById("balanza").innerHTML=html;
+}
+
+function generarTextoCuentaT(nombreCuenta){
+
+let debeArr = [];
+let haberArr = [];
+let dTotal = 0;
+let hTotal = 0;
+
+// recorrer todas las pólizas
+polizas.forEach(p=>{
+p.movimientos.forEach(m=>{
+if(m.cuenta === nombreCuenta){
+
+if(m.tipo === "Debe"){
+debeArr.push(`P${p.numero}: ${formato(m.monto)}`);
+dTotal += m.monto;
+}else{
+haberArr.push(`P${p.numero}: ${formato(m.monto)}`);
+hTotal += m.monto;
+}
+
+}
+});
+});
+
+// saldo
+let saldo = dTotal - hTotal;
+
+// construir texto limpio
+let texto = `${nombreCuenta}\n\n`;
+
+// Debe
+texto += "Debe\n\n";
+debeArr.forEach(l => texto += l + "\n");
+texto += `\n${formato(dTotal)}\n\n`;
+
+// Haber
+texto += "Haber\n\n";
+haberArr.forEach(l => texto += l + "\n");
+texto += `\n${formato(hTotal)}\n\n`;
+
+// saldo
+if(saldo > 0){
+texto += `Saldo Deudor: ${formato(saldo)}`;
+}else if(saldo < 0){
+texto += `Saldo Acreedor: ${formato(Math.abs(saldo))}`;
+}
+
+return texto;
+}
+
+function copiarCuentaT(nombreCuenta){
+
+const texto = generarTextoCuentaT(nombreCuenta);
+
+navigator.clipboard.writeText(texto)
+.then(()=>{
+mostrarError("Cuenta copiada al portapapeles");
+})
+.catch(()=>{
+mostrarError("Error al copiar");
+});
+
 }
 
 /* Añadido: exportar todo el ejercicio a un archivo .wtf (JSON interno). No altera datos existentes. */
