@@ -855,11 +855,11 @@ window.onload = cargarAuto;
 let calcExpresion = "";
 
 function abrirCalculadora(){
-document.getElementById("calcModal").classList.remove("hidden");
+document.getElementById("calcModal").style.display = "flex";
 }
 
 function cerrarCalculadora(){
-document.getElementById("calcModal").classList.add("hidden");
+document.getElementById("calcModal").style.display = "none";
 }
 
 function calcInput(valor){
@@ -875,8 +875,13 @@ document.getElementById("calcDisplay").value = "";
 function calcular(){
 try{
 let resultado = eval(calcExpresion);
+
+/* 🔥 SOLUCIÓN DECIMALES */
+resultado = Math.round((resultado + Number.EPSILON) * 100000000) / 100000000;
+
 calcExpresion = resultado.toString();
 document.getElementById("calcDisplay").value = calcExpresion;
+
 }catch{
 mostrarError("Operación inválida");
 }
@@ -904,25 +909,26 @@ mostrarError("Error al copiar");
 </script>
 
 <!-- 🔽 PEGA AQUÍ EL MODAL DE LA CALCULADORA -->
-<div id="calcModal" class="hidden" style="
+<div id="calcModal" style="
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
 background:rgba(0,0,0,0.5);
-display:flex;
+display:none;
 justify-content:center;
 align-items:center;
 z-index:10000;
 ">
 
 <div style="
-background:white;
+background:#1f2937;
 padding:20px;
-border-radius:10px;
+border-radius:15px;
 width:260px;
 position:relative;
+color:white;
 ">
 
 <span onclick="cerrarCalculadora()" style="
@@ -931,44 +937,50 @@ top:10px;
 right:15px;
 cursor:pointer;
 font-weight:bold;
+color:white;
 ">✖</span>
-
-<h3 style="text-align:center;">Calculadora</h3>
 
 <input id="calcDisplay" type="text" readonly style="
 width:100%;
-padding:10px;
-font-size:18px;
+padding:15px;
+font-size:22px;
 text-align:right;
 margin-bottom:10px;
+border:none;
+border-radius:8px;
+background:black;
+color:#00ffcc;
 ">
 
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px;">
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+
+<button onclick="limpiarCalc()" style="background:#ef4444;">C</button>
+<button onclick="calcInput('(')">(</button>
+<button onclick="calcInput(')')">)</button>
+<button onclick="calcInput('/')">÷</button>
 
 <button onclick="calcInput('7')">7</button>
 <button onclick="calcInput('8')">8</button>
 <button onclick="calcInput('9')">9</button>
-<button onclick="calcInput('/')">÷</button>
+<button onclick="calcInput('*')">×</button>
 
 <button onclick="calcInput('4')">4</button>
 <button onclick="calcInput('5')">5</button>
 <button onclick="calcInput('6')">6</button>
-<button onclick="calcInput('*')">×</button>
+<button onclick="calcInput('-')">−</button>
 
 <button onclick="calcInput('1')">1</button>
 <button onclick="calcInput('2')">2</button>
 <button onclick="calcInput('3')">3</button>
-<button onclick="calcInput('-')">−</button>
-
-<button onclick="calcInput('0')">0</button>
-<button onclick="calcInput('.')">.</button>
-<button onclick="calcular()">=</button>
 <button onclick="calcInput('+')">+</button>
 
-<button onclick="limpiarCalc()" style="grid-column: span 2;">C</button>
-<button onclick="copiarResultado()" style="grid-column: span 2;">Copiar</button>
+<button onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+<button onclick="calcInput('.')">.</button>
+<button onclick="calcular()" style="background:#16a34a;">=</button>
 
-</div>
+<button onclick="copiarResultado()" style="grid-column: span 4; background:#2563eb;">
+📋 Copiar resultado
+</button>
 
 </div>
 </div>
