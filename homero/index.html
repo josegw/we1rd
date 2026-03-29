@@ -1184,6 +1184,14 @@ function lengthFix(o) {
 	return o;
 }
 
+document.onkeydown = function(e){
+
+if(e.key === "Enter"){
+e.preventDefault();
+}
+
+};
+	
 document.onkeyup = function(e) {
 	if (e.which == 110 || e.which == 190) num('.');
 	if (e.which == 96 || e.which == 48) num('0');
@@ -1202,7 +1210,11 @@ document.onkeyup = function(e) {
 	if (e.which == 107) calc('+');
 	if (e.which == 109) calc('-');
 
-	if (e.which == 13) total();
+	if (e.key === "Enter") {
+	e.preventDefault();
+	total();
+	return;
+	}
 
 	if (e.which == 8 || e.which == 46) cls();
 
@@ -1280,19 +1292,6 @@ z-index:10000;
 
 <div style="position:relative; display:flex; gap:20px; align-items:flex-start;">
 
-<span onclick="cerrarCalculadora()" 
-style="
-position:absolute;
-top:5px;
-right:8px;
-color:#666;
-cursor:pointer;
-font-size:14px;
-font-weight:bold;
-z-index:10;
-">✖</span>
-
-<div id="calculator">
 <div id="atajosCalc" style="
 display:none;
 background:white;
@@ -1310,6 +1309,20 @@ F3 = Multiplicación (*)<br>
 F4 = División (/)<br>
 Enter = Igual (=)
 </div>
+
+<span onclick="cerrarCalculadora()" 
+style="
+position:absolute;
+top:5px;
+right:8px;
+color:#666;
+cursor:pointer;
+font-size:14px;
+font-weight:bold;
+z-index:10;
+">✖</span>
+
+<div id="calculator">
 <div id="result">0</div>
 
 <button onclick="cls();">AC</button>
