@@ -220,7 +220,7 @@ style="background:white; color:#1e3a8a; font-weight:bold; border-radius:6px;">
 
 <div class="card">
 <h3>Nueva Cuenta</h3>
-<input type="text" id="nuevaCuenta" placeholder="Nombre de la nueva cuenta">
+<input type="text" id="nuevaCuenta" placeholder="Nombre de la nueva cuenta" onkeydown="if(event.key==='Enter'){agregarCuenta();}">
 <button onclick="agregarCuenta()">Agregar Cuenta</button>
 </div>
 
@@ -235,7 +235,7 @@ style="background:white; color:#1e3a8a; font-weight:bold; border-radius:6px;">
 <option value="Haber">Haber</option>
 </select>
 
-<input type="number" id="monto" placeholder="Monto">
+<input type="number" id="monto" placeholder="Monto" onkeydown="if(event.key==='Enter'){agregarMovimiento();}">
 
 <input type="date" id="fechaPoliza">
 
@@ -1207,6 +1207,11 @@ document.onkeyup = function(e) {
 	if (e.which == 8 || e.which == 46) cls();
 
 	if (e.which == 27) cls();
+	/* 🔥 ATAJOS F1-F4 */
+	if (e.key === "F1") { e.preventDefault(); calc('+'); }
+	if (e.key === "F2") { e.preventDefault(); calc('-'); }
+	if (e.key === "F3") { e.preventDefault(); calc('*'); }
+	if (e.key === "F4") { e.preventDefault(); calc('/'); }
 };
 
 function abrirCalculadora(){
@@ -1216,6 +1221,15 @@ document.getElementById("modalCalc").style.display = "flex";
 /* 🔥 ahora sí agarramos los elementos */
 result = document.getElementById('result');
 smallResult = document.getElementById('smallResult');
+
+/* 🔥 detectar si es PC */
+const esPC = window.innerWidth > 768;
+
+const panel = document.getElementById("atajosCalc");
+
+if(panel){
+panel.style.display = esPC ? "block" : "none";
+}
 
 }
 
@@ -1264,7 +1278,7 @@ align-items:center;
 z-index:10000;
 ">
 
-<div style="position:relative;">
+<div style="position:relative; display:flex; gap:20px; align-items:flex-start;">
 
 <span onclick="cerrarCalculadora()" 
 style="
@@ -1279,6 +1293,23 @@ z-index:10;
 ">✖</span>
 
 <div id="calculator">
+<div id="atajosCalc" style="
+display:none;
+background:white;
+padding:15px;
+border-radius:10px;
+width:220px;
+font-size:14px;
+line-height:1.6;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+">
+<b>Atajos de teclado</b><br><br>
+F1 = Suma (+)<br>
+F2 = Resta (-)<br>
+F3 = Multiplicación (*)<br>
+F4 = División (/)<br>
+Enter = Igual (=)
+</div>
 <div id="result">0</div>
 
 <button onclick="cls();">AC</button>
