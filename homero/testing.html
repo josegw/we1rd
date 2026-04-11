@@ -278,85 +278,43 @@ function generarPDF(nombreEmpresa){
   const empresa = document.getElementById("empresa").value || "";
   const fecha = document.getElementById("fecha").value || "";
 
-  const contenedor = document.createElement("div");
-  contenedor.style.cssText = "font-family:Arial,sans-serif;font-size:12px;color:#111;padding:20px;width:750px;";
-
-  // Título
-  const titulo = document.createElement("div");
-  titulo.style.cssText = "background:#1e3a8a;color:white;padding:12px 16px;border-radius:8px;font-size:16px;margin-bottom:16px;font-weight:bold;";
-  titulo.innerText = empresa + " | " + (fecha ? formatearFecha(fecha) : "");
-  contenedor.appendChild(titulo);
-
-  // Encabezado Libro Diario
-  const h2polizas = document.createElement("div");
-  h2polizas.style.cssText = "background:#374151;color:white;padding:8px 14px;border-radius:6px;font-size:14px;margin:0 0 12px;font-weight:bold;";
-  h2polizas.innerText = "Libro Diario — Pólizas";
-  contenedor.appendChild(h2polizas);
-
-  // Pólizas
+  // Construir pólizas HTML
+  let htmlPolizas = "";
   polizas.forEach(p => {
     let d = 0, h = 0;
-
-    const bloque = document.createElement("div");
-    bloque.style.cssText = "margin-bottom:16px;border:1px solid #ddd;border-radius:8px;overflow:hidden;page-break-inside:avoid;";
-
-    // Header de póliza
-    const header = document.createElement("div");
-    header.style.cssText = "display:flex;justify-content:space-between;background:#e5e7eb;padding:7px 12px;";
-    header.innerHTML = `<span style="font-weight:bold;color:#1e3a8a;">Póliza ${p.numero}</span><span style="color:#374151;">${formatearFecha(p.fecha)}</span>`;
-    bloque.appendChild(header);
-
-    // Tabla
-    const tabla = document.createElement("table");
-    tabla.style.cssText = "width:100%;border-collapse:collapse;";
-
-    const thead = document.createElement("thead");
-    thead.innerHTML = `<tr>
-      <th style="background:#e5e7eb;padding:6px 8px;text-align:center;border:1px solid #ccc;">Cuenta</th>
-      <th style="background:#e5e7eb;padding:6px 8px;text-align:center;border:1px solid #ccc;">Debe</th>
-      <th style="background:#e5e7eb;padding:6px 8px;text-align:center;border:1px solid #ccc;">Haber</th>
-    </tr>`;
-    tabla.appendChild(thead);
-
-    const tbody = document.createElement("tbody");
+    let filas = "";
     p.movimientos.forEach(m => {
       if(m.tipo === "Debe") d += m.monto; else h += m.monto;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+      filas += `<tr>
         <td style="border:1px solid #ddd;padding:5px 8px;${m.tipo==='Debe'?'text-align:left;padding-left:16px;':'text-align:right;padding-right:16px;'}">${m.cuenta}</td>
         <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${m.tipo==='Debe'?formato(m.monto):''}</td>
-        <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${m.tipo==='Haber'?formato(m.monto):''}</td>`;
-      tbody.appendChild(tr);
+        <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${m.tipo==='Haber'?formato(m.monto):''}</td>
+      </tr>`;
     });
-    tabla.appendChild(tbody);
-
-    const tfoot = document.createElement("tfoot");
-    tfoot.innerHTML = `<tr style="background:#f9fafb;font-weight:bold;">
-      <td style="border:1px solid #ddd;padding:5px 8px;">Total</td>
-      <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(d)}</td>
-      <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(h)}</td>
-    </tr>`;
-    tabla.appendChild(tfoot);
-    bloque.appendChild(tabla);
-
-    // Nota
-    if(p.nota && p.nota.trim()){
-      const nota = document.createElement("div");
-      nota.style.cssText = "background:#fef9c3;padding:6px 10px;font-size:11px;color:#555;";
-      nota.innerText = "Nota: " + p.nota;
-      bloque.appendChild(nota);
-    }
-
-    contenedor.appendChild(bloque);
+    htmlPolizas += `
+      <div style="margin-bottom:16px;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;background:#e5e7eb;padding:7px 12px;">
+          <span style="font-weight:bold;color:#1e3a8a;">Póliza ${p.numero}</span>
+          <span style="color:#374151;">${formatearFecha(p.fecha)}</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="background:#e5e7eb;padding:6px 8px;text-align:center;border:1px solid #ccc;">Cuenta</th>
+            <th style="background:#e5e7eb;padding:6px 8px;text-align:center;border:1px solid #ccc;">Debe</th>
+            <th style="background:#e5e7eb;padding:6px 8px;text-align:center;border:1px solid #ccc;">Haber</th>
+          </tr></thead>
+          <tbody>${filas}</tbody>
+          <tfoot><tr style="background:#f9fafb;font-weight:bold;">
+            <td style="border:1px solid #ddd;padding:5px 8px;">Total</td>
+            <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(d)}</td>
+            <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(h)}</td>
+          </tr></tfoot>
+        </table>
+        ${p.nota && p.nota.trim() ? `<div style="background:#fef9c3;padding:6px 10px;font-size:11px;color:#555;">Nota: ${p.nota}</div>` : ''}
+      </div>`;
   });
 
-  // Encabezado Balanza
-  const h2balanza = document.createElement("div");
-  h2balanza.style.cssText = "background:#374151;color:white;padding:8px 14px;border-radius:6px;font-size:14px;margin:16px 0 12px;font-weight:bold;";
-  h2balanza.innerText = "Balanza de Comprobación";
-  contenedor.appendChild(h2balanza);
-
-  // Tabla Balanza
+  // Construir balanza HTML
   let cuentasT = {};
   polizas.forEach(p => {
     p.movimientos.forEach(m => {
@@ -366,18 +324,7 @@ function generarPDF(nombreEmpresa){
   });
 
   let totalDebe=0, totalHaber=0, totalDeudor=0, totalAcreedor=0;
-  const tablaB = document.createElement("table");
-  tablaB.style.cssText = "width:100%;border-collapse:collapse;";
-  tablaB.innerHTML = `<thead><tr>
-    <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Folio</th>
-    <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Cuenta</th>
-    <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Debe</th>
-    <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Haber</th>
-    <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Saldo Deudor</th>
-    <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Saldo Acreedor</th>
-  </tr></thead>`;
-
-  const tbodyB = document.createElement("tbody");
+  let filasBalanza = "";
   let i = 1;
   for(let c in cuentasT){
     let d = cuentasT[c].debe;
@@ -386,49 +333,78 @@ function generarPDF(nombreEmpresa){
     totalDebe += d; totalHaber += h;
     if(saldo > 0) totalDeudor += saldo;
     if(saldo < 0) totalAcreedor += Math.abs(saldo);
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    filasBalanza += `<tr>
       <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${i}</td>
       <td style="border:1px solid #ddd;padding:5px 8px;">${c}</td>
       <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(d)}</td>
       <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(h)}</td>
       <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${saldo>0?'#dc2626':''};font-weight:${saldo>0?'bold':'normal'};">${saldo>0?formato(saldo):''}</td>
-      <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${saldo<0?'#16a34a':''};font-weight:${saldo<0?'bold':'normal'};">${saldo<0?formato(Math.abs(saldo)):''}</td>`;
-    tbodyB.appendChild(tr);
+      <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${saldo<0?'#16a34a':''};font-weight:${saldo<0?'bold':'normal'};">${saldo<0?formato(Math.abs(saldo)):''}</td>
+    </tr>`;
     i++;
   }
-
-  // Fila totales
-  const trTot = document.createElement("tr");
-  trTot.style.cssText = "background:#f9fafb;font-weight:bold;";
-  trTot.innerHTML = `
+  filasBalanza += `<tr style="background:#f9fafb;font-weight:bold;">
     <td colspan="2" style="border:1px solid #ddd;padding:5px 8px;">SUMAS IGUALES</td>
     <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(totalDebe)}</td>
     <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(totalHaber)}</td>
     <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(totalDeudor)}</td>
-    <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(totalAcreedor)}</td>`;
-  tbodyB.appendChild(trTot);
-  tablaB.appendChild(tbodyB);
-  contenedor.appendChild(tablaB);
+    <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;">${formato(totalAcreedor)}</td>
+  </tr>`;
 
-  // Insertar en DOM oculto
-  contenedor.style.position = "absolute";
-  contenedor.style.left = "-9999px";
-  contenedor.style.top = "0";
-  document.body.appendChild(contenedor);
+  // HTML completo
+  const htmlFinal = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <style>
+    *{box-sizing:border-box;}
+    body{font-family:Arial,sans-serif;font-size:12px;color:#111;margin:20px;width:750px;}
+  </style>
+  </head><body>
+    <div style="background:#1e3a8a;color:white;padding:12px 16px;border-radius:8px;font-size:16px;margin-bottom:16px;font-weight:bold;">
+      ${empresa} | ${fecha ? formatearFecha(fecha) : ''}
+    </div>
+    <div style="background:#374151;color:white;padding:8px 14px;border-radius:6px;font-size:14px;margin:0 0 12px;font-weight:bold;">
+      Libro Diario — Pólizas
+    </div>
+    ${htmlPolizas}
+    <div style="background:#374151;color:white;padding:8px 14px;border-radius:6px;font-size:14px;margin:16px 0 12px;font-weight:bold;">
+      Balanza de Comprobación
+    </div>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr>
+        <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Folio</th>
+        <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Cuenta</th>
+        <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Debe</th>
+        <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Haber</th>
+        <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Saldo Deudor</th>
+        <th style="background:#e5e7eb;padding:6px 8px;border:1px solid #ccc;text-align:center;">Saldo Acreedor</th>
+      </tr></thead>
+      <tbody>${filasBalanza}</tbody>
+    </table>
+  </body></html>`;
 
-  const opciones = {
-    margin: [10, 10, 10, 10],
-    filename: (nombreEmpresa || "ejercicio") + "_reporte.pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-  };
+  // Crear iframe oculto para renderizar
+  const iframe = document.createElement("iframe");
+  iframe.style.cssText = "position:fixed;top:0;left:0;width:800px;height:600px;opacity:0;pointer-events:none;border:none;";
+  document.body.appendChild(iframe);
 
-  html2pdf().set(opciones).from(contenedor).save().then(() => {
-    document.body.removeChild(contenedor);
-  });
+  iframe.contentDocument.open();
+  iframe.contentDocument.write(htmlFinal);
+  iframe.contentDocument.close();
+
+  setTimeout(() => {
+    const elemento = iframe.contentDocument.body;
+
+    const opciones = {
+      margin: [10, 10, 10, 10],
+      filename: (nombreEmpresa || "ejercicio") + "_reporte.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+
+    html2pdf().set(opciones).from(elemento).save().then(() => {
+      document.body.removeChild(iframe);
+    });
+  }, 500);
 }
 	
 let polizas=[];
