@@ -1161,6 +1161,8 @@ location.reload();
 const titulo=document.createElement("h3");
 titulo.innerText="Ejercicio finalizado";
 
+generarPDF(nombreEmpresa);
+	
 const enlace=document.createElement("a");
 enlace.href=url;
 enlace.download=nombreEmpresa + ".wtf";
