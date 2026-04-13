@@ -273,7 +273,7 @@ style="background:white; color:#1e3a8a; font-weight:bold; border-radius:6px;">
 
 <script>
 
-function generarPDF(nombreEmpresa){
+function generarPDF(nombreEmpresa, callbackListo){
 
   const empresa = document.getElementById("empresa").value || "";
   const fecha = document.getElementById("fecha").value || "";
@@ -281,48 +281,36 @@ function generarPDF(nombreEmpresa){
   // ── PÓLIZAS ──────────────────────────────────────────────
   let filasPolizas = "";
   polizas.forEach(p => {
-    // Fila de número de póliza (span completo)
-    filasPolizas += `
-      <tr>
-        <td colspan="4" style="background:#1e3a8a;color:white;font-weight:bold;padding:5px 8px;border:1px solid #1e3a8a;">
-          Póliza ${p.numero}
-        </td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background:#e5e7eb;text-align:center;padding:4px 8px;border:1px solid #ccc;font-style:italic;">
-          ${formatearFecha(p.fecha)}
-        </td>
-      </tr>`;
+    let d=0, h=0;
+    p.movimientos.forEach(m=>{ if(m.tipo==="Debe") d+=m.monto; else h+=m.monto; });
+
+    // Primera fila de la póliza: número ocupa columna "Póliza", fecha ocupa el resto
+    const primerMov = p.movimientos[0];
+    filasPolizas += `<tr style="border-top:2px solid #374151;">
+      <td rowspan="${p.movimientos.length + 1}" style="border:1px solid #ddd;padding:4px 6px;text-align:center;font-weight:bold;vertical-align:middle;background:#f3f4f6;">${p.numero}</td>
+      <td colspan="3" style="border:1px solid #ddd;padding:3px 8px;text-align:center;font-style:italic;color:#555;background:#f9fafb;">${formatearFecha(p.fecha)}</td>
+    </tr>`;
 
     p.movimientos.forEach(m => {
       filasPolizas += `<tr>
-        <td style="border:1px solid #ddd;padding:4px 8px;text-align:center;"></td>
-        <td style="border:1px solid #ddd;padding:4px 8px;${m.tipo==='Debe'?'padding-left:14px;':'text-align:right;padding-right:14px;'}">${m.cuenta}</td>
+        <td style="border:1px solid #ddd;padding:4px 8px;${m.tipo==='Debe'?'padding-left:16px;text-align:left;':'padding-right:16px;text-align:right;'}">${m.cuenta}</td>
         <td style="border:1px solid #ddd;padding:4px 8px;text-align:center;">${m.tipo==='Debe'?formato(m.monto):''}</td>
-        <td style="border:1px solid #ddd;padding:4px 8px;text-align:center;">${m.tipo==='Haber'?formato(m.monto):''}</td>
+        <td style="border:1px solid #ddd;padding:4px 6px;text-align:center;">${m.tipo==='Haber'?formato(m.monto):''}</td>
       </tr>`;
     });
 
-    // Totales de la póliza
-    let d=0, h=0;
-    p.movimientos.forEach(m=>{ if(m.tipo==="Debe") d+=m.monto; else h+=m.monto; });
-    filasPolizas += `<tr style="background:#f9fafb;font-weight:bold;">
-      <td style="border:1px solid #ddd;padding:4px 8px;"></td>
-      <td style="border:1px solid #ddd;padding:4px 8px;">Total</td>
-      <td style="border:1px solid #ddd;padding:4px 8px;text-align:center;">${formato(d)}</td>
-      <td style="border:1px solid #ddd;padding:4px 8px;text-align:center;">${formato(h)}</td>
+    // Fila total
+    filasPolizas += `<tr style="background:#f0f0f0;font-weight:bold;">
+      <td style="border:1px solid #ddd;padding:3px 8px;">Total</td>
+      <td style="border:1px solid #ddd;padding:3px 8px;text-align:center;">${formato(d)}</td>
+      <td style="border:1px solid #ddd;padding:3px 6px;text-align:center;">${formato(h)}</td>
     </tr>`;
 
     if(p.nota && p.nota.trim()){
       filasPolizas += `<tr>
-        <td colspan="4" style="background:#fef9c3;padding:4px 8px;border:1px solid #ddd;font-size:11px;color:#555;">
-          📝 Nota: ${p.nota}
-        </td>
+        <td colspan="4" style="background:#fef9c3;padding:3px 8px;border:1px solid #ddd;font-size:10px;color:#555;">Nota: ${p.nota}</td>
       </tr>`;
     }
-
-    // Separador entre pólizas
-    filasPolizas += `<tr><td colspan="4" style="padding:4px;border:none;background:transparent;"></td></tr>`;
   });
 
   // ── CUENTAS T ─────────────────────────────────────────────
@@ -334,53 +322,55 @@ function generarPDF(nombreEmpresa){
     });
   });
 
-  // Agrupar cuentas T de 3 en 3 columnas
   const nombresCuentas = Object.keys(cuentasTMap);
   let filasT = "";
+
   for(let idx=0; idx < nombresCuentas.length; idx += 3){
     const grupo = nombresCuentas.slice(idx, idx+3);
-    // Fila de nombres
     filasT += `<tr>`;
     grupo.forEach(c => {
-      filasT += `<td style="width:33%;vertical-align:top;padding:6px;border:none;">
-        <div style="border:1px solid #ddd;border-radius:6px;overflow:hidden;">
-          <div style="background:#374151;color:white;text-align:center;padding:4px 6px;font-weight:bold;font-size:11px;">${c}</div>
-          <table style="width:100%;border-collapse:collapse;font-size:11px;">
-            <tr>
-              <th style="width:50%;background:#e5e7eb;padding:3px 5px;border:1px solid #ccc;text-align:center;">Debe</th>
-              <th style="width:50%;background:#e5e7eb;padding:3px 5px;border:1px solid #ccc;text-align:center;">Haber</th>
-            </tr>`;
-
       let dT=0, hT=0;
-      const maxRows = Math.max(cuentasTMap[c].debe.length, cuentasTMap[c].haber.length);
-      for(let r=0; r<maxRows; r++){
-        const dm = cuentasTMap[c].debe[r];
-        const hm = cuentasTMap[c].haber[r];
-        if(dm) dT += dm.monto;
-        if(hm) hT += hm.monto;
-        filasT += `<tr>
-          <td style="border:1px solid #eee;padding:2px 5px;text-align:center;">${dm ? 'P'+dm.poliza+': '+formato(dm.monto) : ''}</td>
-          <td style="border:1px solid #eee;padding:2px 5px;text-align:center;">${hm ? 'P'+hm.poliza+': '+formato(hm.monto) : ''}</td>
+      const debeItems = cuentasTMap[c].debe;
+      const haberItems = cuentasTMap[c].haber;
+      debeItems.forEach(x=>dT+=x.monto);
+      haberItems.forEach(x=>hT+=x.monto);
+      const saldoT = dT - hT;
+      const maxR = Math.max(debeItems.length, haberItems.length);
+
+      let filasInternas = "";
+      for(let r=0; r<maxR; r++){
+        const dm = debeItems[r];
+        const hm = haberItems[r];
+        filasInternas += `<tr>
+          <td style="border-right:2px solid #111;padding:2px 4px;text-align:left;font-size:10px;white-space:nowrap;">${dm?'P'+dm.poliza+': '+formato(dm.monto):''}</td>
+          <td style="padding:2px 4px;text-align:right;font-size:10px;white-space:nowrap;">${hm?'P'+hm.poliza+': '+formato(hm.monto):''}</td>
         </tr>`;
       }
 
-      const saldoT = dT - hT;
-      filasT += `<tr style="background:#f9fafb;font-weight:bold;">
-        <td style="border:1px solid #ccc;padding:3px 5px;text-align:center;">${formato(dT)}</td>
-        <td style="border:1px solid #ccc;padding:3px 5px;text-align:center;">${formato(hT)}</td>
-      </tr>`;
+      let saldoStr = "";
+      if(saldoT > 0) saldoStr = `<tr><td colspan="2" style="text-align:center;font-size:10px;color:#dc2626;font-weight:bold;padding:2px;">Saldo Deudor: ${formato(saldoT)}</td></tr>`;
+      else if(saldoT < 0) saldoStr = `<tr><td colspan="2" style="text-align:center;font-size:10px;color:#16a34a;font-weight:bold;padding:2px;">Saldo Acreedor: ${formato(Math.abs(saldoT))}</td></tr>`;
 
-      if(saldoT > 0){
-        filasT += `<tr><td colspan="2" style="text-align:center;padding:2px;font-size:10px;color:#dc2626;font-weight:bold;">Saldo Deudor: ${formato(saldoT)}</td></tr>`;
-      } else if(saldoT < 0){
-        filasT += `<tr><td colspan="2" style="text-align:center;padding:2px;font-size:10px;color:#16a34a;font-weight:bold;">Saldo Acreedor: ${formato(Math.abs(saldoT))}</td></tr>`;
-      }
-
-      filasT += `</table></div></td>`;
+      filasT += `<td style="width:33%;vertical-align:top;padding:4px;border:none;">
+        <table style="width:100%;border-collapse:collapse;border:1px solid #aaa;">
+          <tr>
+            <th colspan="2" style="background:#374151;color:white;text-align:center;padding:3px 4px;font-size:10px;border-bottom:1px solid #555;">${c}</th>
+          </tr>
+          <tr>
+            <th style="width:50%;background:#e5e7eb;padding:2px 4px;text-align:center;font-size:10px;border:1px solid #ccc;border-right:2px solid #111;">Debe</th>
+            <th style="width:50%;background:#e5e7eb;padding:2px 4px;text-align:center;font-size:10px;border:1px solid #ccc;">Haber</th>
+          </tr>
+          ${filasInternas}
+          <tr style="border-top:2px solid #111;">
+            <td style="border-right:2px solid #111;padding:2px 4px;text-align:left;font-size:10px;font-weight:bold;">${formato(dT)}</td>
+            <td style="padding:2px 4px;text-align:right;font-size:10px;font-weight:bold;">${formato(hT)}</td>
+          </tr>
+          ${saldoStr}
+        </table>
+      </td>`;
     });
-    // Rellenar columnas vacías si el grupo tiene menos de 3
     for(let fill=grupo.length; fill<3; fill++){
-      filasT += `<td style="width:33%;padding:6px;border:none;"></td>`;
+      filasT += `<td style="width:33%;padding:4px;border:none;"></td>`;
     }
     filasT += `</tr>`;
   }
@@ -396,84 +386,95 @@ function generarPDF(nombreEmpresa){
 
   let totalDebe=0, totalHaber=0, totalDeudor=0, totalAcreedor=0;
   let filasBalanza = "";
-  let i = 1;
+  let ib = 1;
   for(let c in cuentasBal){
-    let d = cuentasBal[c].debe;
-    let h = cuentasBal[c].haber;
-    let saldo = d - h;
-    totalDebe += d; totalHaber += h;
-    if(saldo > 0) totalDeudor += saldo;
-    if(saldo < 0) totalAcreedor += Math.abs(saldo);
+    let d=cuentasBal[c].debe, h=cuentasBal[c].haber, saldo=d-h;
+    totalDebe+=d; totalHaber+=h;
+    if(saldo>0) totalDeudor+=saldo;
+    if(saldo<0) totalAcreedor+=Math.abs(saldo);
     filasBalanza += `<tr>
-      <td style="border:1px solid #ddd;padding:4px 6px;text-align:center;">${i}</td>
-      <td style="border:1px solid #ddd;padding:4px 6px;">${c}</td>
-      <td style="border:1px solid #ddd;padding:4px 6px;text-align:center;">${formato(d)}</td>
-      <td style="border:1px solid #ddd;padding:4px 6px;text-align:center;">${formato(h)}</td>
-      <td style="border:1px solid #ddd;padding:4px 6px;text-align:center;color:${saldo>0?'#dc2626':''};font-weight:${saldo>0?'bold':'normal'};">${saldo>0?formato(saldo):''}</td>
-      <td style="border:1px solid #ddd;padding:4px 6px;text-align:center;color:${saldo<0?'#16a34a':''};font-weight:${saldo<0?'bold':'normal'};">${saldo<0?formato(Math.abs(saldo)):''}</td>
+      <td style="border:1px solid #ddd;padding:3px 5px;text-align:center;">${ib}</td>
+      <td style="border:1px solid #ddd;padding:3px 5px;">${c}</td>
+      <td style="border:1px solid #ddd;padding:3px 5px;text-align:center;">${formato(d)}</td>
+      <td style="border:1px solid #ddd;padding:3px 5px;text-align:center;">${formato(h)}</td>
+      <td style="border:1px solid #ddd;padding:3px 5px;text-align:center;color:${saldo>0?'#dc2626':''};font-weight:${saldo>0?'bold':'normal'};">${saldo>0?formato(saldo):''}</td>
+      <td style="border:1px solid #ddd;padding:3px 5px;text-align:center;color:${saldo<0?'#16a34a':''};font-weight:${saldo<0?'bold':'normal'};">${saldo<0?formato(Math.abs(saldo)):''}</td>
     </tr>`;
-    i++;
+    ib++;
   }
   filasBalanza += `<tr style="background:#e5e7eb;font-weight:bold;">
-    <td colspan="2" style="border:1px solid #ccc;padding:4px 6px;">SUMAS IGUALES</td>
-    <td style="border:1px solid #ccc;padding:4px 6px;text-align:center;">${formato(totalDebe)}</td>
-    <td style="border:1px solid #ccc;padding:4px 6px;text-align:center;">${formato(totalHaber)}</td>
-    <td style="border:1px solid #ccc;padding:4px 6px;text-align:center;">${formato(totalDeudor)}</td>
-    <td style="border:1px solid #ccc;padding:4px 6px;text-align:center;">${formato(totalAcreedor)}</td>
+    <td colspan="2" style="border:1px solid #ccc;padding:3px 5px;">SUMAS IGUALES</td>
+    <td style="border:1px solid #ccc;padding:3px 5px;text-align:center;">${formato(totalDebe)}</td>
+    <td style="border:1px solid #ccc;padding:3px 5px;text-align:center;">${formato(totalHaber)}</td>
+    <td style="border:1px solid #ccc;padding:3px 5px;text-align:center;">${formato(totalDeudor)}</td>
+    <td style="border:1px solid #ccc;padding:3px 5px;text-align:center;">${formato(totalAcreedor)}</td>
   </tr>`;
 
   // ── HTML FINAL ────────────────────────────────────────────
   const htmlFinal = `<!DOCTYPE html><html><head><meta charset="UTF-8">
   <style>
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:Arial,sans-serif; font-size:12px; color:#111; padding:15px; width:190mm; }
-    .seccion { background:#374151; color:white; padding:6px 12px; border-radius:5px; font-size:13px; font-weight:bold; margin:14px 0 8px; }
-    table { width:100%; border-collapse:collapse; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:12px;width:770px;}
+    .sec{background:#374151;color:white;padding:5px 10px;border-radius:4px;font-size:12px;font-weight:bold;margin:12px 0 6px;}
+    table{width:100%;border-collapse:collapse;}
   </style>
   </head><body>
-
-    <div style="background:#1e3a8a;color:white;padding:10px 14px;border-radius:7px;font-size:15px;font-weight:bold;margin-bottom:12px;">
-      ${empresa} &nbsp;|&nbsp; ${fecha ? formatearFecha(fecha) : ''}
+    <div style="background:#1e3a8a;color:white;padding:9px 13px;border-radius:6px;font-size:14px;font-weight:bold;margin-bottom:10px;">
+      ${empresa} &nbsp;|&nbsp; ${fecha?formatearFecha(fecha):''}
     </div>
 
-    <div class="seccion">Libro Diario — Pólizas</div>
-    <table>
+    <div class="sec">Libro Diario — Pólizas</div>
+    <table style="table-layout:fixed;">
+      <colgroup>
+        <col style="width:7%;">
+        <col style="width:51%;">
+        <col style="width:21%;">
+        <col style="width:21%;">
+      </colgroup>
       <thead>
         <tr style="background:#e5e7eb;">
-          <th style="width:8%;border:1px solid #ccc;padding:5px;">Póliza</th>
-          <th style="width:50%;border:1px solid #ccc;padding:5px;">Cuenta</th>
-          <th style="width:21%;border:1px solid #ccc;padding:5px;">Debe</th>
-          <th style="width:21%;border:1px solid #ccc;padding:5px;">Haber</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Póliza</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Cuenta</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Debe</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Haber</th>
         </tr>
       </thead>
       <tbody>${filasPolizas}</tbody>
     </table>
 
-    <div class="seccion">Cuentas T</div>
+    <div class="sec">Cuentas T</div>
     <table style="table-layout:fixed;">
+      <colgroup><col style="width:33%;"><col style="width:33%;"><col style="width:34%;"></colgroup>
       <tbody>${filasT}</tbody>
     </table>
 
-    <div class="seccion">Balanza de Comprobación</div>
-    <table>
+    <div class="sec">Balanza de Comprobación</div>
+    <table style="table-layout:fixed;">
+      <colgroup>
+        <col style="width:6%;">
+        <col style="width:34%;">
+        <col style="width:15%;">
+        <col style="width:15%;">
+        <col style="width:15%;">
+        <col style="width:15%;">
+      </colgroup>
       <thead>
         <tr style="background:#e5e7eb;">
-          <th style="width:6%;border:1px solid #ccc;padding:5px;">Folio</th>
-          <th style="width:34%;border:1px solid #ccc;padding:5px;">Cuenta</th>
-          <th style="width:15%;border:1px solid #ccc;padding:5px;">Debe</th>
-          <th style="width:15%;border:1px solid #ccc;padding:5px;">Haber</th>
-          <th style="width:15%;border:1px solid #ccc;padding:5px;">Saldo Deudor</th>
-          <th style="width:15%;border:1px solid #ccc;padding:5px;">Saldo Acreedor</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Folio</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Cuenta</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Debe</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Haber</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Saldo Deudor</th>
+          <th style="border:1px solid #ccc;padding:4px;text-align:center;">Saldo Acreedor</th>
         </tr>
       </thead>
       <tbody>${filasBalanza}</tbody>
     </table>
-
   </body></html>`;
 
-  // Iframe oculto para captura
+  // ── IFRAME + DESCARGA ─────────────────────────────────────
   const iframe = document.createElement("iframe");
-  iframe.style.cssText = "position:fixed;top:0;left:0;width:820px;height:1px;opacity:0;pointer-events:none;border:none;";
+  iframe.style.cssText = "position:fixed;top:0;left:0;width:800px;height:1px;opacity:0;pointer-events:none;border:none;";
   document.body.appendChild(iframe);
 
   iframe.contentDocument.open();
@@ -482,17 +483,28 @@ function generarPDF(nombreEmpresa){
 
   setTimeout(() => {
     const elemento = iframe.contentDocument.body;
-
     const opciones = {
       margin: [8, 8, 8, 8],
       filename: (nombreEmpresa || "ejercicio") + "_reporte.pdf",
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 820 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
-    html2pdf().set(opciones).from(elemento).save().then(() => {
+    html2pdf().set(opciones).from(elemento).outputPdf('blob').then(blob => {
       document.body.removeChild(iframe);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = (nombreEmpresa || "ejercicio") + "_reporte.pdf";
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if(callbackListo) callbackListo();
+      }, 300);
     });
   }, 600);
 }
@@ -1233,7 +1245,16 @@ location.reload();
 const titulo=document.createElement("h3");
 titulo.innerText="Ejercicio finalizado";
 
-generarPDF(nombreEmpresa);
+generarPDF(nombreEmpresa, function(){
+  const a2 = document.createElement("a");
+  a2.href = url;
+  a2.download = nombreEmpresa + ".wtf";
+  a2.style.display = "none";
+  document.body.appendChild(a2);
+  a2.click();
+  setTimeout(() => document.body.removeChild(a2), 300);
+});
+
 	
 const enlace=document.createElement("a");
 enlace.href=url;
