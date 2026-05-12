@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libro Mayor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f13; --surface: #17171e; --surface2: #1f1f2a; --border: #2a2a38;
+  --accent: #c8f04a; --red: #f04a6a; --text: #e8e8f0; --muted: #6b6b88;
+  --debe: #4a9ef0; --haber: #c8f04a; --ingreso: #4af0c8; --egreso: #f09c4a; --diario: #a04af0;
+  --ajuste: #f0c84a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent); }
+#headerInfo { font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card-title { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+input, select, textarea {
+  font-family: 'DM Mono', monospace; font-size: 13px; background: var(--surface2);
+  border: 1px solid var(--border); color: var(--text); border-radius: 8px;
+  padding: 9px 12px; outline: none; transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input::placeholder { color: var(--muted); }
+select option { background: var(--surface2); }
+select:disabled, input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+button { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+button:hover { opacity: 0.85; }
+button:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #0f0f13; }
+.btn-danger  { background: var(--red);    color: white; }
+.btn-warn    { background: #f09c4a;       color: #0f0f13; }
+.btn-ghost   { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-edit    { background: #f59e0b; color: #0f0f13; }
+.btn-ajuste  { background: var(--ajuste); color: #0f0f13; }
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 10px; }
+.row label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+.badge-I { background: rgba(74,240,200,0.15); color: var(--ingreso); }
+.badge-E { background: rgba(240,156,74,0.15);  color: var(--egreso); }
+.badge-D { background: rgba(160,74,240,0.15);  color: var(--diario); }
+.badge-A { background: rgba(240,200,74,0.15);  color: var(--ajuste); }
+
+/* TABLA PÓLIZA */
+.tbl-poliza { width: 100%; border-collapse: collapse; font-family: 'DM Mono', monospace; font-size: 12.5px; }
+.tbl-poliza th { background: var(--surface2); color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 10px; text-align: center; }
+.tbl-poliza td { padding: 6px 10px; border-bottom: 1px solid var(--border); text-align: center; }
+.tbl-poliza .td-cuenta { text-align: left !important; }
+.tbl-poliza .td-sub    { text-align: left !important; padding-left: 24px !important; color: var(--muted); font-size: 12px; }
+.tbl-poliza .td-debe   { color: var(--debe); }
+.tbl-poliza .td-haber  { color: var(--haber); }
+.tbl-poliza .td-pval   { color: var(--muted); font-style: italic; }
+
+/* TABS */
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.tab-btn { font-size: 12px; padding: 6px 14px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-radius: 6px; }
+.tab-btn.active { background: var(--accent); color: #0f0f13; border-color: var(--accent); }
+.tab-btn[data-tipo="A"] { border-color: rgba(240,200,74,0.3); }
+.tab-btn[data-tipo="A"].active { background: var(--ajuste); border-color: var(--ajuste); }
+
+/* ═══════════ CUENTA T ═══════════ */
+#mayor { display: flex; flex-wrap: wrap; gap: 0; }
+.cuenta-t { display: inline-block; margin: 10px; vertical-align: top; font-family: 'DM Mono', monospace; font-size: 12px; min-width: 260px; }
+.ct-nombre { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; text-align: center; color: var(--text); margin-bottom: 2px; }
+.ct-subinfo { font-family: 'DM Mono', monospace; font-size: 10px; text-align: center; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.5px; }
+.ct-headers { display: flex; justify-content: center; font-weight: 700; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--text); }
+.ct-h-debe  { width: 130px; text-align: left;  color: var(--debe);  padding: 3px 6px; }
+.ct-h-sep   { width: 2px; background: var(--text); }
+.ct-h-haber { width: 130px; text-align: right; color: var(--haber); padding: 3px 6px; }
+.ct-body { display: flex; justify-content: center; min-height: 80px; }
+.ct-col-debe  { width: 130px; text-align: left;  padding: 4px 6px; }
+.ct-col-sep   { width: 2px; background: var(--text); }
+.ct-col-haber { width: 130px; text-align: right; padding: 4px 6px; }
+.ct-linea-debe  { color: var(--debe);  display: block; line-height: 1.7; }
+.ct-linea-haber { color: var(--haber); display: block; line-height: 1.7; text-align: right; }
+/* Líneas de ajuste — color diferenciado */
+.ct-linea-debe.es-ajuste  { color: var(--ajuste); }
+.ct-linea-haber.es-ajuste { color: var(--ajuste); }
+.ct-etiqueta    { color: var(--muted); font-size: 11px; margin-right: 4px; }
+/* Separador de ajustes dentro de la columna */
+.ct-sep-ajuste {
+  display: block;
+  border-top: 1px dashed var(--ajuste);
+  margin: 4px 0;
+  opacity: 0.5;
+}
+.ct-totales { display: flex; justify-content: center; border-top: 2px solid var(--text); padding-top: 5px; margin-top: 2px; }
+.ct-tot-debe  { width: 130px; color: var(--debe);  font-weight: 700; text-align: left;  padding: 0 6px; }
+.ct-tot-sep   { width: 2px; }
+.ct-tot-haber { width: 130px; color: var(--haber); font-weight: 700; text-align: right; padding: 0 6px; }
+.ct-saldo { text-align: center; margin-top: 8px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
+.ct-saldo-deudor   { background: rgba(74,158,240,0.15); color: var(--debe); }
+.ct-saldo-acreedor { background: rgba(200,240,74,0.15);  color: var(--haber); }
+
+/* PARCIALES LIST */
+#listaParciales { margin-top: 8px; }
+.parcial-item { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 12px; }
+.parcial-nombre { flex: 1; color: var(--text); }
+.parcial-monto  { color: var(--accent); min-width: 80px; text-align: right; }
+.parcial-input-nom { flex: 1; padding: 4px 8px !important; font-size: 12px !important; }
+.parcial-input-mon { width: 80px !important; padding: 4px 8px !important; font-size: 12px !important; }
+.parcial-btn { padding: 4px 8px !important; font-size: 12px !important; border-radius: 5px !important; }
+#parcialesTotal { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* ALERT */
+.alert { position: fixed; top: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); color: var(--text); padding: 12px 18px; border-radius: 8px; z-index: 9999; font-size: 13px; font-family: 'DM Mono', monospace; animation: slideIn 0.2s ease; }
+.alert.error { border-left-color: var(--red); }
+@keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 10000; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 90%; max-width: 480px; position: relative; max-height: 90vh; overflow-y: auto; }
+.modal-close { position: absolute; top: 14px; right: 16px; background: none; color: var(--muted); font-size: 18px; padding: 0; }
+.modal-close:hover { color: var(--text); }
+
+/* MIGRACIÓN */
+.migracion-item { font-family: 'DM Mono', monospace; font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--border); color: var(--muted); }
+.migracion-item span { color: var(--ajuste); font-weight: 700; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+@media(max-width:600px){ .cuenta-t { min-width: calc(100% - 20px); } .row { flex-direction: column; } }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">LIBRO MAYOR</div>
+  <div id="headerInfo">—</div>
+</header>
+
+<!-- INICIO -->
+<div id="inicio" class="container">
+  <div class="card" style="max-width:480px;margin:60px auto;">
+    <div class="card-title">Nuevo Ejercicio</div>
+    <div class="row">
+      <label style="flex:1;">Empresa
+        <input type="text" id="empresa" placeholder="Nombre de la empresa">
+      </label>
+    </div>
+    <div class="row">
+      <label>Fecha
+        <input type="date" id="fecha">
+      </label>
+    </div>
+    <button class="btn-primary" onclick="iniciar()" style="width:100%;margin-top:8px;">Iniciar</button>
+    <hr>
+    <div class="card-title">Cargar Ejercicio</div>
+    <div class="row"><input type="file" id="archivoWTF" accept=".wtf" style="flex:1;"></div>
+    <button class="btn-ghost" onclick="cargarWTF()" style="width:100%;margin-top:4px;">Cargar Archivo .wtf</button>
+  </div>
+</div>
+
+<!-- SISTEMA -->
+<div id="sistema" class="container" style="display:none;">
+
+  <!-- Nueva Cuenta -->
+  <div class="card">
+    <div class="card-title">Nueva Cuenta</div>
+    <div class="row">
+      <label style="flex:1;">Nombre
+        <input type="text" id="nuevaCuenta" placeholder="Nombre de cuenta" onkeydown="if(event.key==='Enter')agregarCuenta()">
+      </label>
+      <button class="btn-ghost" onclick="agregarCuenta()" style="align-self:flex-end;">+ Agregar</button>
+    </div>
+  </div>
+
+  <!-- Nueva Póliza -->
+  <div class="card">
+    <div class="card-title">Nueva Póliza</div>
+    <div class="row">
+      <label>Tipo de Póliza
+        <select id="tipoPoliza">
+          <option value="">Tipo</option>
+          <option value="I">Ingreso (I)</option>
+          <option value="E">Egreso (E)</option>
+          <option value="D">Diario (D)</option>
+          <option value="A">Ajuste (A)</option>
+        </select>
+      </label>
+      <label>Fecha
+        <input type="date" id="fechaPoliza">
+      </label>
+    </div>
+
+    <hr>
+    <div class="card-title" style="margin-bottom:10px;">Agregar Movimiento</div>
+    <div class="row">
+      <label style="flex:2;">Cuenta
+        <select id="cuentaSelect"></select>
+      </label>
+      <label>Debe / Haber
+        <select id="tipoMov">
+          <option value="">Tipo</option>
+          <option value="Debe">Debe</option>
+          <option value="Haber">Haber</option>
+        </select>
+      </label>
+      <label>Monto
+        <input type="number" id="montoMov" placeholder="0.00" min="0" step="0.01"
+          onkeydown="if(event.key==='Enter')agregarMovimiento()">
+      </label>
+      <button class="btn-primary" onclick="agregarMovimiento()" style="align-self:flex-end;">+ Monto</button>
+    </div>
+
+    <!-- Parciales -->
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:4px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">
+        Parciales — subcuentas del monto anterior
+      </div>
+      <div class="row">
+        <label style="flex:2;">Subcuenta
+          <input type="text" id="parcialNombre" placeholder="Nombre subcuenta" onkeydown="if(event.key==='Enter')agregarParcial()">
+        </label>
+        <label>Monto Parcial
+          <input type="number" id="parcialMonto" placeholder="0.00" min="0" step="0.01" onkeydown="if(event.key==='Enter')agregarParcial()">
+        </label>
+        <button class="btn-ghost" onclick="agregarParcial()" style="align-self:flex-end;">+ Parcial</button>
+      </div>
+      <div id="listaParciales"></div>
+      <div id="parcialesTotal"></div>
+    </div>
+
+    <hr>
+    <div class="card-title">Vista previa</div>
+    <div id="previewPoliza"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="finalizarPoliza()">✔ Finalizar Póliza</button>
+      <button class="btn-danger"  onclick="limpiarPoliza()">✖ Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Pólizas Registradas -->
+  <div class="card">
+    <div class="card-title">Pólizas Registradas</div>
+    <div class="tabs" id="tabsPolizas"></div>
+    <div id="visorPolizas"></div>
+  </div>
+
+  <!-- Mayor -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div class="card-title" style="margin-bottom:0;">Mayor — Cuentas T</div>
+      <button class="btn-warn" onclick="cerrarEjercicio()">Cerrar Ejercicio</button>
+    </div>
+    <div id="mayor"></div>
+  </div>
+
+</div>
+
+<!-- MODAL: editar movimiento -->
+<div class="modal-overlay" id="modalEditMov">
+  <div class="modal-box" style="max-width:560px;">
+    <button class="modal-close" onclick="cerrarModalEditMov()">✖</button>
+    <div class="card-title">Editar Movimiento</div>
+    <div class="row" style="margin-top:8px;">
+      <label style="flex:2;">Cuenta
+        <select id="editMovCuenta"></select>
+      </label>
+      <label>Debe / Haber
+        <select id="editMovTipo">
+          <option value="Debe">Debe</option>
+          <option value="Haber">Haber</option>
+        </select>
+      </label>
+      <label>Monto
+        <input type="number" id="editMovMonto" min="0" step="0.01" oninput="onEditMovMontoChange()">
+      </label>
+    </div>
+
+    <div style="margin-top:10px;">
+      <hr style="margin:10px 0;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">
+        Parciales
+      </div>
+      <div id="editMovParciales"></div>
+      <div id="editMovParcialesTotal" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-top:6px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+        <label style="flex:2;display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">
+          Nueva subcuenta
+          <input type="text" id="editMovNuevoParcialNombre" placeholder="Nombre subcuenta"
+            onkeydown="if(event.key==='Enter')agregarParDesdeEditMov()"
+            oninput="onEditMovNuevoParcialChange()">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">
+          Monto
+          <input type="number" id="editMovNuevoParcialMonto" placeholder="0.00" min="0" step="0.01"
+            onkeydown="if(event.key==='Enter')agregarParDesdeEditMov()"
+            oninput="onEditMovNuevoParcialChange()">
+        </label>
+        <button class="btn-ghost" onclick="agregarParDesdeEditMov()" style="padding:9px 12px;font-size:12px;">+ Parcial</button>
+      </div>
+      <div id="editMovParcialesWarn" style="font-family:'DM Mono',monospace;font-size:12px;margin-top:6px;display:none;"></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:14px;" onclick="confirmarEditMov()">Guardar cambios</button>
+  </div>
+</div>
+
+<!-- MODAL: editar parcial -->
+<div class="modal-overlay" id="modalEditPar">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarModalEditPar()">✖</button>
+    <div class="card-title">Editar Parcial</div>
+    <div class="row" style="margin-top:8px;">
+      <label style="flex:2;">Subcuenta
+        <input type="text" id="editParNombre" placeholder="Nombre subcuenta">
+      </label>
+      <label>Monto
+        <input type="number" id="editParMonto" min="0" step="0.01">
+      </label>
+    </div>
+    <div id="editParWarn" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-top:6px;"></div>
+    <button class="btn-primary" style="width:100%;margin-top:12px;" onclick="confirmarEditPar()">Guardar cambios</button>
+  </div>
+</div>
+
+<!-- MODAL: nota -->
+<div class="modal-overlay" id="modalNota">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarModalNota()">✖</button>
+    <div class="card-title">Nota de Póliza</div>
+    <textarea id="textoNota" style="width:100%;height:110px;margin-top:6px;resize:vertical;"></textarea>
+    <button class="btn-primary" style="width:100%;margin-top:12px;" onclick="guardarNota()">Guardar Nota</button>
+  </div>
+</div>
+<div class="modal-overlay" id="modalVerNota">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('modalVerNota').classList.remove('open')">✖</button>
+    <div class="card-title">Nota</div>
+    <textarea id="textoNotaVer" readonly style="width:100%;height:110px;margin-top:6px;resize:vertical;background:var(--bg);"></textarea>
+  </div>
+</div>
+
+<!-- MODAL: migración de parciales (archivos viejos) -->
+<div class="modal-overlay" id="modalMigracion">
+  <div class="modal-box" style="max-width:560px;">
+    <button class="modal-close" onclick="cerrarModalMigracion()">✖</button>
+    <div class="card-title">⚠ Parciales Ambiguos Detectados</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+      Este archivo contiene subcuentas con el mismo nombre que pertenecen a distintas cuentas principales.
+      En el nuevo sistema, cada cuenta T de parcial indica a qué cuenta principal pertenece.<br><br>
+      <strong style="color:var(--text);">¿Deseas migrar automáticamente?</strong> El sistema asignará a cada
+      subcuenta su cuenta principal correspondiente. Esta acción no puede deshacerse.
+    </p>
+    <div id="migracionLista" style="margin-bottom:14px;max-height:200px;overflow-y:auto;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-primary" style="flex:1;" onclick="confirmarMigracion()">Migrar automáticamente</button>
+      <button class="btn-ghost" style="flex:1;" onclick="cerrarModalMigracion()">Continuar sin migrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════ ESTADO ════════════════════ */
+let cuentas = [
+  "Acreedores Diversos","Bancos","Caja","Capital","Clientes",
+  "Compras","Descuentos sobre Compras","Descuentos sobre Ventas",
+  "Deudores Diversos","Devoluciones sobre Compras","Devoluciones sobre Ventas",
+  "Documentos por Cobrar","Documentos por Pagar","Gastos de Administracion",
+  "Gastos de Compra","Gastos de Venta","Gastos y Productos Financieros",
+  "IVA Acreeditable","IVA Pendiente de Acreeditar","IVA Pendiente de Pago",
+  "IVA por Pagar","Mercancías","Mobiliario y Equipo","Papelería y Útiles",
+  "Proveedores","Ventas"
+];
+let polizas           = [];
+let polizaActual      = [];
+let parcialesActuales = [];
+let editandoPoliza    = null;
+let polizaActualNota  = "";
+let polizaActivaNum   = null;
+let contadores        = { I:1, E:1, D:1, A:1 };
+
+let editMovIdx  = null;
+let editParIdx  = null;
+
+// datos de migración pendiente
+let _migracionDatos = null;
+
+/* ════════════════════ UTIL ════════════════════ */
+function fmt(n){ return "$ " + Number(n).toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtFecha(iso){
+  if(!iso) return "";
+  const [y,m,d] = iso.split("-");
+  return new Date(y,m-1,d).toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+}
+function alerta(msg, error=false){
+  const a = document.createElement("div");
+  a.className = "alert" + (error?" error":"");
+  a.innerText = msg;
+  document.body.appendChild(a);
+  setTimeout(()=>a.remove(), 3000);
+}
+function badge(tipo){
+  if(tipo==="A") return `<span class="badge badge-A">A</span>`;
+  return `<span class="badge badge-${tipo}">${tipo}</span>`;
+}
+
+function llenarSelect(id, valorActual){
+  const sel = document.getElementById(id);
+  sel.innerHTML = '<option value="">Selecciona cuenta</option>';
+  cuentas.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = c;
+    if(c === valorActual) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+/* ════════════════════ AUTOGUARDADO ════════════════════ */
+function guardarAuto(){
+  localStorage.setItem("libro_mayor_auto", JSON.stringify({
+    empresa:  document.getElementById("empresa").value||"",
+    fecha:    document.getElementById("fecha").value||"",
+    polizas, cuentas, contadores
+  }));
+}
+function cargarAuto(){
+  const raw = localStorage.getItem("libro_mayor_auto");
+  if(!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    if(!d||!Array.isArray(d.polizas)||!Array.isArray(d.cuentas)) return;
+    polizas    = d.polizas;
+    cuentas    = d.cuentas.length ? d.cuentas : cuentas;
+    contadores = d.contadores || { I:1, E:1, D:1, A:1 };
+    if(!contadores.A) contadores.A = 1;
+    document.getElementById("empresa").value = d.empresa||"";
+    document.getElementById("fecha").value   = d.fecha||"";
+    mostrarSistema();
+  } catch(e){}
+}
+
+/* ════════════════════ INICIO ════════════════════ */
+function iniciar(){
+  if(!document.getElementById("empresa").value.trim()){ alerta("Ingresa el nombre de la empresa.", true); return; }
+  if(!document.getElementById("fecha").value){ alerta("Selecciona la fecha.", true); return; }
+  mostrarSistema();
+}
+function mostrarSistema(){
+  document.getElementById("inicio").style.display  = "none";
+  document.getElementById("sistema").style.display = "block";
+  document.getElementById("headerInfo").innerText =
+    (document.getElementById("empresa").value||"") + " — " + fmtFecha(document.getElementById("fecha").value||"");
+  llenarSelect("cuentaSelect", "");
+  renderTodo();
+}
+
+/* ════════════════════ CUENTAS ════════════════════ */
+function agregarCuenta(){
+  const n = document.getElementById("nuevaCuenta").value.trim();
+  if(!n){ alerta("Escribe el nombre.", true); return; }
+  if(cuentas.includes(n)){ alerta("La cuenta ya existe.", true); return; }
+  cuentas.push(n);
+  document.getElementById("nuevaCuenta").value = "";
+  llenarSelect("cuentaSelect", "");
+  alerta("Cuenta agregada");
+}
+
+/* ════════════════════ BLOQUEOS ════════════════════ */
+function actualizarBloqueos(){
+  document.getElementById("tipoPoliza").disabled  = polizaActual.length > 0;
+  document.getElementById("fechaPoliza").disabled = polizaActual.length > 0;
+}
+
+/* ════════════════════ PARCIALES (pendientes) ════════════════════ */
+function agregarParcial(){
+  const nombre = document.getElementById("parcialNombre").value.trim();
+  const monto  = parseFloat(document.getElementById("parcialMonto").value);
+  if(!nombre){ alerta("Escribe el nombre de la subcuenta.", true); return; }
+  if(!monto||monto<=0){ alerta("El monto debe ser mayor a 0.", true); return; }
+  parcialesActuales.push({ nombre, monto });
+  document.getElementById("parcialNombre").value = "";
+  document.getElementById("parcialMonto").value  = "";
+  renderParciales();
+}
+
+function eliminarParcial(i){
+  parcialesActuales.splice(i, 1);
+  renderParciales();
+}
+
+function abrirEditParcial(i){
+  editMovIdx = null;
+  editParIdx = i;
+  document.getElementById("editParNombre").value = parcialesActuales[i].nombre;
+  document.getElementById("editParMonto").value  = parcialesActuales[i].monto;
+  document.getElementById("editParWarn").innerText = "";
+  document.getElementById("modalEditPar").classList.add("open");
+}
+
+function cerrarModalEditPar(){ document.getElementById("modalEditPar").classList.remove("open"); editParIdx=null; editMovIdx=null; }
+
+function confirmarEditPar(){
+  const nombre = document.getElementById("editParNombre").value.trim();
+  const monto  = parseFloat(document.getElementById("editParMonto").value);
+  if(!nombre){ alerta("Escribe el nombre.", true); return; }
+  if(!monto||monto<=0){ alerta("El monto debe ser mayor a 0.", true); return; }
+
+  if(editMovIdx !== null){
+    const mov = polizaActual[editMovIdx];
+    const pars = mov.parciales;
+    const nuevaSuma = pars.reduce((acc, p, idx) => acc + (idx === editParIdx ? monto : p.monto), 0);
+    if(Math.abs(nuevaSuma - mov.monto) > 0.01){
+      alerta(`Los parciales sumarían ${fmt(nuevaSuma)} pero la cuenta principal es ${fmt(mov.monto)}. No cuadran.`, true);
+      return;
+    }
+    pars[editParIdx] = { nombre, monto };
+    cerrarModalEditPar();
+    renderPreview();
+  } else {
+    parcialesActuales[editParIdx] = { nombre, monto };
+    cerrarModalEditPar();
+    renderParciales();
+  }
+}
+
+function onEditParMontoChange(){
+  if(editMovIdx === null) return;
+  const monto = parseFloat(document.getElementById("editParMonto").value)||0;
+  const mov   = polizaActual[editMovIdx];
+  const pars  = mov.parciales;
+  const nuevaSuma = pars.reduce((acc,p,idx)=> acc + (idx===editParIdx ? monto : p.monto), 0);
+  const warn = document.getElementById("editParWarn");
+  if(Math.abs(nuevaSuma - mov.monto) > 0.01){
+    warn.innerText = `⚠ Suma parciales: ${fmt(nuevaSuma)} ≠ cuenta principal: ${fmt(mov.monto)}`;
+    warn.style.color = "var(--red)";
+  } else {
+    warn.innerText = `✔ Suma parciales: ${fmt(nuevaSuma)} coincide con la cuenta principal.`;
+    warn.style.color = "var(--accent)";
+  }
+}
+
+function renderParciales(){
+  const cont = document.getElementById("listaParciales");
+  const tot  = document.getElementById("parcialesTotal");
+  if(!parcialesActuales.length){ cont.innerHTML=""; tot.innerHTML=""; return; }
+  let sum = 0;
+  cont.innerHTML = parcialesActuales.map((p,i)=>`
+    <div class="parcial-item">
+      <span class="parcial-nombre">${p.nombre}</span>
+      <span class="parcial-monto">${fmt(p.monto)}</span>
+      <button class="btn-edit parcial-btn" onclick="abrirEditParcial(${i})">✏</button>
+      <button class="btn-danger parcial-btn" onclick="eliminarParcial(${i})">✖</button>
+    </div>`).join("");
+  parcialesActuales.forEach(p=>sum+=p.monto);
+  tot.innerHTML = `Total parciales: <strong style="color:var(--accent)">${fmt(sum)}</strong>`;
+}
+
+/* ════════════════════ MOVIMIENTOS ════════════════════ */
+function agregarMovimiento(){
+  const cuenta = document.getElementById("cuentaSelect").value;
+  const tipo   = document.getElementById("tipoMov").value;
+  const monto  = parseFloat(document.getElementById("montoMov").value);
+  if(!cuenta){ alerta("Selecciona una cuenta.", true); return; }
+  if(!tipo)  { alerta("Selecciona Debe o Haber.", true); return; }
+  if(!monto||monto<=0){ alerta("El monto debe ser mayor a 0.", true); return; }
+  if(parcialesActuales.length > 0){
+    const sumP = parcialesActuales.reduce((a,p)=>a+p.monto, 0);
+    if(Math.abs(sumP - monto) > 0.01){
+      alerta(`Parciales (${fmt(sumP)}) ≠ monto principal (${fmt(monto)}).`, true);
+      return;
+    }
+  }
+  polizaActual.push({ cuenta, tipo, monto, parciales: [...parcialesActuales] });
+  parcialesActuales = [];
+  document.getElementById("montoMov").value      = "";
+  document.getElementById("cuentaSelect").value  = "";
+  document.getElementById("tipoMov").value       = "";
+  document.getElementById("parcialNombre").value = "";
+  document.getElementById("parcialMonto").value  = "";
+  renderParciales();
+  actualizarBloqueos();
+  renderPreview();
+}
+
+function eliminarMovimiento(i){
+  if(!confirm("¿Eliminar este movimiento?")) return;
+  polizaActual.splice(i, 1);
+  actualizarBloqueos();
+  renderPreview();
+}
+
+function abrirEditMov(i){
+  editMovIdx = i;
+  const m = polizaActual[i];
+  llenarSelect("editMovCuenta", m.cuenta);
+  document.getElementById("editMovTipo").value              = m.tipo;
+  document.getElementById("editMovMonto").value             = m.monto;
+  document.getElementById("editMovNuevoParcialNombre").value = "";
+  document.getElementById("editMovNuevoParcialMonto").value  = "";
+  renderEditMovParciales();
+  actualizarWarnEditMov();
+  document.getElementById("modalEditMov").classList.add("open");
+}
+function cerrarModalEditMov(){ document.getElementById("modalEditMov").classList.remove("open"); editMovIdx=null; }
+
+function onEditMovMontoChange(){ actualizarWarnEditMov(); }
+function onEditMovNuevoParcialChange(){ actualizarWarnEditMov(); }
+
+function actualizarWarnEditMov(){
+  if(editMovIdx === null) return;
+  const mov         = polizaActual[editMovIdx];
+  const pars        = mov.parciales||[];
+  const montoP      = parseFloat(document.getElementById("editMovMonto").value)||0;
+  const nuevoMonto  = parseFloat(document.getElementById("editMovNuevoParcialMonto").value)||0;
+  const nuevoNombre = document.getElementById("editMovNuevoParcialNombre").value.trim();
+  const warn        = document.getElementById("editMovParcialesWarn");
+  if(!pars.length && !nuevoNombre && !nuevoMonto){ warn.style.display="none"; return; }
+  const sumExistentes = pars.reduce((a,p)=>a+p.monto, 0);
+  const sumTotal = sumExistentes + (nuevoNombre && nuevoMonto > 0 ? nuevoMonto : 0);
+  if(Math.abs(sumTotal - montoP) > 0.01){
+    warn.innerText = `⚠ Parciales suman ${fmt(sumTotal)} — cuenta principal: ${fmt(montoP)}`;
+    warn.style.color   = "var(--red)";
+    warn.style.display = "block";
+  } else {
+    warn.innerText = `✔ Parciales suman ${fmt(sumTotal)} — coincide con la cuenta principal.`;
+    warn.style.color   = "var(--accent)";
+    warn.style.display = "block";
+  }
+}
+
+function agregarParDesdeEditMov(){
+  if(editMovIdx === null) return;
+  const nombre = document.getElementById("editMovNuevoParcialNombre").value.trim();
+  const monto  = parseFloat(document.getElementById("editMovNuevoParcialMonto").value);
+  if(!nombre){ alerta("Escribe el nombre de la subcuenta.", true); return; }
+  if(!monto||monto<=0){ alerta("El monto debe ser mayor a 0.", true); return; }
+  const mov    = polizaActual[editMovIdx];
+  const pars   = mov.parciales||[];
+  const montoP = parseFloat(document.getElementById("editMovMonto").value)||0;
+  const sumTras = pars.reduce((a,p)=>a+p.monto,0) + monto;
+  if(sumTras - montoP > 0.01){
+    alerta(`Al agregar este parcial, la suma (${fmt(sumTras)}) superaría la cuenta principal (${fmt(montoP)}).`, true);
+    return;
+  }
+  mov.parciales.push({ nombre, monto });
+  document.getElementById("editMovNuevoParcialNombre").value = "";
+  document.getElementById("editMovNuevoParcialMonto").value  = "";
+  renderEditMovParciales();
+  actualizarWarnEditMov();
+}
+
+function confirmarEditMov(){
+  const cuenta = document.getElementById("editMovCuenta").value;
+  const tipo   = document.getElementById("editMovTipo").value;
+  const monto  = parseFloat(document.getElementById("editMovMonto").value);
+  if(!cuenta){ alerta("Selecciona una cuenta.", true); return; }
+  if(!monto||monto<=0){ alerta("El monto debe ser mayor a 0.", true); return; }
+  const pars = polizaActual[editMovIdx].parciales||[];
+  if(pars.length > 0){
+    const sumP = pars.reduce((a,p)=>a+p.monto, 0);
+    if(Math.abs(sumP - monto) > 0.01){
+      alerta(`Los parciales (${fmt(sumP)}) no cuadran con el monto (${fmt(monto)}). Ajústalos primero.`, true);
+      return;
+    }
+  }
+  polizaActual[editMovIdx] = { ...polizaActual[editMovIdx], cuenta, tipo, monto };
+  cerrarModalEditMov();
+  renderPreview();
+}
+
+function renderEditMovParciales(){
+  if(editMovIdx === null) return;
+  const mov  = polizaActual[editMovIdx];
+  const pars = mov.parciales||[];
+  const cont = document.getElementById("editMovParciales");
+  const tot  = document.getElementById("editMovParcialesTotal");
+  if(!pars.length){ cont.innerHTML=""; tot.innerHTML=""; return; }
+  let sum = 0;
+  cont.innerHTML = pars.map((p,i)=>`
+    <div class="parcial-item">
+      <span class="parcial-nombre">${p.nombre}</span>
+      <span class="parcial-monto">${fmt(p.monto)}</span>
+      <button class="btn-edit parcial-btn" onclick="abrirEditParDesdeMov(${i})">✏</button>
+      <button class="btn-danger parcial-btn" onclick="eliminarParDesdeMov(${i})">✖</button>
+    </div>`).join("");
+  pars.forEach(p=>sum+=p.monto);
+  tot.innerHTML = `Total parciales: <strong style="color:var(--accent)">${fmt(sum)}</strong>`;
+}
+
+function eliminarParDesdeMov(parIdx){
+  if(editMovIdx === null) return;
+  if(!confirm("¿Eliminar este parcial?")) return;
+  polizaActual[editMovIdx].parciales.splice(parIdx, 1);
+  renderEditMovParciales();
+  actualizarWarnEditMov();
+}
+
+function abrirEditParDesdeMov(parIdx){
+  document.getElementById("modalEditMov").classList.remove("open");
+  editParIdx = parIdx;
+  const par = polizaActual[editMovIdx].parciales[parIdx];
+  document.getElementById("editParNombre").value = par.nombre;
+  document.getElementById("editParMonto").value  = par.monto;
+  onEditParMontoChange();
+  document.getElementById("modalEditPar").classList.add("open");
+}
+
+/* ════════════════════ PREVIEW ════════════════════ */
+function renderPreview(){
+  if(!polizaActual.length){ document.getElementById("previewPoliza").innerHTML=""; return; }
+  const tipo  = document.getElementById("tipoPoliza").value||"?";
+  const fecha = document.getElementById("fechaPoliza").value;
+  const numMostrar = editandoPoliza !== null
+    ? polizas.find(p=>p.id===editandoPoliza)?.numero ?? "?"
+    : (contadores[tipo]||"?");
+  let d=0, h=0, rows="";
+
+  polizaActual.forEach((m,i)=>{
+    rows += `<tr>
+      <td class="td-cuenta">${m.cuenta}</td>
+      <td></td>
+      <td class="td-debe">${m.tipo==="Debe"  ? fmt(m.monto) : ""}</td>
+      <td class="td-haber">${m.tipo==="Haber" ? fmt(m.monto) : ""}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn-edit" style="padding:3px 8px;font-size:11px;margin-right:3px;" onclick="abrirEditMov(${i})">✏</button>
+        <button class="btn-danger" style="padding:3px 8px;font-size:11px;" onclick="eliminarMovimiento(${i})">✖</button>
+      </td>
+    </tr>`;
+    (m.parciales||[]).forEach(par=>{
+      rows += `<tr>
+        <td class="td-sub">↳ ${par.nombre}</td>
+        <td class="td-pval">${fmt(par.monto)}</td>
+        <td></td><td></td><td></td>
+      </tr>`;
+    });
+    if(m.tipo==="Debe") d+=m.monto; else h+=m.monto;
+  });
+
+  document.getElementById("previewPoliza").innerHTML = `
+    <table class="tbl-poliza">
+      <tr>
+        <th class="td-cuenta">Cuenta</th><th>Parcial</th>
+        <th style="color:var(--debe)">Debe</th>
+        <th style="color:var(--haber)">Haber</th>
+        <th></th>
+      </tr>
+      <tr><td colspan="5" style="text-align:center;color:var(--muted);font-size:11px;padding:6px;">
+        ${badge(tipo)} ${numMostrar} &nbsp; ${fecha?fmtFecha(fecha):""}
+      </td></tr>
+      ${rows}
+      <tr style="font-weight:700;background:var(--surface2);">
+        <td colspan="2">TOTAL</td>
+        <td class="td-debe">${fmt(d)}</td>
+        <td class="td-haber">${fmt(h)}</td>
+        <td></td>
+      </tr>
+    </table>`;
+}
+
+/* ════════════════════ FINALIZAR ════════════════════ */
+function finalizarPoliza(){
+  const tipo  = document.getElementById("tipoPoliza").value;
+  const fecha = document.getElementById("fechaPoliza").value;
+  if(!tipo) { alerta("Selecciona el tipo de póliza.", true); return; }
+  if(!fecha){ alerta("Selecciona la fecha.", true); return; }
+  if(!polizaActual.length){ alerta("La póliza está vacía.", true); return; }
+  let d=0, h=0;
+  polizaActual.forEach(m=>{ if(m.tipo==="Debe")d+=m.monto; else h+=m.monto; });
+  if(Math.abs(d-h)>0.01){ alerta("La póliza no está cuadrada.", true); return; }
+
+  if(editandoPoliza !== null){
+    const idx = polizas.findIndex(p=>p.id===editandoPoliza);
+    const polizaOriginal = polizas[idx];
+    polizas[idx] = {
+      id:          editandoPoliza,
+      tipo:        polizaOriginal.tipo,
+      numero:      polizaOriginal.numero,
+      fecha,
+      movimientos: [...polizaActual],
+      nota:        polizaActualNota||""
+    };
+    editandoPoliza = null;
+  } else {
+    const num = contadores[tipo];
+    contadores[tipo]++;
+    polizas.push({ id:Date.now(), tipo, numero:num, fecha, movimientos:[...polizaActual], nota:polizaActualNota||"" });
+  }
+
+  limpiarPoliza();
+  renderTodo();
+  alerta("Póliza guardada ✔");
+}
+
+function limpiarPoliza(){
+  polizaActual      = [];
+  parcialesActuales = [];
+  polizaActualNota  = "";
+  editandoPoliza    = null;
+  document.getElementById("previewPoliza").innerHTML = "";
+  document.getElementById("montoMov").value      = "";
+  document.getElementById("parcialNombre").value = "";
+  document.getElementById("parcialMonto").value  = "";
+  document.getElementById("tipoPoliza").disabled  = false;
+  document.getElementById("fechaPoliza").disabled = false;
+  renderParciales();
+}
+
+/* ════════════════════ RENDER TODO ════════════════════ */
+function renderTodo(){ guardarAuto(); renderTabs(); renderMayor(); }
+
+/* ════════════════════ TABS / VISOR ════════════════════ */
+function renderTabs(){
+  const cont = document.getElementById("tabsPolizas");
+  cont.innerHTML = polizas.map(p=>`
+    <button class="tab-btn" data-id="${p.id}" data-tipo="${p.tipo}" onclick="verPoliza(${p.id})">
+      ${p.tipo==="A" ? `A${p.numero}` : `${p.tipo}${p.numero}`}
+    </button>`).join("");
+  if(polizas.length > 0){
+    verPoliza(polizaActivaNum ?? polizas[polizas.length-1].id);
+  } else {
+    document.getElementById("visorPolizas").innerHTML = "";
+  }
+}
+
+function verPoliza(id){
+  polizaActivaNum = id;
+  const p = polizas.find(x=>x.id===id);
+  if(!p){ document.getElementById("visorPolizas").innerHTML=""; return; }
+  let rows="";
+  p.movimientos.forEach(m=>{
+    rows += `<tr>
+      <td class="td-cuenta">${m.cuenta}</td>
+      <td></td>
+      <td class="td-debe">${m.tipo==="Debe"  ? fmt(m.monto) : ""}</td>
+      <td class="td-haber">${m.tipo==="Haber" ? fmt(m.monto) : ""}</td>
+    </tr>`;
+    (m.parciales||[]).forEach(par=>{
+      rows += `<tr>
+        <td class="td-sub">↳ ${par.nombre}</td>
+        <td class="td-pval">${fmt(par.monto)}</td>
+        <td></td><td></td>
+      </tr>`;
+    });
+  });
+  document.getElementById("visorPolizas").innerHTML = `
+    <table class="tbl-poliza">
+      <tr>
+        <th class="td-cuenta">Cuenta</th><th>Parcial</th>
+        <th style="color:var(--debe)">Debe</th>
+        <th style="color:var(--haber)">Haber</th>
+      </tr>
+      <tr><td colspan="4" style="text-align:center;color:var(--muted);font-size:11px;padding:6px;">
+        ${badge(p.tipo)} ${p.tipo==="A"?`A${p.numero}`:p.numero} &nbsp; ${fmtFecha(p.fecha)}
+      </td></tr>
+      ${rows}
+    </table>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn-warn" onclick="editarPoliza(${p.id})">✏ Editar</button>
+      <button class="btn-ghost" onclick="abrirModalNota(${p.id})">${p.nota?"✏ Nota":"+ Nota"}</button>
+      ${p.nota?`<button class="btn-ghost" onclick="verNota(${p.id})">📄 Ver Nota</button>`:""}
+    </div>`;
+  document.querySelectorAll("#tabsPolizas .tab-btn").forEach(b=>{
+    b.classList.toggle("active", Number(b.dataset.id)===id);
+  });
+}
+
+function editarPoliza(id){
+  const p = polizas.find(x=>x.id===id);
+  polizaActual     = p.movimientos.map(m=>({...m, parciales:[...(m.parciales||[])]}));
+  polizaActualNota = p.nota||"";
+  document.getElementById("tipoPoliza").value  = p.tipo;
+  document.getElementById("fechaPoliza").value = p.fecha;
+  editandoPoliza = id;
+  actualizarBloqueos();
+  renderPreview();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ════════════════════ MAYOR ════════════════════ */
+/*
+  Clave del mapa para cuentas normales:  nombre de cuenta
+  Clave del mapa para parciales:          "nombreParcial §§ nombreCuentaPrincipal"
+  El separador §§ garantiza que no colisione con nombres reales.
+*/
+const SEP = " §§ ";
+
+function claveParPrincipal(nombreParcial, nombrePrincipal){
+  return nombreParcial + SEP + nombrePrincipal;
+}
+
+function renderMayor(){
+  // mapa: clave -> { debe:[], haber:[], esParcial, nombreParcial, nombrePrincipal }
+  const mapa = {};
+
+  function getOrCreate(clave, esParcial, nombreParcial, nombrePrincipal){
+    if(!mapa[clave]) mapa[clave] = {
+      debe:[], haber:[],
+      esParcial: esParcial||false,
+      nombreParcial: nombreParcial||"",
+      nombrePrincipal: nombrePrincipal||""
+    };
+    return mapa[clave];
+  }
+
+  function push(clave, label, tipo, monto, esAjuste){
+    const entrada = getOrCreate(clave, false, "", "");
+    entrada[tipo==="Debe"?"debe":"haber"].push({ label, monto, esAjuste:!!esAjuste });
+  }
+  function pushParcial(nombreParcial, nombrePrincipal, label, tipo, monto, esAjuste){
+    const clave = claveParPrincipal(nombreParcial, nombrePrincipal);
+    const entrada = getOrCreate(clave, true, nombreParcial, nombrePrincipal);
+    entrada[tipo==="Debe"?"debe":"haber"].push({ label, monto, esAjuste:!!esAjuste });
+  }
+
+  polizas.forEach(p=>{
+    const esAjuste = p.tipo === "A";
+    const label = esAjuste ? `(A${p.numero})` : `(${p.tipo}${p.numero})`;
+    p.movimientos.forEach(m=>{
+      // Cuenta principal en el mapa: usa su nombre directamente (sin SEP)
+      getOrCreate(m.cuenta, false, "", "");
+      mapa[m.cuenta][m.tipo==="Debe"?"debe":"haber"].push({ label, monto:m.monto, esAjuste });
+      // Parciales: clave compuesta
+      (m.parciales||[]).forEach(par=>{
+        pushParcial(par.nombre, m.cuenta, label, m.tipo, par.monto, esAjuste);
+      });
+    });
+  });
+
+  let html = "";
+
+  for(const clave in mapa){
+    const entrada = mapa[clave];
+    const { debe, haber, esParcial, nombreParcial, nombrePrincipal } = entrada;
+
+    const dTotal = debe.reduce((a,x)=>a+x.monto, 0);
+    const hTotal = haber.reduce((a,x)=>a+x.monto, 0);
+    const saldo  = dTotal - hTotal;
+
+    // Separar normales de ajustes para cada columna
+    function renderColumna(filas, lado){
+      if(!filas.length) return "&nbsp;";
+      const normales = filas.filter(f=>!f.esAjuste);
+      const ajustes  = filas.filter(f=> f.esAjuste);
+      const claseLinea = lado==="debe" ? "ct-linea-debe" : "ct-linea-haber";
+      let out = "";
+      normales.forEach(f=>{
+        out += `<span class="${claseLinea}"><span class="ct-etiqueta">${f.label}</span>${fmt(f.monto)}</span>`;
+      });
+      if(ajustes.length){
+        // separador visual entre normales y ajustes
+        out += `<span class="ct-sep-ajuste"></span>`;
+        ajustes.forEach(f=>{
+          out += `<span class="${claseLinea} es-ajuste"><span class="ct-etiqueta">${f.label}</span>${fmt(f.monto)}</span>`;
+        });
+      }
+      return out || "&nbsp;";
+    }
+
+    const lineasDebe  = renderColumna(debe,  "debe");
+    const lineasHaber = renderColumna(haber, "haber");
+
+    const saldoHtml = saldo===0?"":
+      saldo>0
+        ? `<div class="ct-saldo ct-saldo-deudor">Saldo Deudor: ${fmt(saldo)}</div>`
+        : `<div class="ct-saldo ct-saldo-acreedor">Saldo Acreedor: ${fmt(Math.abs(saldo))}</div>`;
+
+    // Título de la cuenta T
+    const titulo = esParcial ? nombreParcial : clave;
+    const subinfo = esParcial
+      ? `<div class="ct-subinfo">↑ de: ${nombrePrincipal}</div>`
+      : "";
+
+    html += `
+    <div class="cuenta-t">
+      <div class="ct-nombre">${titulo}</div>
+      ${subinfo}
+      <div class="ct-headers">
+        <div class="ct-h-debe">Debe</div><div class="ct-h-sep"></div><div class="ct-h-haber">Haber</div>
+      </div>
+      <div class="ct-body">
+        <div class="ct-col-debe">${lineasDebe}</div>
+        <div class="ct-col-sep"></div>
+        <div class="ct-col-haber">${lineasHaber}</div>
+      </div>
+      <div class="ct-totales">
+        <div class="ct-tot-debe">${fmt(dTotal)}</div>
+        <div class="ct-tot-sep"></div>
+        <div class="ct-tot-haber">${fmt(hTotal)}</div>
+      </div>
+      ${saldoHtml}
+    </div>`;
+  }
+
+  document.getElementById("mayor").innerHTML =
+    html || `<p style="color:var(--muted);font-size:13px;">Aún no hay movimientos.</p>`;
+}
+
+/* ════════════════════ NOTAS ════════════════════ */
+let notaPolizaId = null;
+function abrirModalNota(id){
+  notaPolizaId = id;
+  const p = polizas.find(x=>x.id===id);
+  document.getElementById("textoNota").value = p?(p.nota||""):"";
+  document.getElementById("modalNota").classList.add("open");
+}
+function cerrarModalNota(){ document.getElementById("modalNota").classList.remove("open"); notaPolizaId=null; }
+function guardarNota(){
+  if(notaPolizaId===null) return;
+  const p = polizas.find(x=>x.id===notaPolizaId);
+  if(p) p.nota = document.getElementById("textoNota").value.trim();
+  cerrarModalNota();
+  renderTodo();
+  if(polizaActivaNum) verPoliza(polizaActivaNum);
+  alerta("Nota guardada");
+}
+function verNota(id){
+  const p = polizas.find(x=>x.id===id);
+  document.getElementById("textoNotaVer").value = p?p.nota||"":"";
+  document.getElementById("modalVerNota").classList.add("open");
+}
+
+/* ════════════════════ MIGRACIÓN ════════════════════ */
+/*
+  Un archivo "viejo" tiene parciales sin indicación de cuenta principal.
+  En el sistema nuevo, la cuenta T de cada parcial se distingue por la
+  cuenta principal a la que pertenece.
+  
+  "Necesita migración" = existe el mismo nombre de parcial bajo dos o más
+  cuentas principales distintas (ambigüedad real). Si todos los parciales
+  con el mismo nombre están bajo la misma cuenta principal no hay conflicto
+  y no se muestra el modal.
+
+  La migración NO cambia la estructura de datos interna (los parciales ya
+  viven dentro de sus movimientos con la cuenta principal accesible).
+  Solo es informativa: le muestra al usuario qué conflictos existen y los
+  "resuelve" en pantalla de forma automática (el renderMayor ya lo hace
+  correctamente con los datos existentes).
+
+  Por lo tanto, la "migración automática" simplemente confirma al usuario
+  que el sistema ya separó todo correctamente y guarda.
+*/
+function detectarConflictosParciales(polizasArr){
+  // parcialNombre -> Set de cuentas principales
+  const mapa = {};
+  polizasArr.forEach(p=>{
+    p.movimientos.forEach(m=>{
+      (m.parciales||[]).forEach(par=>{
+        if(!mapa[par.nombre]) mapa[par.nombre] = new Set();
+        mapa[par.nombre].add(m.cuenta);
+      });
+    });
+  });
+  // conflictos: mismo nombre de parcial en 2+ cuentas principales
+  const conflictos = [];
+  for(const nombre in mapa){
+    if(mapa[nombre].size > 1){
+      conflictos.push({ nombre, cuentas: [...mapa[nombre]] });
+    }
+  }
+  return conflictos;
+}
+
+function mostrarModalMigracion(conflictos, datosCompletos){
+  _migracionDatos = datosCompletos;
+  const lista = document.getElementById("migracionLista");
+  lista.innerHTML = conflictos.map(c=>`
+    <div class="migracion-item">
+      Subcuenta <span>${c.nombre}</span> aparece en:<br>
+      ${c.cuentas.map(cu=>`&nbsp;&nbsp;• ${cu}`).join("<br>")}
+    </div>`).join("");
+  document.getElementById("modalMigracion").classList.add("open");
+}
+
+function cerrarModalMigracion(){
+  document.getElementById("modalMigracion").classList.remove("open");
+  // Si cierra sin migrar, igual cargamos (el mayor ya renderiza bien)
+  if(_migracionDatos){
+    aplicarDatos(_migracionDatos);
+    _migracionDatos = null;
+  }
+}
+
+function confirmarMigracion(){
+  document.getElementById("modalMigracion").classList.remove("open");
+  if(_migracionDatos){
+    aplicarDatos(_migracionDatos);
+    _migracionDatos = null;
+  }
+  alerta("Migración completada. Las cuentas T de parciales ahora indican su cuenta principal ✔");
+}
+
+function aplicarDatos(d){
+  polizas    = d.polizas;
+  cuentas    = d.cuentas;
+  contadores = d.contadores;
+  document.getElementById("empresa").value = d.empresa||"";
+  document.getElementById("fecha").value   = d.fecha||"";
+  mostrarSistema();
+}
+
+/* ════════════════════ CARGAR / CERRAR ════════════════════ */
+function cargarWTF(){
+  const file = document.getElementById("archivoWTF").files[0];
+  if(!file){ alerta("Selecciona un archivo.", true); return; }
+  if(!file.name.toLowerCase().endsWith(".wtf")){ alerta("Solo archivos .wtf", true); return; }
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try {
+      const d = JSON.parse(e.target.result);
+      if(!d||!Array.isArray(d.polizas)||!Array.isArray(d.cuentas)){ alerta("Archivo inválido.", true); return; }
+      const polizasProcesadas = d.polizas.map(p=>({
+        ...p,
+        id:     p.id||(Date.now()+Math.random()),
+        tipo:   p.tipo||"D",
+        numero: p.numero||1,
+        nota:   p.nota||"",
+        movimientos: (p.movimientos||[]).map(m=>({...m, parciales:m.parciales||[]}))
+      }));
+      const cuentasProcesadas    = d.cuentas.length ? d.cuentas : cuentas;
+      const contadoresProcesados = d.contadores
+        ? { I:1,E:1,D:1,A:1, ...d.contadores, A: d.contadores.A||1 }
+        : { I:1,E:1,D:1,A:1 };
+
+      const datosCompletos = {
+        empresa:    d.empresa||"",
+        fecha:      d.fecha||"",
+        polizas:    polizasProcesadas,
+        cuentas:    cuentasProcesadas,
+        contadores: contadoresProcesados
+      };
+
+      // Detectar si hay conflictos de parciales que requieran informar al usuario
+      const conflictos = detectarConflictosParciales(polizasProcesadas);
+      if(conflictos.length > 0){
+        mostrarModalMigracion(conflictos, datosCompletos);
+      } else {
+        aplicarDatos(datosCompletos);
+        alerta("Ejercicio cargado");
+      }
+    } catch(err){ alerta("Archivo corrupto.", true); }
+  };
+  reader.readAsText(file);
+}
+
+function cerrarEjercicio(){
+  if(!polizas.length){ alerta("No hay pólizas registradas.", true); return; }
+  if(!confirm("¿Cerrar y descargar el ejercicio?")) return;
+  const datos = {
+    empresa: document.getElementById("empresa").value||"",
+    fecha:   document.getElementById("fecha").value||"",
+    polizas, cuentas, contadores,
+    numeroPoliza: Math.max(...Object.values(contadores),1)
+  };
+  const blob = new Blob([JSON.stringify(datos)], {type:"application/octet-stream"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = (datos.empresa||"ejercicio") + ".wtf";
+  a.click();
+  setTimeout(()=>{ localStorage.removeItem("libro_mayor_auto"); location.reload(); }, 800);
+}
+
+window.onload = cargarAuto;
+</script>
+</body>
+</html>
