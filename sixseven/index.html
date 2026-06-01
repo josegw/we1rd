@@ -949,71 +949,112 @@ function gen_ec_lineal(){
 /* ── Ecuación con Denominadores ─────────────────────── */
 function gen_ec_denominadores(){
   const v = pick(['x','y','t','m','n']);
-  const type = rnd(1,2);
+  // Now 3 types for more variety
+  const type = rnd(1,3);
   let qHTML, answerHTML;
 
+  /* helper: lcm of two numbers */
+  function lcm(a,b){ return ab(a*b)/gcd(ab(a),ab(b)); }
+
   if(type===1){
-    // Build guaranteed-integer problem:
-    // (x + a)/d1 + (b·x + c)/d2 = e
-    // Choose sol first, then derive e
-    const sol=rnd(1,8);
-    const d1=pick([2,3,4,6]), d2=pick([2,3,4,6]);
-    const a=rnd(0,5), b=rnd(1,3), c=rnd(0,5);
-    const lhsNum = (sol+a)*d2 + (b*sol+c)*d1;  // over d1*d2
-    const denom  = d1*d2;
-    // Reduce
-    const g=gcd(ab(lhsNum),denom);
-    const en=lhsNum/g, ed=denom/g;
-    // Only use if result is integer
-    if(ed===1){
-      const e=en;
+    // (x + a)/d1 + (b·x + c)/d2 = e  — guaranteed integer solution
+    // Strategy: pick sol & denominators first, then compute e exactly.
+    // Retry up to 30 times until the RHS is a clean integer.
+    const DENOMS = [2,3,4,5,6];
+    let found=false, attempts=0;
+    let sol, d1, d2, a, b, c, e;
+    while(!found && attempts<30){
+      attempts++;
+      sol = rnd(1,10);
+      d1  = pick(DENOMS);
+      do { d2 = pick(DENOMS); } while(d2===d1);
+      a = rnd(1,6);   // always ≥1 so numerator is never bare "v"
+      b = rnd(1,4);
+      c = rnd(1,6);
+      const lhsNum = (sol+a)*d2 + (b*sol+c)*d1;
+      const denom  = d1*d2;
+      const g2=gcd(ab(lhsNum),denom);
+      if((denom/g2)===1){ e=lhsNum/g2; found=true; }
+    }
+    if(found){
       const bS = b===1?'':String(b);
-      const aS = a===0?'':`+ ${a}`;
-      const cS = c===0?'':`+ ${c}`;
-      qHTML = `${frac(`${v} ${aS}`,d1)} + ${frac(`${bS}${v} ${cS}`,d2)} = ${e}`;
+      qHTML = `${frac(`${v} + ${a}`,d1)} + ${frac(`${bS}${v} + ${c}`,d2)} = ${e}`;
       answerHTML = `${v} = ${sol}`;
     } else {
-      // Retry with simpler numbers that guarantee integer
-      const sol2=rnd(2,6);
-      const d=pick([2,3,4]), d2b=pick([2,3,4]);
-      const L=d*d2b;
-      // coefs such that answer is integer
-      const a2=rnd(0,3), b2=rnd(1,2), c2=rnd(0,3);
-      const lhs2=(sol2+a2)*d2b + (b2*sol2+c2)*d;
-      if(lhs2%L===0){
-        const e2=lhs2/L;
-        qHTML = `${frac(`${v} + ${a2}`,d)} + ${frac(`${b2}${v} + ${c2}`,d2b)} = ${e2}`;
-        answerHTML = `${v} = ${sol2}`;
-      } else {
-        // ultimate safe fallback: 3x/2 + x/3 = k → x = 6k/11
-        // just use a manually constructed one
-        const sol3=rnd(2,8);
-        const e3= sol3*7; // 3x/2 + 2x/1 = 7x/2 → nope, use:
-        // x/2 + x/3 = e → 5x/6 = e → x=6e/5, want integer sol
-        // sol3 must be mult of 5
-        const sol4=5*rnd(1,4);
-        const e4=sol4*5/6; // not integer either
-        // Just do: x/2 + x/2 = sol3 → x = sol3
-        qHTML = `${frac(`${v}`,2)} + ${frac(`${v}`,2)} = ${sol3}`;
-        answerHTML = `${v} = ${sol3}`;
-      }
+      // Deterministic fallback: construct manually with LCM trick
+      // (v + a)/d1 + (v + c)/d2 = e, sol chosen so both numerators divisible
+      const d1f=pick([2,3,4,5]), d2f=pick([2,3,4,5]);
+      const L=lcm(d1f,d2f);
+      const solf=L*rnd(1,4);          // sol is a multiple of LCM → numerators clean
+      const af=rnd(1,5), cf=rnd(1,5);
+      const ef=(solf+af)/d1f + (solf+cf)/d2f;
+      qHTML = `${frac(`${v} + ${af}`,d1f)} + ${frac(`${v} + ${cf}`,d2f)} = ${ef}`;
+      answerHTML = `${v} = ${solf}`;
     }
 
-  } else {
+  } else if(type===2){
     // (a·x)/d1 + (b·x)/d2 + (c·x)/d3 = e
-    // Guarantee integer: find LCM, pick sol
-    const d1=2, d2=3, d3=6;   // LCM = 6
-    const L=6;
+    // Use varied denominator triples (not always 2,3,6)
+    const TRIPLES = [
+      [2,3,6], [2,4,8], [3,4,12], [2,5,10],
+      [3,6,6], [4,6,12],[2,3,4],  [3,5,15],
+    ];
+    const [d1,d2,d3] = pick(TRIPLES);
+    const L = lcm(lcm(d1,d2),d3);
     const a=rnd(1,4), b=rnd(1,4), c=rnd(1,4);
-    // sum of coefs over LCM: (a*3 + b*2 + c) / 6
-    const num = a*3+b*2+c;
-    // sol such that sol*num divisible by 6
-    // pick sol = 6/gcd(num,6)
-    const g=gcd(num,6);
-    const sol=6/g;
-    const e=sol*num/6;
+    // coefficient of v after multiplying through by L:
+    const coefTotal = a*(L/d1) + b*(L/d2) + c*(L/d3);
+    // pick sol as a multiple of L/gcd(coefTotal,L) so e is integer
+    const g=gcd(coefTotal,L);
+    const base=L/g;
+    const sol=base*rnd(1,4);
+    const e=sol*coefTotal/L;
     qHTML = `${frac(`${a}${v}`,d1)} + ${frac(`${b}${v}`,d2)} + ${frac(`${c}${v}`,d3)} = ${e}`;
     answerHTML = `${v} = ${sol}`;
+
+  } else {
+    // NEW type 3: subtraction form  (a·x + b)/d1 - (c·x + d2c)/d2 = e
+    // Adds structural variety (minus sign between fractions)
+    const DENOMS = [2,3,4,5,6];
+    let found=false, attempts=0;
+    let sol, d1, d2, a, b, c, dc, e;
+    while(!found && attempts<30){
+      attempts++;
+      sol = rnd(2,12);
+      d1  = pick(DENOMS);
+      do { d2 = pick(DENOMS); } while(d2===d1);
+      a = rnd(1,4);
+      b = rnd(1,6);
+      c = rnd(1,3);
+      dc= rnd(1,5);
+      const lhsNum = (a*sol+b)*d2 - (c*sol+dc)*d1;
+      const denom  = d1*d2;
+      if(lhsNum<=0) continue;   // ensure positive RHS
+      const g2=gcd(ab(lhsNum),denom);
+      if((denom/g2)===1){ e=lhsNum/g2; found=true; }
+    }
+    if(found){
+      const aS=a===1?'':String(a), cS=c===1?'':String(c);
+      qHTML = `${frac(`${aS}${v} + ${b}`,d1)} - ${frac(`${cS}${v} + ${dc}`,d2)} = ${e}`;
+      answerHTML = `${v} = ${sol}`;
+    } else {
+      // Fallback for type 3: (3v+2)/2 - (v+1)/3 = e, sol integer
+      const solf=rnd(2,10);
+      const ef=Math.floor((3*solf+2)/2) - Math.floor((solf+1)/3);
+      // ensure exact
+      if(((3*solf+2)%2===0) && ((solf+1)%3===0)){
+        qHTML = `${frac(`3${v} + 2`,2)} - ${frac(`${v} + 1`,3)} = ${(3*solf+2)/2-(solf+1)/3}`;
+        answerHTML = `${v} = ${solf}`;
+      } else {
+        // absolute last resort: vary the type-2 minimal case
+        const solFinal=rnd(3,9);
+        const eFinal=solFinal*5/6;
+        // make sol divisible by 6 so e is integer
+        const sol6=6*rnd(1,3);
+        qHTML = `${frac(`${v}`,2)} + ${frac(`${v}`,3)} = ${sol6*5/6}`;
+        answerHTML = `${v} = ${sol6}`;
+      }
+    }
   }
 
   return { questionHTML:qHTML, answerHTML, topic:'ec_denominadores',
