@@ -6,72 +6,72 @@
 <title>Personaje hablando 8-bit</title>
 
 <style>
-  body {
-    margin: 0;
-    height: 100vh;
-    background: #0d0d12;
-    color: white;
-    font-family: monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
+body {
+  margin: 0;
+  height: 100vh;
+  background: #0d0d12;
+  color: white;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
 
-  .scene {
-    text-align: center;
-  }
+.scene {
+  text-align: center;
+}
 
-  #character {
-    width: 260px;
-    image-rendering: pixelated;
-    transform-origin: bottom center;
-    transition: transform 0.06s linear;
-  }
+#character {
+  width: 260px;
+  image-rendering: pixelated;
+  transform-origin: bottom center;
+  transition: transform 0.06s linear;
+}
 
-  .talk-left {
-    transform: translateX(-10px) translateY(-8px) rotate(-3deg);
-  }
+.talk-left {
+  transform: translateX(-10px) translateY(-8px) rotate(-3deg);
+}
 
-  .talk-right {
-    transform: translateX(10px) translateY(-8px) rotate(3deg);
-  }
+.talk-right {
+  transform: translateX(10px) translateY(-8px) rotate(3deg);
+}
 
-  .dialogue-box {
-    margin-top: 25px;
-    width: 80vw;
-    max-width: 700px;
-    min-height: 110px;
-    border: 4px solid white;
-    background: #050505;
-    padding: 20px;
-    font-size: 22px;
-    line-height: 1.5;
-    text-align: left;
-    box-shadow: 0 0 0 4px #222;
-  }
+.dialogue-box {
+  margin-top: 25px;
+  width: 80vw;
+  max-width: 700px;
+  min-height: 110px;
+  border: 4px solid white;
+  background: #050505;
+  padding: 20px;
+  font-size: 22px;
+  line-height: 1.5;
+  text-align: left;
+  box-shadow: 0 0 0 4px #222;
+}
 
-  button {
-    margin-top: 20px;
-    padding: 12px 25px;
-    font-family: monospace;
-    font-size: 18px;
-    cursor: pointer;
-    background: white;
-    border: none;
-  }
+button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-family: monospace;
+  font-size: 18px;
+  cursor: pointer;
+  background: white;
+  color: black;
+  border: none;
+}
 </style>
 </head>
 
 <body>
 
 <div class="scene">
-  <!-- Cambia "personaje.png" por el nombre de tu imagen -->
   <img id="character" src="personaje.png" alt="Personaje">
 
   <div class="dialogue-box" id="dialogue"></div>
 
-  <button onclick="startDialogue()">Iniciar diálogo</button>
+  <button id="startBtn">Iniciar diálogo</button>
 </div>
 
 <script>
@@ -79,42 +79,59 @@ const text = `Hola... soy Jimbo. Parece que esta partida apenas comienza, pero a
 
 const dialogue = document.getElementById("dialogue");
 const character = document.getElementById("character");
+const startBtn = document.getElementById("startBtn");
 
-let audioBuffer = null;
-let audioContext = null;
 let speakingSide = false;
+let isTyping = false;
 
-async function loadSound() {
-  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const sounds = [];
 
-  const response = await fetch("audio.mp3");
-  const arrayBuffer = await response.arrayBuffer();
-  audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+function preloadSounds() {
+  for (let i = 0; i < 12; i++) {
+    const sound = new Audio("audio.mp3");
+    sound.preload = "auto";
+    sound.volume = 0.35;
+    sounds.push(sound);
+  }
+}
+
+function unlockSounds() {
+  sounds.forEach(sound => {
+    sound.muted = true;
+    sound.play()
+      .then(() => {
+        sound.pause();
+        sound.currentTime = 0;
+        sound.muted = false;
+      })
+      .catch(() => {});
+  });
+}
+
+function getSound() {
+  const sound = sounds.find(s => s.paused) || sounds[0];
+  sound.pause();
+  sound.currentTime = 0;
+  return sound;
 }
 
 function playBlip(char) {
-  if (!audioBuffer || char === " ") return;
+  if (char === " ") return;
 
-  const source = audioContext.createBufferSource();
-  const gain = audioContext.createGain();
+  const sound = getSound();
 
-  source.buffer = audioBuffer;
-
-  // No es aleatorio: cambia según el tipo de letra
   if ("aeiouáéíóú".includes(char.toLowerCase())) {
-    source.playbackRate.value = 1.15;
-    gain.gain.value = 0.28;
+    sound.playbackRate = 1.15;
+    sound.volume = 0.38;
   } else if (".,;:!?".includes(char)) {
-    source.playbackRate.value = 0.8;
-    gain.gain.value = 0.18;
+    sound.playbackRate = 0.85;
+    sound.volume = 0.22;
   } else {
-    source.playbackRate.value = 1;
-    gain.gain.value = 0.25;
+    sound.playbackRate = 1;
+    sound.volume = 0.32;
   }
 
-  source.connect(gain);
-  gain.connect(audioContext.destination);
-  source.start();
+  sound.play().catch(() => {});
 }
 
 function moveCharacter() {
@@ -129,26 +146,31 @@ function moveCharacter() {
 }
 
 function getDelay(char) {
-  if (char === ".") return 300;
-  if (char === ",") return 180;
-  if (char === "!" || char === "?") return 260;
-  if (char === " ") return 40;
+  if (char === ".") return 280;
+  if (char === ",") return 160;
+  if (char === "!" || char === "?") return 230;
+  if (char === " ") return 35;
   return 45;
 }
 
-async function startDialogue() {
+function startDialogue() {
+  if (isTyping) return;
+
+  isTyping = true;
   dialogue.textContent = "";
+  startBtn.textContent = "Hablando...";
 
-  if (!audioContext) {
-    await loadSound();
-  }
-
-  await audioContext.resume();
+  unlockSounds();
 
   let i = 0;
 
   function typeNext() {
-    if (i >= text.length) return;
+    if (i >= text.length) {
+      isTyping = false;
+      startBtn.textContent = "Repetir diálogo";
+      character.classList.remove("talk-left", "talk-right");
+      return;
+    }
 
     const char = text[i];
     dialogue.textContent += char;
@@ -162,8 +184,12 @@ async function startDialogue() {
     setTimeout(typeNext, getDelay(char));
   }
 
-  typeNext();
+  setTimeout(typeNext, 150);
 }
+
+preloadSounds();
+
+startBtn.addEventListener("click", startDialogue);
 </script>
 
 </body>
