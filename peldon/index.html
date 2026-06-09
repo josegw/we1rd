@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personaje hablando 8-bit</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #0d0d12;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .scene {
+    text-align: center;
+  }
+
+  #character {
+    width: 260px;
+    image-rendering: pixelated;
+    transform-origin: bottom center;
+    transition: transform 0.06s linear;
+  }
+
+  .talk-left {
+    transform: translateX(-10px) translateY(-8px) rotate(-3deg);
+  }
+
+  .talk-right {
+    transform: translateX(10px) translateY(-8px) rotate(3deg);
+  }
+
+  .dialogue-box {
+    margin-top: 25px;
+    width: 80vw;
+    max-width: 700px;
+    min-height: 110px;
+    border: 4px solid white;
+    background: #050505;
+    padding: 20px;
+    font-size: 22px;
+    line-height: 1.5;
+    text-align: left;
+    box-shadow: 0 0 0 4px #222;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-family: monospace;
+    font-size: 18px;
+    cursor: pointer;
+    background: white;
+    border: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+  <!-- Cambia "personaje.png" por el nombre de tu imagen -->
+  <img id="character" src="personaje.png" alt="Personaje">
+
+  <div class="dialogue-box" id="dialogue"></div>
+
+  <button onclick="startDialogue()">Iniciar diálogo</button>
+</div>
+
+<script>
+const text = `Hola... soy Jimbo. Parece que esta partida apenas comienza, pero algo raro está pasando aquí.`;
+
+const dialogue = document.getElementById("dialogue");
+const character = document.getElementById("character");
+
+let audioBuffer = null;
+let audioContext = null;
+let speakingSide = false;
+
+async function loadSound() {
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+  const response = await fetch("audio.mp3");
+  const arrayBuffer = await response.arrayBuffer();
+  audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+}
+
+function playBlip(char) {
+  if (!audioBuffer || char === " ") return;
+
+  const source = audioContext.createBufferSource();
+  const gain = audioContext.createGain();
+
+  source.buffer = audioBuffer;
+
+  // No es aleatorio: cambia según el tipo de letra
+  if ("aeiouáéíóú".includes(char.toLowerCase())) {
+    source.playbackRate.value = 1.15;
+    gain.gain.value = 0.28;
+  } else if (".,;:!?".includes(char)) {
+    source.playbackRate.value = 0.8;
+    gain.gain.value = 0.18;
+  } else {
+    source.playbackRate.value = 1;
+    gain.gain.value = 0.25;
+  }
+
+  source.connect(gain);
+  gain.connect(audioContext.destination);
+  source.start();
+}
+
+function moveCharacter() {
+  speakingSide = !speakingSide;
+
+  character.classList.remove("talk-left", "talk-right");
+  character.classList.add(speakingSide ? "talk-left" : "talk-right");
+
+  setTimeout(() => {
+    character.classList.remove("talk-left", "talk-right");
+  }, 70);
+}
+
+function getDelay(char) {
+  if (char === ".") return 300;
+  if (char === ",") return 180;
+  if (char === "!" || char === "?") return 260;
+  if (char === " ") return 40;
+  return 45;
+}
+
+async function startDialogue() {
+  dialogue.textContent = "";
+
+  if (!audioContext) {
+    await loadSound();
+  }
+
+  await audioContext.resume();
+
+  let i = 0;
+
+  function typeNext() {
+    if (i >= text.length) return;
+
+    const char = text[i];
+    dialogue.textContent += char;
+
+    if (char !== " ") {
+      playBlip(char);
+      moveCharacter();
+    }
+
+    i++;
+    setTimeout(typeNext, getDelay(char));
+  }
+
+  typeNext();
+}
+</script>
+
+</body>
+</html>
