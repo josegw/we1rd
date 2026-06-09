@@ -83,14 +83,15 @@ const startBtn = document.getElementById("startBtn");
 
 let speakingSide = false;
 let isTyping = false;
+let lastBlipTime = 0;
 
 const sounds = [];
 
 function preloadSounds() {
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 6; i++) {
     const sound = new Audio("audio.mp3");
     sound.preload = "auto";
-    sound.volume = 0.35;
+    sound.volume = 0.28;
     sounds.push(sound);
   }
 }
@@ -98,13 +99,11 @@ function preloadSounds() {
 function unlockSounds() {
   sounds.forEach(sound => {
     sound.muted = true;
-    sound.play()
-      .then(() => {
-        sound.pause();
-        sound.currentTime = 0;
-        sound.muted = false;
-      })
-      .catch(() => {});
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+      sound.muted = false;
+    }).catch(() => {});
   });
 }
 
@@ -116,19 +115,23 @@ function getSound() {
 }
 
 function playBlip(char) {
-  if (char === " ") return;
+  const now = performance.now();
+
+  if (char === " " || now - lastBlipTime < 55) return;
+
+  lastBlipTime = now;
 
   const sound = getSound();
 
   if ("aeiouáéíóú".includes(char.toLowerCase())) {
-    sound.playbackRate = 1.15;
-    sound.volume = 0.38;
+    sound.playbackRate = 1.1;
+    sound.volume = 0.30;
   } else if (".,;:!?".includes(char)) {
     sound.playbackRate = 0.85;
-    sound.volume = 0.22;
+    sound.volume = 0.20;
   } else {
     sound.playbackRate = 1;
-    sound.volume = 0.32;
+    sound.volume = 0.27;
   }
 
   sound.play().catch(() => {});
@@ -142,15 +145,15 @@ function moveCharacter() {
 
   setTimeout(() => {
     character.classList.remove("talk-left", "talk-right");
-  }, 70);
+  }, 55);
 }
 
 function getDelay(char) {
-  if (char === ".") return 280;
-  if (char === ",") return 160;
-  if (char === "!" || char === "?") return 230;
-  if (char === " ") return 35;
-  return 45;
+  if (char === ".") return 180;
+  if (char === ",") return 100;
+  if (char === "!" || char === "?") return 150;
+  if (char === " ") return 18;
+  return 22;
 }
 
 function startDialogue() {
@@ -177,18 +180,20 @@ function startDialogue() {
 
     if (char !== " ") {
       playBlip(char);
-      moveCharacter();
+
+      if (i % 2 === 0) {
+        moveCharacter();
+      }
     }
 
     i++;
     setTimeout(typeNext, getDelay(char));
   }
 
-  setTimeout(typeNext, 150);
+  setTimeout(typeNext, 100);
 }
 
 preloadSounds();
-
 startBtn.addEventListener("click", startDialogue);
 </script>
 
