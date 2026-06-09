@@ -81,17 +81,23 @@ const dialogue = document.getElementById("dialogue");
 const character = document.getElementById("character");
 const startBtn = document.getElementById("startBtn");
 
-let speakingSide = false;
 let isTyping = false;
-let lastBlipTime = 0;
+let animationId = null;
+let lastBlip = 0;
+let lastMove = 0;
+let speakingSide = false;
+
+const charsPerSecond = 42; // súbelo a 55 si lo quieres más rápido
+const blipEveryMs = 75;
+const moveEveryMs = 90;
 
 const sounds = [];
 
 function preloadSounds() {
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 4; i++) {
     const sound = new Audio("audio.mp3");
     sound.preload = "auto";
-    sound.volume = 0.28;
+    sound.volume = 0.22;
     sounds.push(sound);
   }
 }
@@ -115,23 +121,16 @@ function getSound() {
 }
 
 function playBlip(char) {
-  const now = performance.now();
-
-  if (char === " " || now - lastBlipTime < 55) return;
-
-  lastBlipTime = now;
+  if (!char || char === " ") return;
 
   const sound = getSound();
 
   if ("aeiouáéíóú".includes(char.toLowerCase())) {
-    sound.playbackRate = 1.1;
-    sound.volume = 0.30;
+    sound.playbackRate = 1.08;
   } else if (".,;:!?".includes(char)) {
     sound.playbackRate = 0.85;
-    sound.volume = 0.20;
   } else {
     sound.playbackRate = 1;
-    sound.volume = 0.27;
   }
 
   sound.play().catch(() => {});
@@ -148,14 +147,6 @@ function moveCharacter() {
   }, 55);
 }
 
-function getDelay(char) {
-  if (char === ".") return 180;
-  if (char === ",") return 100;
-  if (char === "!" || char === "?") return 150;
-  if (char === " ") return 18;
-  return 22;
-}
-
 function startDialogue() {
   if (isTyping) return;
 
@@ -165,32 +156,40 @@ function startDialogue() {
 
   unlockSounds();
 
-  let i = 0;
+  const startTime = performance.now();
 
-  function typeNext() {
-    if (i >= text.length) {
+  function animate(now) {
+    const elapsed = (now - startTime) / 1000;
+    const charsToShow = Math.min(
+      Math.floor(elapsed * charsPerSecond),
+      text.length
+    );
+
+    dialogue.textContent = text.slice(0, charsToShow);
+
+    const currentChar = text[charsToShow - 1];
+
+    if (charsToShow < text.length) {
+      if (now - lastBlip > blipEveryMs && currentChar !== " ") {
+        playBlip(currentChar);
+        lastBlip = now;
+      }
+
+      if (now - lastMove > moveEveryMs && currentChar !== " ") {
+        moveCharacter();
+        lastMove = now;
+      }
+
+      animationId = requestAnimationFrame(animate);
+    } else {
       isTyping = false;
       startBtn.textContent = "Repetir diálogo";
       character.classList.remove("talk-left", "talk-right");
-      return;
+      cancelAnimationFrame(animationId);
     }
-
-    const char = text[i];
-    dialogue.textContent += char;
-
-    if (char !== " ") {
-      playBlip(char);
-
-      if (i % 2 === 0) {
-        moveCharacter();
-      }
-    }
-
-    i++;
-    setTimeout(typeNext, getDelay(char));
   }
 
-  setTimeout(typeNext, 100);
+  animationId = requestAnimationFrame(animate);
 }
 
 preloadSounds();
