@@ -26,7 +26,8 @@ body {
   width: 260px;
   image-rendering: pixelated;
   transform-origin: bottom center;
-  transition: transform 0.06s linear;
+  transition: transform 0.035s linear;
+  will-change: transform;
 }
 
 .talk-left {
@@ -81,59 +82,49 @@ const dialogue = document.getElementById("dialogue");
 const character = document.getElementById("character");
 const startBtn = document.getElementById("startBtn");
 
+let audioCtx;
+let audioBuffer;
 let isTyping = false;
-let animationId = null;
-let lastBlip = 0;
-let lastMove = 0;
 let speakingSide = false;
 
-const charsPerSecond = 42; // súbelo a 55 si lo quieres más rápido
-const blipEveryMs = 75;
-const moveEveryMs = 90;
+const charsPerSecond = 65;     // velocidad del texto
+const blipsPerSecond = 18;     // cantidad de sonidos por segundo
+const movesPerSecond = 13;     // movimiento del personaje
 
-const sounds = [];
+async function setupAudio() {
+  if (audioCtx && audioBuffer) return;
 
-function preloadSounds() {
-  for (let i = 0; i < 4; i++) {
-    const sound = new Audio("audio.mp3");
-    sound.preload = "auto";
-    sound.volume = 0.22;
-    sounds.push(sound);
-  }
-}
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function unlockSounds() {
-  sounds.forEach(sound => {
-    sound.muted = true;
-    sound.play().then(() => {
-      sound.pause();
-      sound.currentTime = 0;
-      sound.muted = false;
-    }).catch(() => {});
-  });
-}
+  const response = await fetch("audio.mp3");
+  const arrayBuffer = await response.arrayBuffer();
+  audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
 
-function getSound() {
-  const sound = sounds.find(s => s.paused) || sounds[0];
-  sound.pause();
-  sound.currentTime = 0;
-  return sound;
+  await audioCtx.resume();
 }
 
 function playBlip(char) {
-  if (!char || char === " ") return;
+  if (!audioCtx || !audioBuffer || !char || char === " ") return;
 
-  const sound = getSound();
+  const source = audioCtx.createBufferSource();
+  const gain = audioCtx.createGain();
+
+  source.buffer = audioBuffer;
 
   if ("aeiouáéíóú".includes(char.toLowerCase())) {
-    sound.playbackRate = 1.08;
+    source.playbackRate.value = 1.15;
+    gain.gain.value = 0.20;
   } else if (".,;:!?".includes(char)) {
-    sound.playbackRate = 0.85;
+    source.playbackRate.value = 0.85;
+    gain.gain.value = 0.15;
   } else {
-    sound.playbackRate = 1;
+    source.playbackRate.value = 1;
+    gain.gain.value = 0.18;
   }
 
-  sound.play().catch(() => {});
+  source.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start();
 }
 
 function moveCharacter() {
@@ -144,55 +135,86 @@ function moveCharacter() {
 
   setTimeout(() => {
     character.classList.remove("talk-left", "talk-right");
-  }, 55);
+  }, 45);
 }
 
-function startDialogue() {
+function getVisibleChars(elapsedMs) {
+  let count = 0;
+  let time = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    let delay = 1000 / charsPerSecond;
+
+    if (text[i] === ".") delay += 130;
+    if (text[i] === ",") delay += 70;
+    if (text[i] === "!" || text[i] === "?") delay += 110;
+
+    time += delay;
+
+    if (time <= elapsedMs) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return count;
+}
+
+async function startDialogue() {
   if (isTyping) return;
 
   isTyping = true;
+  startBtn.textContent = "Cargando...";
   dialogue.textContent = "";
+
+  await setupAudio();
+
   startBtn.textContent = "Hablando...";
 
-  unlockSounds();
-
   const startTime = performance.now();
+  let lastChars = 0;
+  let lastBlipStep = -1;
+  let lastMoveStep = -1;
 
   function animate(now) {
-    const elapsed = (now - startTime) / 1000;
-    const charsToShow = Math.min(
-      Math.floor(elapsed * charsPerSecond),
-      text.length
-    );
+    const elapsed = now - startTime;
+    const charsToShow = Math.min(getVisibleChars(elapsed), text.length);
 
-    dialogue.textContent = text.slice(0, charsToShow);
+    if (charsToShow !== lastChars) {
+      dialogue.textContent = text.slice(0, charsToShow);
+      lastChars = charsToShow;
+    }
 
     const currentChar = text[charsToShow - 1];
 
-    if (charsToShow < text.length) {
-      if (now - lastBlip > blipEveryMs && currentChar !== " ") {
+    const blipStep = Math.floor(elapsed / (1000 / blipsPerSecond));
+    const moveStep = Math.floor(elapsed / (1000 / movesPerSecond));
+
+    if (charsToShow < text.length && currentChar && currentChar !== " ") {
+      if (blipStep !== lastBlipStep) {
         playBlip(currentChar);
-        lastBlip = now;
+        lastBlipStep = blipStep;
       }
 
-      if (now - lastMove > moveEveryMs && currentChar !== " ") {
+      if (moveStep !== lastMoveStep) {
         moveCharacter();
-        lastMove = now;
+        lastMoveStep = moveStep;
       }
+    }
 
-      animationId = requestAnimationFrame(animate);
+    if (charsToShow < text.length) {
+      requestAnimationFrame(animate);
     } else {
       isTyping = false;
       startBtn.textContent = "Repetir diálogo";
       character.classList.remove("talk-left", "talk-right");
-      cancelAnimationFrame(animationId);
     }
   }
 
-  animationId = requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 }
 
-preloadSounds();
 startBtn.addEventListener("click", startDialogue);
 </script>
 
