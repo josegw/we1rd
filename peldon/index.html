@@ -83,48 +83,50 @@ const character = document.getElementById("character");
 const startBtn = document.getElementById("startBtn");
 
 let audioCtx;
-let audioBuffer;
 let isTyping = false;
 let speakingSide = false;
 
-const charsPerSecond = 65;     // velocidad del texto
-const blipsPerSecond = 18;     // cantidad de sonidos por segundo
-const movesPerSecond = 13;     // movimiento del personaje
+const charsPerSecond = 72;
+const blipsPerSecond = 24;
+const movesPerSecond = 15;
 
-async function setupAudio() {
-  if (audioCtx && audioBuffer) return;
-
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-  const response = await fetch("audio.mp3");
-  const arrayBuffer = await response.arrayBuffer();
-  audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-  await audioCtx.resume();
-}
-
-function playBlip(char) {
-  if (!audioCtx || !audioBuffer || !char || char === " ") return;
-
-  const source = audioCtx.createBufferSource();
-  const gain = audioCtx.createGain();
-
-  source.buffer = audioBuffer;
-
-  if ("aeiouáéíóú".includes(char.toLowerCase())) {
-    source.playbackRate.value = 1.15;
-    gain.gain.value = 0.20;
-  } else if (".,;:!?".includes(char)) {
-    source.playbackRate.value = 0.85;
-    gain.gain.value = 0.15;
-  } else {
-    source.playbackRate.value = 1;
-    gain.gain.value = 0.18;
+async function unlockAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
-  source.connect(gain);
+  if (audioCtx.state === "suspended") {
+    await audioCtx.resume();
+  }
+}
+
+function play8BitBlip(char) {
+  if (!audioCtx || !char || char === " ") return;
+
+  const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "square";
+
+  if ("aeiouáéíóú".includes(char.toLowerCase())) {
+    osc.frequency.value = 620;
+  } else if (".,;:!?".includes(char)) {
+    osc.frequency.value = 380;
+  } else {
+    osc.frequency.value = 520;
+  }
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.18, now + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+
+  osc.connect(gain);
   gain.connect(audioCtx.destination);
-  source.start();
+
+  osc.start(now);
+  osc.stop(now + 0.04);
 }
 
 function moveCharacter() {
@@ -135,7 +137,7 @@ function moveCharacter() {
 
   setTimeout(() => {
     character.classList.remove("talk-left", "talk-right");
-  }, 45);
+  }, 40);
 }
 
 function getVisibleChars(elapsedMs) {
@@ -145,17 +147,14 @@ function getVisibleChars(elapsedMs) {
   for (let i = 0; i < text.length; i++) {
     let delay = 1000 / charsPerSecond;
 
-    if (text[i] === ".") delay += 130;
-    if (text[i] === ",") delay += 70;
-    if (text[i] === "!" || text[i] === "?") delay += 110;
+    if (text[i] === ".") delay += 110;
+    if (text[i] === ",") delay += 60;
+    if (text[i] === "!" || text[i] === "?") delay += 90;
 
     time += delay;
 
-    if (time <= elapsedMs) {
-      count++;
-    } else {
-      break;
-    }
+    if (time <= elapsedMs) count++;
+    else break;
   }
 
   return count;
@@ -164,15 +163,14 @@ function getVisibleChars(elapsedMs) {
 async function startDialogue() {
   if (isTyping) return;
 
+  await unlockAudio();
+
   isTyping = true;
-  startBtn.textContent = "Cargando...";
   dialogue.textContent = "";
-
-  await setupAudio();
-
   startBtn.textContent = "Hablando...";
 
   const startTime = performance.now();
+
   let lastChars = 0;
   let lastBlipStep = -1;
   let lastMoveStep = -1;
@@ -193,7 +191,7 @@ async function startDialogue() {
 
     if (charsToShow < text.length && currentChar && currentChar !== " ") {
       if (blipStep !== lastBlipStep) {
-        playBlip(currentChar);
+        play8BitBlip(currentChar);
         lastBlipStep = blipStep;
       }
 
