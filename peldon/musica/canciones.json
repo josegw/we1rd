@@ -3,5 +3,35 @@
     "archivo": "Sideral.mp3",
     "nombre": "Espacio Sideral",
     "artista": "Jesse & Joy"
+  },
+    {
+    "archivo": "Shoulder.mp3",
+    "nombre": "Put Your Head on My Shoulder",
+    "artista": "Paul Anka"
+  },
+    {
+    "archivo": "Notice.mp3",
+    "nombre": "Notice Me Senpai",
+    "artista": "Tiffany Herrera"
+  },
+    {
+    "archivo": "Inside.mp3",
+    "nombre": "Bury Me Deep Inside Your Heart",
+    "artista": "HIM"
+  },
+    {
+    "archivo": "Frances.mp3",
+    "nombre": "Frances Limon",
+    "artista": "Enanitos Verdes"
+  },
+    {
+    "archivo": "Death.mp3",
+    "nombre": "Join Me in Death",
+    "artista": "HIM"
+  },
+    {
+    "archivo": "Cherry.mp3",
+    "nombre": "Cherry Waves",
+    "artista": "Deftones"
   }
 ]
