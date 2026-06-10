@@ -153,16 +153,58 @@ html,body{
 /* Content */
 .phone-content{flex:1;position:relative;overflow:hidden;}
 
-/* Home indicator */
+/* ══ HOME BUTTON (iPhone 4 style) ══ */
 .home-indicator{
-  height:34px;display:flex;align-items:center;justify-content:center;
+  height:52px;display:flex;align-items:center;justify-content:center;
   cursor:pointer;flex-shrink:0;
+  /* subtle bottom padding from edge */
+  padding-bottom:4px;
 }
-.home-bar{
-  width:130px;height:4px;background:rgba(255,255,255,.28);border-radius:2px;
-  transition:background .2s;
+.home-btn-classic{
+  width:46px;height:46px;border-radius:50%;
+  /* Double-ring classic iPhone home button */
+  background:
+    radial-gradient(circle at 38% 32%, rgba(255,255,255,.22) 0%, transparent 55%),
+    linear-gradient(145deg, #4A0016 0%, #2A000C 40%, #1A0008 100%);
+  border:2px solid rgba(255,255,255,.28);
+  box-shadow:
+    0 0 0 3px rgba(100,10,30,.8),
+    0 0 0 5px rgba(255,255,255,.10),
+    0 0 0 6.5px rgba(80,5,20,.7),
+    0 3px 14px rgba(0,0,0,.7),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(0,0,0,.4);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .12s, box-shadow .12s;
+  position:relative;
 }
-.home-indicator:active .home-bar{background:rgba(255,255,255,.55);}
+/* Rounded-square inner glyph */
+.home-btn-classic::after{
+  content:'';
+  width:15px;height:15px;
+  border-radius:4px;
+  border:2px solid rgba(255,190,210,.55);
+  background:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+}
+.home-indicator:active .home-btn-classic{
+  transform:scale(.91);
+  box-shadow:
+    0 0 0 3px rgba(100,10,30,.8),
+    0 0 0 5px rgba(255,255,255,.18),
+    0 0 0 6.5px rgba(80,5,20,.7),
+    0 1px 6px rgba(0,0,0,.6),
+    inset 0 1px 0 rgba(255,255,255,.1),
+    inset 0 -1px 0 rgba(0,0,0,.5);
+}
+.home-indicator.no-home{
+  /* keep space but invisible & non-interactive during call */
+  pointer-events:none;
+  opacity:0;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:0;}
 
 /* ── Views ── */
 .phone-view{
@@ -237,12 +279,14 @@ html,body{
 .dock .app-icon-wrap{width:54px;height:54px;border-radius:14px;}
 
 /* App colors */
-.ic-phone{background:linear-gradient(145deg,#25991A,#156010);}
-.ic-contacts{background:linear-gradient(145deg,#7A3D12,#4A2008);}
-.ic-msg{background:linear-gradient(145deg,#1A8B2E,#0E5820);}
-.ic-music{background:linear-gradient(145deg,#7A1230,#4A0818);}
-.ic-photos{background:linear-gradient(145deg,#B86C10,#7A4408);}
-.ic-settings{background:linear-gradient(145deg,#505050,#2A2A2A);}
+.ic-phone    {background:linear-gradient(145deg,#25991A,#156010);}
+.ic-contacts {background:linear-gradient(145deg,#7A3D12,#4A2008);}
+.ic-msg      {background:linear-gradient(145deg,#1A8B2E,#0E5820);}
+.ic-music    {background:linear-gradient(145deg,#7A1230,#4A0818);}
+.ic-photos   {background:linear-gradient(145deg,#B86C10,#7A4408);}
+.ic-settings {background:linear-gradient(145deg,#505050,#2A2A2A);}
+/* Gallery – warm rose/vino gradient matching site palette */
+.ic-gallery  {background:linear-gradient(145deg,#8B1535,#5A0820);}
 
 /* ══ APP NAV BAR ══ */
 .app-nav{
@@ -382,6 +426,7 @@ html,body{
 .ac-btn-lbl{font-size:.62rem;color:rgba(255,255,255,.5);font-weight:500;}
 
 .ac-hangup-wrap{padding:18px 0 8px;display:flex;justify-content:center;}
+/* ── Hang-up button: clearly a phone being put down ── */
 .ac-hangup{
   width:70px;height:70px;border-radius:50%;
   background:linear-gradient(135deg,#C42B20,#8C1510);
@@ -391,24 +436,56 @@ html,body{
 }
 .ac-hangup:active{transform:scale(.91);}
 
-/* Home button */
-.home-indicator{
-  height:52px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;
+/* ══ GALLERY ══ */
+#view-gallery{background:#0A0003;}
+.gallery-grid{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:8px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2px;
+  align-content:start;
 }
-.home-btn-circle{
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,.08);
-  border:1.5px solid rgba(255,255,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  transition:background .15s,transform .12s;
-  box-shadow:0 2px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.12);
+.gallery-thumb{
+  aspect-ratio:1/1;cursor:pointer;overflow:hidden;
+  background:rgba(255,255,255,.06);
+  position:relative;
 }
-.home-indicator:active .home-btn-circle{background:rgba(255,255,255,.2);transform:scale(.92);}
-.home-indicator.no-home{display:none;}
+.gallery-thumb img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .18s;
+  display:block;
+}
+.gallery-thumb:active img{transform:scale(.93);}
 
-/* scrollbar */
-::-webkit-scrollbar{width:0;}
+/* Photo lightbox */
+.gallery-lightbox{
+  position:absolute;inset:0;z-index:50;
+  background:rgba(8,0,2,.97);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+.gallery-lightbox.open{opacity:1;pointer-events:all;}
+.gallery-lightbox-img{
+  max-width:100%;max-height:calc(100% - 70px);
+  object-fit:contain;border-radius:6px;
+}
+.gallery-close{
+  position:absolute;top:14px;right:14px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .15s;
+}
+.gallery-close:active{background:rgba(255,255,255,.25);}
+.gallery-empty{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  color:var(--muted);font-size:.88rem;padding:20px;text-align:center;
+}
 </style>
 </head>
 <body>
@@ -491,21 +568,18 @@ html,body{
     <div class="status-bar">
       <div class="status-time" id="status-time">9:41</div>
       <div class="status-icons">
-        <!-- Signal bars -->
         <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
           <rect x="0" y="8" width="3" height="4" rx="1" fill="rgba(255,240,244,.8)"/>
           <rect x="4.5" y="5.5" width="3" height="6.5" rx="1" fill="rgba(255,240,244,.8)"/>
           <rect x="9" y="3" width="3" height="9" rx="1" fill="rgba(255,240,244,.8)"/>
           <rect x="13.5" y="0" width="3" height="12" rx="1" fill="rgba(255,240,244,.35)"/>
         </svg>
-        <!-- WiFi -->
         <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
           <path d="M1 4.5C3.5 2 6.6 0.5 8 0.5s4.5 1.5 7 4" stroke="rgba(255,240,244,.8)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
           <path d="M3.5 7C5 5.5 6.5 4.8 8 4.8s3 .7 4.5 2.2" stroke="rgba(255,240,244,.8)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
           <path d="M6 9.5C6.7 8.8 7.3 8.5 8 8.5s1.3.3 2 1" stroke="rgba(255,240,244,.8)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
           <circle cx="8" cy="11.2" r=".8" fill="rgba(255,240,244,.8)"/>
         </svg>
-        <!-- Battery -->
         <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
           <rect x=".5" y=".5" width="21" height="11" rx="3" stroke="rgba(255,240,244,.5)" stroke-width="1"/>
           <rect x="2" y="2" width="16" height="8" rx="2" fill="rgba(255,240,244,.8)"/>
@@ -517,7 +591,7 @@ html,body{
     <div class="phone-content" id="phone-content">
 
       <!-- LOCK -->
-      <div class="phone-view" id="view-lock" onclick="unlockPhone()">
+      <div class="phone-view" id="view-lock">
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:.55rem;">
           <div class="lock-time" id="lock-time">9:41</div>
           <div class="lock-date" id="lock-date">Martes, 10 de junio</div>
@@ -527,7 +601,7 @@ html,body{
             <circle cx="10" cy="10" r="9" stroke="rgba(255,255,255,.42)" stroke-width="1.2"/>
             <path d="M10 6v5l3 2" stroke="rgba(255,255,255,.42)" stroke-width="1.2" stroke-linecap="round"/>
           </svg>
-          <span>Toca para abrir</span>
+          <span>Presiona inicio o toca para abrir</span>
         </div>
       </div>
 
@@ -538,7 +612,6 @@ html,body{
         <div class="dock">
           <div class="app-icon" onclick="openApp('phone-app')">
             <div class="app-icon-wrap ic-phone">
-              <!-- Phone handset SVG -->
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                 <path d="M6 4h5l2 5-2.5 2a14 14 0 006.5 6.5L19 15l5 2v5a2 2 0 01-2 2C9 24 4 19 4 6a2 2 0 012-2z" fill="white" fill-opacity=".92"/>
               </svg>
@@ -547,7 +620,6 @@ html,body{
           </div>
           <div class="app-icon" onclick="openApp('contacts')">
             <div class="app-icon-wrap ic-contacts">
-              <!-- Contacts SVG -->
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                 <circle cx="14" cy="11" r="4" fill="white" fill-opacity=".9"/>
                 <path d="M6 22c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-opacity=".9" stroke-width="2" stroke-linecap="round" fill="none"/>
@@ -671,7 +743,7 @@ html,body{
 
       <!-- ACTIVE CALL -->
       <div class="phone-view hidden" id="view-active-call">
-        <div class="ac-avatar" style="overflow:hidden;padding:0;">
+        <div class="ac-avatar" style="overflow:hidden;padding:0;margin-top:16px;">
           <img src="pfp.png" alt="Mi Amor" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">
         </div>
         <div class="ac-name">Mi Amor</div>
@@ -706,9 +778,8 @@ html,body{
           <div class="ac-btn">
             <div class="ac-btn-circle">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M11 5H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2v-3" stroke="white" stroke-opacity=".75" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-                <path d="M9 12c0 3 2 5 5 5" stroke="white" stroke-opacity=".5" stroke-width="1.3" stroke-linecap="round" fill="none"/>
-                <path d="M14 7l4 4-4 4M18 11H10" stroke="white" stroke-opacity=".75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <ellipse cx="12" cy="18" rx="6" ry="3" stroke="white" stroke-opacity=".75" stroke-width="1.5" fill="none"/>
+                <path d="M6 18V9a6 6 0 0112 0v9" stroke="white" stroke-opacity=".75" stroke-width="1.5" fill="none"/>
               </svg>
             </div>
             <div class="ac-btn-lbl">Altavoz</div>
@@ -744,22 +815,50 @@ html,body{
         </div>
 
         <div class="ac-hangup-wrap">
+          <!-- Clear hang-up icon: handset face-down with end-call bar -->
           <div class="ac-hangup" id="btn-hangup" onclick="hangUp()">
-            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-              <path d="M15 18c-3.5 0-6.7-.8-9.3-2.2L4 17.5a19 19 0 0022 0l-1.7-1.7C21.7 17.2 18.5 18 15 18z" fill="white" fill-opacity=".9" transform="rotate(135,15,15)"/>
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <!-- Handset rotated to "hung up" position (receiver down) -->
+              <path d="M7 22c2-2 4.5-3.5 10-3.5S25 20 27 22"
+                    stroke="white" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+              <circle cx="9.5" cy="23.5" r="2.8" fill="white" fill-opacity=".9"/>
+              <circle cx="24.5" cy="23.5" r="2.8" fill="white" fill-opacity=".9"/>
             </svg>
           </div>
+        </div>
+
+        <!-- Gallery lightbox (inside active call, not used; lightbox lives in gallery view) -->
+      </div>
+
+      <!-- GALLERY -->
+      <div class="phone-view hidden" id="view-gallery">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Galería</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="gallery-grid" id="gallery-grid">
+          <!-- photos injected by JS -->
+        </div>
+        <!-- Lightbox -->
+        <div class="gallery-lightbox" id="gallery-lightbox">
+          <div class="gallery-close" onclick="closeLightbox()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 2l10 10M12 2L2 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <img class="gallery-lightbox-img" id="gallery-lightbox-img" src="" alt="">
         </div>
       </div>
 
     </div><!-- /phone-content -->
 
+    <!-- ══ HOME BUTTON (classic iPhone 4 style) ══ -->
     <div class="home-indicator" id="home-indicator" onclick="homeButtonPress()">
-      <div class="home-btn-circle">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M2 7.5L9 2l7 5.5V16a1 1 0 01-1 1H12v-4H6v4H3a1 1 0 01-1-1V7.5z" stroke="rgba(255,240,244,.7)" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
-        </svg>
-      </div>
+      <div class="home-btn-classic"></div>
     </div>
   </div>
 </div>
@@ -800,40 +899,143 @@ function fmtDate(d) {
 }
 function tick() {
   const n=new Date();
-  const te=document.getElementById('lock-time');
-  const se=document.getElementById('status-time');
+  ['lock-time','status-time'].forEach(id => {
+    const el=document.getElementById(id);
+    if(el) el.textContent=fmtTime(n);
+  });
   const de=document.getElementById('lock-date');
-  if(te) te.textContent=fmtTime(n);
-  if(se) se.textContent=fmtTime(n);
   if(de) de.textContent=fmtDate(n);
 }
 setInterval(tick,1000); tick();
 
 // ── INIT PHONE ──
 function initPhone() {
+  buildGrid();
+  buildGallery();
+}
+
+function buildGrid() {
   const grid = document.getElementById('apps-grid');
   const apps = [
-    { cls:'ic-photos',  label:'Fotos',    svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="6" width="22" height="17" rx="3" fill="white" fill-opacity=".9"/><circle cx="10" cy="13" r="2.5" fill="rgba(184,108,16,.8)"/><path d="M3 18l5-5 4 4 3-3 5 5" stroke="rgba(184,108,16,.6)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="20" cy="9" r="1.5" fill="rgba(184,108,16,.8)"/></svg>` },
-    { cls:'ic-music',   label:'Música',   svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
-    { cls:'ic-settings', label:'Ajustes', svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="white" stroke-opacity=".85" stroke-width="1.6" fill="none"/><path d="M14 5v2M14 21v2M5 14H3M25 14h-2M7.05 7.05l1.41 1.41M19.54 19.54l1.41 1.41M7.05 20.95l1.41-1.41M19.54 8.46l1.41-1.41" stroke="white" stroke-opacity=".85" stroke-width="1.6" stroke-linecap="round"/></svg>` },
-    { cls:'ic-msg',     label:'Mensajes', svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 4h20a2 2 0 012 2v12a2 2 0 01-2 2H8l-6 6V6a2 2 0 012-2z" fill="white" fill-opacity=".9"/><path d="M8 11h12M8 15h7" stroke="rgba(26,139,46,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>` },
+    { cls:'ic-photos',  label:'Fotos',    action:'',         svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="6" width="22" height="17" rx="3" fill="white" fill-opacity=".9"/><circle cx="10" cy="13" r="2.5" fill="rgba(184,108,16,.8)"/><path d="M3 18l5-5 4 4 3-3 5 5" stroke="rgba(184,108,16,.6)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="20" cy="9" r="1.5" fill="rgba(184,108,16,.8)"/></svg>` },
+    { cls:'ic-music',   label:'Música',   action:'',         svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
+    { cls:'ic-settings',label:'Ajustes',  action:'',         svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="white" stroke-opacity=".85" stroke-width="1.6" fill="none"/><path d="M14 5v2M14 21v2M5 14H3M25 14h-2M7.05 7.05l1.41 1.41M19.54 19.54l1.41 1.41M7.05 20.95l1.41-1.41M19.54 8.46l1.41-1.41" stroke="white" stroke-opacity=".85" stroke-width="1.6" stroke-linecap="round"/></svg>` },
+    { cls:'ic-msg',     label:'Mensajes', action:'',         svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 4h20a2 2 0 012 2v12a2 2 0 01-2 2H8l-6 6V6a2 2 0 012-2z" fill="white" fill-opacity=".9"/><path d="M8 11h12M8 15h7" stroke="rgba(26,139,46,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>` },
+    // Gallery app – icon: rounded frame with 4 thumbnails + rose tint
+    { cls:'ic-gallery', label:'Galería',  action:'gallery',
+      svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <!-- outer frame -->
+        <rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+        <!-- 4 photo tiles -->
+        <rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/>
+        <rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/>
+        <rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/>
+        <rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/>
+        <!-- small mountain silhouette in top-left tile -->
+        <path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- heart in bottom-right tile -->
+        <path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/>
+      </svg>`
+    },
   ];
+  grid.innerHTML = '';
   apps.forEach(a => {
-    grid.innerHTML += `<div class="app-icon"><div class="app-icon-wrap ${a.cls}">${a.svg}</div><div class="app-label">${a.label}</div></div>`;
+    const onclick = a.action ? `onclick="openApp('${a.action}')"` : '';
+    grid.innerHTML += `<div class="app-icon" ${onclick}><div class="app-icon-wrap ${a.cls}">${a.svg}</div><div class="app-label">${a.label}</div></div>`;
   });
+}
+
+// ── GALLERY ──
+// Photos are loaded dynamically from /fotos directory.
+// The server must expose them; we attempt to list via a fetch of the directory
+// or fall back to a pre-scanned manifest. Since this is a static PWA we try
+// common extensions and let the img onerror hide broken ones.
+const PHOTO_EXTENSIONS = ['jpg','jpeg','png','gif','webp','avif'];
+const FOTOS_PATH = 'fotos/';
+
+function buildGallery() {
+  const grid = document.getElementById('gallery-grid');
+
+  // Attempt to fetch directory listing (works if server returns HTML index)
+  fetch(FOTOS_PATH)
+    .then(r => r.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const links = Array.from(doc.querySelectorAll('a[href]'))
+        .map(a => a.getAttribute('href'))
+        .filter(h => {
+          const low = h.toLowerCase().split('?')[0];
+          return PHOTO_EXTENSIONS.some(e => low.endsWith('.' + e));
+        })
+        .map(h => h.split('/').pop());
+
+      if (links.length > 0) {
+        renderPhotos(links);
+      } else {
+        showGalleryEmpty();
+      }
+    })
+    .catch(() => showGalleryEmpty());
+}
+
+function renderPhotos(files) {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = '';
+  files.forEach(file => {
+    const div = document.createElement('div');
+    div.className = 'gallery-thumb';
+    const img = document.createElement('img');
+    img.src = FOTOS_PATH + file;
+    img.alt = file;
+    img.loading = 'lazy';
+    img.onerror = () => div.remove(); // hide missing files
+    img.onclick = () => openLightbox(FOTOS_PATH + file);
+    div.appendChild(img);
+    grid.appendChild(div);
+  });
+}
+
+function showGalleryEmpty() {
+  const grid = document.getElementById('gallery-grid');
+  grid.style.display = 'flex';
+  grid.style.flexDirection = 'column';
+  grid.style.alignItems = 'center';
+  grid.style.justifyContent = 'center';
+  grid.innerHTML = `
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="opacity:.35;margin-bottom:12px">
+      <rect x="4" y="10" width="44" height="34" rx="7" stroke="rgba(255,190,210,.8)" stroke-width="2" fill="none"/>
+      <circle cx="17" cy="23" r="4" fill="rgba(255,190,210,.5)"/>
+      <path d="M4 34l12-10 9 9 7-7 16 14" stroke="rgba(255,190,210,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <div style="color:rgba(255,190,210,.55);font-size:.88rem;line-height:1.5;text-align:center;max-width:200px;">
+      Agrega imágenes a la carpeta <b style="color:rgba(255,190,210,.8)">fotos/</b> del proyecto para verlas aquí.
+    </div>`;
+}
+
+function openLightbox(src) {
+  const lb = document.getElementById('gallery-lightbox');
+  document.getElementById('gallery-lightbox-img').src = src;
+  lb.classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('gallery-lightbox').classList.remove('open');
 }
 
 // ── NAVIGATION ──
 let currentView = 'view-lock';
 
 function showView(to, dir) {
+  if (currentView === to) return;
   const fromEl = document.getElementById(currentView);
   const toEl   = document.getElementById(to);
-  if (!toEl || currentView === to) return;
+  if (!fromEl || !toEl) return;
 
-  fromEl.classList.add(dir === 'forward' ? 'slide-left' : 'hidden');
   if (dir === 'forward') {
+    fromEl.classList.add('slide-left');
     setTimeout(() => { fromEl.classList.add('hidden'); fromEl.classList.remove('slide-left'); }, 340);
+  } else {
+    fromEl.classList.add('hidden');
   }
 
   toEl.classList.remove('hidden','slide-left');
@@ -842,22 +1044,50 @@ function showView(to, dir) {
   toEl.style.transition = 'none';
   requestAnimationFrame(() => requestAnimationFrame(() => {
     toEl.style.transition = 'transform .34s cubic-bezier(.4,0,.2,1), opacity .34s';
-    toEl.style.transform = 'translateX(0)';
-    toEl.style.opacity = '1';
+    toEl.style.transform  = 'translateX(0)';
+    toEl.style.opacity    = '1';
   }));
   currentView = to;
 }
 
-function unlockPhone() { showView('view-home','forward'); }
+function unlockPhone()  { showView('view-home','forward'); }
 function goHome()       { showView('view-home','backward'); }
 function openApp(a) {
-  const map={ contacts:'view-contacts','contact-detail':'view-contact-detail','phone-app':'view-phone-app' };
+  const map = {
+    contacts:         'view-contacts',
+    'contact-detail': 'view-contact-detail',
+    'phone-app':      'view-phone-app',
+    gallery:          'view-gallery',
+  };
   if (map[a]) showView(map[a],'forward');
 }
 
+// ── HOME BUTTON ──
+// Works on lock screen (unlock), any app (go home), and call screen (interrupt)
 function homeButtonPress() {
-  if (currentView === 'view-active-call') endCallWith('home');
-  else if (currentView !== 'view-lock' && currentView !== 'view-home') goHome();
+  // If a lightbox is open inside gallery, close it first
+  const lb = document.getElementById('gallery-lightbox');
+  if (lb && lb.classList.contains('open')) {
+    closeLightbox();
+    return;
+  }
+
+  if (currentView === 'view-lock') {
+    unlockPhone();
+    return;
+  }
+  if (currentView === 'view-active-call') {
+    // During call: force end the call and go home
+    endCallWith('home');
+    return;
+  }
+  if (currentView === 'view-home') {
+    // Already home – pressing home goes back to lock (classic behavior)
+    showView('view-lock','backward');
+    return;
+  }
+  // Any other app → go home
+  goHome();
 }
 
 // ── AUDIO ──
@@ -866,54 +1096,73 @@ const audGoodbye = document.getElementById('audio-goodbye');
 audCalling.src = 'llamada.mp3';
 audGoodbye.src = 'adios.mp3';
 
-// Unlock AudioContext on first user interaction (iOS requirement)
 let audioUnlocked = false;
 function unlockAudio() {
   if (audioUnlocked) return;
   audioUnlocked = true;
-  // Create and immediately suspend a silent AudioContext to satisfy iOS
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const buf = ctx.createBuffer(1,1,22050);
   const src = ctx.createBufferSource();
-  src.buffer = buf;
-  src.connect(ctx.destination);
-  src.start(0);
-  ctx.resume();
+  src.buffer = buf; src.connect(ctx.destination); src.start(0); ctx.resume();
 }
 document.addEventListener('touchstart', unlockAudio, {once:true});
 document.addEventListener('click', unlockAudio, {once:true});
 
 // ── CALL LOGIC ──
-let callTimer  = null;
+let callTimer   = null;
 let callSeconds = 0;
-let callEnding  = false;
-let callDest    = null; // 'home' | 'phone-app'
+let callState   = 'idle'; // 'idle' | 'ringing' | 'active' | 'ending'
+let callDest    = null;   // 'home' | 'phone-app'
+let ringTimeout = null;
 
-function startCall() {
-  unlockAudio();
-  callEnding  = false;
-  callDest    = null;
-  callSeconds = 0;
-  showView('view-active-call','forward');
-
+function resetCallUI() {
   const statusEl = document.getElementById('call-status');
   const timerEl  = document.getElementById('call-timer');
   const waveEl   = document.getElementById('call-wave');
-  statusEl.textContent = 'Llamando…';
-  timerEl.textContent  = '\u00A0';
-  waveEl.classList.add('off');
+  if (statusEl) statusEl.textContent = 'Llamando…';
+  if (timerEl)  timerEl.textContent  = '\u00A0';
+  if (waveEl)   waveEl.classList.add('off');
+}
 
-  // Hide home button during call (call screen has its own navigation)
+function startCall() {
+  unlockAudio();
+  // Cancel any in-progress ending
+  callState   = 'ringing';
+  callDest    = null;
+  callSeconds = 0;
+  clearInterval(callTimer);
+  clearTimeout(ringTimeout);
+
+  showView('view-active-call','forward');
+  resetCallUI();
+
+  // Hide home button during active call screen
   document.getElementById('home-indicator').classList.add('no-home');
 
   audCalling.currentTime = 0;
   audCalling.loop = true;
   audCalling.play().catch(()=>{});
 
-  setTimeout(() => {
-    if (currentView !== 'view-active-call') return;
-    statusEl.textContent = 'En llamada';
-    waveEl.classList.remove('off');
+  // When llamada.mp3 naturally ends (loop is true so this only fires if loop removed)
+  // We remove loop after 6s so the audio continues but state changes to active,
+  // then if audio ends we end the call.
+  audCalling.onended = () => {
+    if (callState === 'ringing' || callState === 'active') {
+      endCallWith(callDest || 'phone-app');
+    }
+  };
+
+  // After 6 seconds → "En llamada"
+  ringTimeout = setTimeout(() => {
+    if (callState !== 'ringing') return;
+    callState = 'active';
+    audCalling.loop = false; // let it play out naturally and fire onended when done
+
+    const statusEl = document.getElementById('call-status');
+    const waveEl   = document.getElementById('call-wave');
+    if (statusEl) statusEl.textContent = 'En llamada';
+    if (waveEl)   waveEl.classList.remove('off');
+
     clearInterval(callTimer);
     callTimer = setInterval(() => {
       callSeconds++;
@@ -921,68 +1170,91 @@ function startCall() {
       const ss = String(callSeconds%60).padStart(2,'0');
       const el = document.getElementById('call-timer');
       if (el) el.textContent = `${mm}:${ss}`;
-    },1000);
-  },3000);
+    }, 1000);
+  }, 6000);
 }
 
-function callFromContact() { openApp('phone-app'); setTimeout(startCall, 300); }
+function callFromContact() {
+  openApp('phone-app');
+  setTimeout(startCall, 300);
+}
 
-function hangUp() { endCallWith('phone-app'); }
+function hangUp() {
+  if (callState === 'idle' || callState === 'ending') return;
+  endCallWith('phone-app');
+}
 
 function endCallWith(destination) {
-  if (callEnding) return;
-  callEnding = true;
-  callDest   = destination;
+  if (callState === 'ending') return;
+  callState = 'ending';
+  callDest  = destination;
 
+  clearTimeout(ringTimeout);
   clearInterval(callTimer);
 
-  // Stop calling audio, switch to goodbye seamlessly
+  // Stop ringing audio
+  audCalling.loop    = false;
+  audCalling.onended = null;
   audCalling.pause();
-  audCalling.loop = false;
   audCalling.currentTime = 0;
 
-  const waveEl = document.getElementById('call-wave');
-  if (waveEl) waveEl.classList.add('off');
-
-  // Timer keeps showing – just freeze it (already cleared)
+  // Keep wave + timer running while goodbye plays
+  // (wave stays as-is, timer freezes where it was — already cleared above)
   const statusEl = document.getElementById('call-status');
   if (statusEl) statusEl.textContent = 'Llamada finalizada';
 
+  // Play goodbye and navigate when it ends
   audGoodbye.currentTime = 0;
   audGoodbye.loop = false;
 
-  audGoodbye.onended = finishCall;
+  const onGoodbyeEnd = () => {
+    audGoodbye.removeEventListener('ended', onGoodbyeEnd);
+    finishCall();
+  };
+  audGoodbye.addEventListener('ended', onGoodbyeEnd);
 
   audGoodbye.play().catch(() => {
-    // If audio fails, still navigate after short delay
-    setTimeout(finishCall, 1500);
+    // Audio failed; navigate after brief pause
+    setTimeout(finishCall, 800);
   });
 
-  // Safety timeout in case onended never fires
-  setTimeout(() => { if (callEnding) finishCall(); }, 12000);
+  // Hard safety: if onended never fires after 15 s, navigate anyway
+  setTimeout(() => {
+    if (callState === 'ending') finishCall();
+  }, 15000);
 }
 
 function finishCall() {
-  if (!callEnding) return;
-  callEnding = false;
-  const dest = callDest;
-  audGoodbye.onended = null;
+  if (callState !== 'ending') return;
+  callState = 'idle';
+
   audGoodbye.pause();
+  audGoodbye.currentTime = 0;
 
-  // Force currentView to active-call so showView works regardless
-  currentView = 'view-active-call';
-
-  const statusEl = document.getElementById('call-status');
-  const timerEl  = document.getElementById('call-timer');
-  if (statusEl) statusEl.textContent = 'Llamando…';
-  if (timerEl)  timerEl.textContent  = '\u00A0';
-
-  if (dest === 'home') showView('view-home','backward');
-  else showView('view-phone-app','backward');
+  // Freeze wave
+  const waveEl = document.getElementById('call-wave');
+  if (waveEl) waveEl.classList.add('off');
 
   // Show home button again
   document.getElementById('home-indicator').classList.remove('no-home');
+
+  // Force currentView so showView works
+  currentView = 'view-active-call';
+
+  // Reset UI silently before navigating away
+  resetCallUI();
+
+  if (callDest === 'home') {
+    showView('view-home','backward');
+  } else {
+    showView('view-phone-app','backward');
+  }
 }
+
+// Lock screen tap also unlocks
+document.getElementById('view-lock').addEventListener('click', function() {
+  unlockPhone();
+});
 </script>
 </body>
 </html>
