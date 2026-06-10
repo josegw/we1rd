@@ -4,3 +4,9 @@ Hola como **estas**
 Esta es una nota de ejemplo. Lo que pongas después de la primera línea será el contenido completo.
 
 También puedes usar **negritas** así.
+
+Cosas para hacer
+- Comprar comida
+/ Comer
+- Mandarte mensaje bonito
+/ Escuchar una canción
