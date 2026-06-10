@@ -287,6 +287,7 @@ html,body{
 .ic-settings {background:linear-gradient(145deg,#505050,#2A2A2A);}
 /* Gallery – warm rose/vino gradient matching site palette */
 .ic-gallery  {background:linear-gradient(145deg,#8B1535,#5A0820);}
+.ic-notes    {background:linear-gradient(145deg,#D6A126,#8A5B09);}
 
 /* ══ APP NAV BAR ══ */
 .app-nav{
@@ -444,6 +445,17 @@ html,body{
   padding:14px 14px 18px;
   display:flex;flex-direction:column;gap:12px;
 }
+.music-hero{
+  padding:14px 14px 16px;
+  border-radius:20px;
+  background:
+    radial-gradient(ellipse at 20% 10%,rgba(192,51,85,.28),transparent 55%),
+    linear-gradient(145deg,rgba(158,30,58,.18),rgba(255,255,255,.045));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 8px 28px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.10);
+}
+.music-hero-title{font-size:1.22rem;font-weight:800;color:var(--cream);letter-spacing:-.02em;}
+.music-hero-sub{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:4px;}
 .music-card{
   background:rgba(255,255,255,.055);
   border:1px solid rgba(255,255,255,.09);
@@ -465,46 +477,66 @@ html,body{
 .music-play.playing{filter:brightness(1.08);}
 .music-info{flex:1;min-width:0;}
 .music-title{font-size:.94rem;font-weight:700;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.music-artist{font-size:.68rem;color:rgba(255,255,255,.48);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.music-file{font-size:.68rem;color:rgba(255,255,255,.42);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .music-time{font-size:.72rem;color:var(--rose-pale);font-variant-numeric:tabular-nums;font-weight:600;}
-.music-seek{
-  width:100%;height:30px;margin:0;
-  appearance:none;-webkit-appearance:none;
-  background:transparent;cursor:pointer;
-  touch-action:pan-x;
-  display:block;
+.music-bar{
+  width:100%;height:6px;border-radius:20px;overflow:hidden;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.06);
 }
-.music-seek:disabled{opacity:.55;}
-.music-seek::-webkit-slider-runnable-track{
-  height:7px;border-radius:20px;
-  background:linear-gradient(90deg,var(--vino-bright) var(--progress,0%), rgba(255,255,255,.11) var(--progress,0%));
-  border:1px solid rgba(255,255,255,.07);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-}
-.music-seek::-webkit-slider-thumb{
-  appearance:none;-webkit-appearance:none;
-  width:18px;height:18px;border-radius:50%;
-  margin-top:-6px;
-  background:linear-gradient(135deg,var(--rose-pale),#fff);
-  border:2px solid var(--vino-light);
-  box-shadow:0 3px 13px rgba(192,51,85,.55);
-}
-.music-seek::-moz-range-track{
-  height:7px;border-radius:20px;
-  background:rgba(255,255,255,.11);
-  border:1px solid rgba(255,255,255,.07);
-}
-.music-seek::-moz-range-progress{
-  height:7px;border-radius:20px;
+.music-fill{
+  height:100%;width:0%;border-radius:20px;
   background:linear-gradient(90deg,var(--vino-bright),var(--rose-pale));
-}
-.music-seek::-moz-range-thumb{
-  width:18px;height:18px;border-radius:50%;
-  background:linear-gradient(135deg,var(--rose-pale),#fff);
-  border:2px solid var(--vino-light);
-  box-shadow:0 3px 13px rgba(192,51,85,.55);
+  box-shadow:0 0 12px rgba(192,51,85,.55);
+  transition:width .12s linear;
 }
 .music-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--muted);font-size:.88rem;line-height:1.5;text-align:center;padding:22px;
+}
+
+
+/* ══ NOTES ══ */
+#view-notes{background:#0A0003;}
+.notes-list{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:12px 12px 18px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.note-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.10);
+  border-radius:15px;
+  padding:12px 13px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .12s,background .15s;
+}
+.note-card:active{transform:scale(.985);background:rgba(255,255,255,.09);}
+.note-card-title{
+  font-size:1rem;font-weight:800;color:var(--cream);
+  line-height:1.25;margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.note-card-preview{
+  font-size:.78rem;color:rgba(255,255,255,.56);line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.note-detail{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:18px 18px 26px;
+}
+.note-detail.hidden{display:none;}
+.note-full-title{
+  font-size:1.35rem;font-weight:850;color:var(--cream);
+  letter-spacing:-.02em;line-height:1.22;margin-bottom:14px;
+}
+.note-full-body{
+  font-size:.96rem;color:rgba(255,240,244,.88);
+  line-height:1.72;white-space:pre-wrap;
+}
+.note-full-body strong{color:#fff;font-weight:850;}
+.notes-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   color:var(--muted);font-size:.88rem;line-height:1.5;text-align:center;padding:22px;
 }
@@ -513,22 +545,32 @@ html,body{
 #view-gallery{background:#0A0003;}
 .gallery-grid{
   flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:8px;
+  padding:9px;
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:2px;
+  gap:3px;
   align-content:start;
+  background:#0A0003;
 }
 .gallery-thumb{
   aspect-ratio:1/1;cursor:pointer;overflow:hidden;
-  background:rgba(255,255,255,.06);
+  background:rgba(255,255,255,.055);
   position:relative;
+  border:1px solid rgba(255,240,244,.14);
+  border-radius:7px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.gallery-thumb::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  border-radius:6px;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);
 }
 .gallery-thumb img{
   width:100%;height:100%;object-fit:cover;
-  transition:transform .18s;
-  display:block;
+  transition:transform .18s,opacity .25s;
+  display:block;opacity:0;
 }
+.gallery-thumb.loaded img{opacity:1;}
 .gallery-thumb:active img{transform:scale(.93);}
 
 /* Photo lightbox */
@@ -919,6 +961,25 @@ html,body{
         </div>
       </div>
 
+      <!-- NOTES -->
+      <div class="phone-view hidden" id="view-notes">
+        <div class="app-nav">
+          <div class="back-btn" id="notes-back" onclick="notesBack()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="notes-back-label">Inicio</span>
+          </div>
+          <div class="app-nav-title" id="notes-nav-title">Notas</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="notes-list" id="notes-list">
+          <!-- notes injected by JS -->
+        </div>
+        <div class="note-detail hidden" id="note-detail">
+          <div class="note-full-title" id="note-full-title"></div>
+          <div class="note-full-body" id="note-full-body"></div>
+        </div>
+      </div>
+
       <!-- GALLERY -->
       <div class="phone-view hidden" id="view-gallery">
         <div class="app-nav">
@@ -1014,6 +1075,7 @@ function buildGrid() {
   if (!grid) return;
   const apps = [
     { cls:'ic-music',   label:'Música',  action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
+    { cls:'ic-notes',   label:'Notas',   action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
     { cls:'ic-settings',label:'Ajustes', action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="white" stroke-opacity=".85" stroke-width="1.6" fill="none"/><path d="M14 5v2M14 21v2M5 14H3M25 14h-2M7.05 7.05l1.41 1.41M19.54 19.54l1.41 1.41M7.05 20.95l1.41-1.41M19.54 8.46l1.41-1.41" stroke="white" stroke-opacity=".85" stroke-width="1.6" stroke-linecap="round"/></svg>` },
     { cls:'ic-msg',     label:'Mensajes',action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 4h20a2 2 0 012 2v12a2 2 0 01-2 2H8l-6 6V6a2 2 0 012-2z" fill="white" fill-opacity=".9"/><path d="M8 11h12M8 15h7" stroke="rgba(26,139,46,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>` },
     { cls:'ic-gallery', label:'Galería', action:'gallery',svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
@@ -1036,7 +1098,6 @@ let musicLoaded = false;
 let musicTracks = [];
 let currentMusicIndex = -1;
 let musicRaf = null;
-let musicUserSeeking = false;
 const musicAudio = new Audio();
 musicAudio.preload = 'metadata';
 
@@ -1050,14 +1111,13 @@ function formatMusicTime(value) {
 function normalizeMusicItem(item) {
   if (typeof item === 'string') {
     const file = item.trim();
-    return file ? { file, title:file.replace(/\.[^/.]+$/, ''), artist:'Artista desconocido' } : null;
+    return file ? { file, title:file.replace(/\.[^/.]+$/, '') } : null;
   }
   if (!item || typeof item !== 'object') return null;
   const file = String(item.archivo || item.file || item.src || item.url || '').trim();
   const title = String(item.nombre || item.titulo || item.title || file.replace(/\.[^/.]+$/, '')).trim();
-  const artist = String(item.artista || item.artist || item.autor || 'Artista desconocido').trim();
   if (!file || !file.toLowerCase().split('?')[0].endsWith('.mp3')) return null;
-  return { file, title:title || file, artist:artist || 'Artista desconocido' };
+  return { file, title:title || file };
 }
 
 async function buildMusic() {
@@ -1085,7 +1145,12 @@ function renderMusicTracks() {
 
   if (!musicTracks.length) { showMusicEmpty(); return; }
 
-  list.innerHTML = '';
+  list.innerHTML = `
+    <div class="music-hero">
+      <div class="music-hero-title">Música que te dedico</div>
+      <div class="music-hero-sub">Presiona play para escuchar cada canción. Si eliges otra, la anterior se pausa automáticamente.</div>
+    </div>
+  `;
 
   musicTracks.forEach((track, index) => {
     const card = document.createElement('div');
@@ -1099,51 +1164,20 @@ function renderMusicTracks() {
         </button>
         <div class="music-info">
           <div class="music-title">${track.title}</div>
-          <div class="music-artist">${track.artist}</div>
+          <div class="music-file">${track.file}</div>
         </div>
         <div class="music-time" id="music-time-${index}">0:00/0:00</div>
       </div>
-      <input class="music-seek" id="music-seek-${index}" type="range" min="0" max="0" value="0" step="0.01" aria-label="Avanzar ${track.title.replace(/"/g,'&quot;')}">
+      <div class="music-bar"><div class="music-fill" id="music-fill-${index}"></div></div>
     `;
     list.appendChild(card);
-    setupMusicSeek(index);
   });
-}
-
-function setupMusicSeek(index) {
-  const seek = document.getElementById(`music-seek-${index}`);
-  if (!seek) return;
-
-  const beginSeek = () => { musicUserSeeking = true; };
-  const finishSeek = () => { musicUserSeeking = false; seekToValue(true); };
-
-  const seekToValue = (commit=false) => {
-    const max = Number(seek.max) || 0;
-    const value = Number(seek.value) || 0;
-    const pct = max ? Math.min(100, (value / max) * 100) : 0;
-    seek.style.setProperty('--progress', `${pct}%`);
-
-    const time = document.getElementById(`music-time-${index}`);
-    if (time) time.textContent = `${formatMusicTime(value)}/${formatMusicTime(max)}`;
-
-    if (commit && max && currentMusicIndex === index) {
-      musicAudio.currentTime = Math.min(value, max);
-      updateMusicProgress();
-    }
-  };
-
-  seek.addEventListener('pointerdown', beginSeek);
-  seek.addEventListener('touchstart', beginSeek, {passive:true});
-  seek.addEventListener('input', () => seekToValue(false));
-  seek.addEventListener('change', finishSeek);
-  seek.addEventListener('pointerup', finishSeek);
-  seek.addEventListener('touchend', finishSeek);
 }
 
 function showMusicEmpty() {
   const list = document.getElementById('music-list');
   if (!list) return;
-  list.innerHTML = `<div class="music-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">musica/canciones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"archivo":"cancion.mp3","nombre":"Mi canción","artista":"Artista"}]</code></div>`;
+  list.innerHTML = `<div class="music-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">musica/canciones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"archivo":"cancion.mp3","nombre":"Mi canción"}]</code></div>`;
 }
 
 function setMusicButton(index, playing) {
@@ -1158,30 +1192,21 @@ function setMusicButton(index, playing) {
 }
 
 function resetMusicRow(index) {
-  const seek = document.getElementById(`music-seek-${index}`);
+  const fill = document.getElementById(`music-fill-${index}`);
   const time = document.getElementById(`music-time-${index}`);
-  if (seek) {
-    seek.value = 0;
-    seek.style.setProperty('--progress','0%');
-  }
-  const duration = (index === currentMusicIndex && Number.isFinite(musicAudio.duration)) ? musicAudio.duration : Number(seek?.max || 0);
-  if (time) time.textContent = `0:00/${formatMusicTime(duration)}`;
+  if (fill) fill.style.width = '0%';
+  if (time) time.textContent = '0:00/0:00';
   setMusicButton(index, false);
 }
 
 function updateMusicProgress() {
   if (currentMusicIndex < 0) return;
-  const duration = Number.isFinite(musicAudio.duration) ? musicAudio.duration : 0;
+  const duration = musicAudio.duration || 0;
   const current = musicAudio.currentTime || 0;
-  const seek = document.getElementById(`music-seek-${currentMusicIndex}`);
+  const fill = document.getElementById(`music-fill-${currentMusicIndex}`);
   const time = document.getElementById(`music-time-${currentMusicIndex}`);
-  const progress = duration ? Math.min(100, (current / duration) * 100) : 0;
-  if (seek) {
-    if (duration) seek.max = String(duration);
-    if (!musicUserSeeking) seek.value = String(Math.min(current, duration || current));
-    seek.style.setProperty('--progress', `${progress}%`);
-  }
-  if (time && !musicUserSeeking) time.textContent = `${formatMusicTime(current)}/${formatMusicTime(duration)}`;
+  if (fill) fill.style.width = duration ? `${Math.min(100, (current / duration) * 100)}%` : '0%';
+  if (time) time.textContent = `${formatMusicTime(current)}/${formatMusicTime(duration)}`;
 
   if (!musicAudio.paused && !musicAudio.ended) {
     musicRaf = requestAnimationFrame(updateMusicProgress);
@@ -1205,12 +1230,6 @@ function toggleMusic(index) {
     return;
   }
 
-  if (currentMusicIndex === index && musicAudio.paused) {
-    setMusicButton(index, true);
-    musicAudio.play().then(updateMusicProgress).catch(() => setMusicButton(index, false));
-    return;
-  }
-
   if (currentMusicIndex >= 0 && currentMusicIndex !== index) {
     resetMusicRow(currentMusicIndex);
   }
@@ -1220,7 +1239,7 @@ function toggleMusic(index) {
   musicAudio.currentTime = 0;
   setMusicButton(index, true);
   updateMusicProgress();
-  musicAudio.play().then(updateMusicProgress).catch(() => setMusicButton(index, false));
+  musicAudio.play().catch(() => setMusicButton(index, false));
 }
 
 musicAudio.addEventListener('loadedmetadata', updateMusicProgress);
@@ -1452,6 +1471,177 @@ function closeLightbox() {
   document.getElementById('gallery-lightbox').classList.remove('open');
 }
 
+// ── NOTES ──
+const NOTES_PATH = 'notas/';
+const NOTES_MANIFEST = 'notas.json';
+let notesLoaded = false;
+let notesData = [];
+let notesMode = 'list';
+
+function isNoteFile(path) {
+  const clean = String(path).split('?')[0].split('#')[0].toLowerCase();
+  return clean.endsWith('.txt');
+}
+
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function noteMarkup(text) {
+  return escapeHTML(text).replace(/\*\*(.+?)\*\*/gs, '<strong>$1</strong>');
+}
+
+function plainNoteText(text) {
+  return String(text).replace(/\*\*(.+?)\*\*/gs, '$1').replace(/\s+/g, ' ').trim();
+}
+
+async function buildNotes(force=false) {
+  if (notesLoaded && !force) { showNotesList(); return; }
+  const list = document.getElementById('notes-list');
+  if (!list) return;
+  list.className = 'notes-empty';
+  list.innerHTML = 'Cargando notas…';
+
+  const files = await findNoteFiles();
+  notesData = [];
+  for (const file of files) {
+    const note = await readNoteFile(file);
+    if (note) notesData.push(note);
+  }
+
+  notesLoaded = true;
+  renderNotesList();
+}
+
+async function findNoteFiles() {
+  const fromManifest = await readNoteManifest(NOTES_PATH);
+  if (fromManifest.length) return fromManifest;
+
+  const fromDirectory = await readNotesDirectory(NOTES_PATH);
+  if (fromDirectory.length) return fromDirectory;
+
+  const fromGithub = await readGithubNotesFolder(NOTES_PATH);
+  if (fromGithub.length) return fromGithub;
+
+  return [];
+}
+
+async function readNoteManifest(folder) {
+  try {
+    const res = await fetch(joinPath(folder, NOTES_MANIFEST), { cache:'force-cache' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const files = Array.isArray(data) ? data : (Array.isArray(data.notes) ? data.notes : []);
+    return files.map(file => String(file).trim()).filter(isNoteFile).map(file => joinPath(folder, file));
+  } catch(e) { return []; }
+}
+
+async function readNotesDirectory(folder) {
+  try {
+    const res = await fetch(folder, { cache:'force-cache' });
+    if (!res.ok) return [];
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return Array.from(doc.querySelectorAll('a[href]'))
+      .map(a => a.getAttribute('href'))
+      .filter(Boolean)
+      .filter(isNoteFile)
+      .map(href => joinPath(folder, href.split('/').pop()));
+  } catch(e) { return []; }
+}
+
+async function readGithubNotesFolder(folder) {
+  try {
+    const info = getGithubInfo();
+    if (!info) return [];
+    const path = githubFolderPath(folder, info.repo, info.currentDir);
+    const api = `https://api.github.com/repos/${info.owner}/${info.repo}/contents/${path}?ref=${GITHUB_BRANCH}`;
+    const res = await fetch(api, { cache:'force-cache' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data
+      .filter(item => item && item.type === 'file' && isNoteFile(item.name))
+      .map(item => item.download_url || joinPath(folder, item.name));
+  } catch(e) { return []; }
+}
+
+async function readNoteFile(src) {
+  try {
+    const res = await fetch(src, { cache:'force-cache' });
+    if (!res.ok) return null;
+    const raw = (await res.text()).replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
+    const lines = raw.split('\n');
+    const title = (lines.shift() || src.split('/').pop().replace(/\.txt$/i, '')).trim() || 'Sin título';
+    const body = lines.join('\n').trim();
+    return { src, title, body };
+  } catch(e) { return null; }
+}
+
+function renderNotesList() {
+  const list = document.getElementById('notes-list');
+  const detail = document.getElementById('note-detail');
+  list.className = 'notes-list';
+  detail.classList.add('hidden');
+  notesMode = 'list';
+  updateNotesNav();
+
+  if (!notesData.length) {
+    list.className = 'notes-empty';
+    list.innerHTML = 'No pude leer notas en <b style="color:rgba(255,190,210,.8)">notas/</b>.<br>Crea archivos .txt o agrega <b style="color:rgba(255,190,210,.8)">notas.json</b> dentro de esa carpeta.';
+    return;
+  }
+
+  list.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  notesData.forEach((note, index) => {
+    const card = document.createElement('div');
+    card.className = 'note-card';
+    card.onclick = () => openNote(index);
+    const preview = plainNoteText(note.body).slice(0, 115) || 'Sin contenido';
+    card.innerHTML = `<div class="note-card-title">${escapeHTML(note.title)}</div><div class="note-card-preview">${escapeHTML(preview)}${preview.length >= 115 ? '…' : ''}</div>`;
+    frag.appendChild(card);
+  });
+  list.appendChild(frag);
+}
+
+function showNotesList() {
+  document.getElementById('notes-list').style.display = '';
+  document.getElementById('note-detail').classList.add('hidden');
+  renderNotesList();
+}
+
+function openNote(index) {
+  const note = notesData[index];
+  if (!note) return;
+  document.getElementById('notes-list').style.display = 'none';
+  document.getElementById('note-detail').classList.remove('hidden');
+  document.getElementById('note-full-title').innerHTML = noteMarkup(note.title);
+  document.getElementById('note-full-body').innerHTML = noteMarkup(note.body || '');
+  notesMode = 'detail';
+  updateNotesNav();
+}
+
+function updateNotesNav() {
+  const title = document.getElementById('notes-nav-title');
+  const back = document.getElementById('notes-back-label');
+  if (title) title.textContent = notesMode === 'detail' ? 'Nota' : 'Notas';
+  if (back) back.textContent = notesMode === 'detail' ? 'Notas' : 'Inicio';
+}
+
+function notesBack() {
+  if (notesMode === 'detail') {
+    showNotesList();
+  } else {
+    goHome();
+  }
+}
+
 // ── NAVIGATION ──
 let currentView = 'view-lock';
 
@@ -1503,11 +1693,13 @@ function showView(to, dir) {
 function unlockPhone() { showView('view-home', 'forward'); }
 function goHome() {
   if (currentView === 'view-music') stopAndResetMusic();
+  if (currentView === 'view-notes') showNotesList();
   showView('view-home', 'backward');
 }
 function openApp(a) {
-  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', gallery:'view-gallery' };
+  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', notes:'view-notes', gallery:'view-gallery' };
   if (a === 'music') buildMusic();
+  if (a === 'notes') buildNotes();
   if (map[a]) showView(map[a], 'forward');
 }
 
