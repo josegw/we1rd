@@ -591,7 +591,7 @@ html,body{
     <div class="phone-content" id="phone-content">
 
       <!-- LOCK -->
-      <div class="phone-view" id="view-lock">
+      <div class="phone-view" id="view-lock" onclick="unlockPhone()">
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:.55rem;">
           <div class="lock-time" id="lock-time">9:41</div>
           <div class="lock-date" id="lock-date">Martes, 10 de junio</div>
@@ -888,28 +888,51 @@ if (!isIOS) {
   initPhone();
 }
 
-// ── CLOCK ──
-function fmtTime(d) {
-  return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-}
-function fmtDate(d) {
-  const D=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  return `${D[d.getDay()]}, ${d.getDate()} de ${M[d.getMonth()]}`;
-}
-function tick() {
-  const n=new Date();
-  ['lock-time','status-time'].forEach(id => {
-    const el=document.getElementById(id);
-    if(el) el.textContent=fmtTime(n);
+// ── CLOCK (CD Victoria, Tamaulipas = America/Monterrey) ──
+const TZ = 'America/Monterrey';
+
+function nowInCDV() {
+  // Use Intl to get the current wall-clock time in CD Victoria
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour:   'numeric', minute: 'numeric', second: 'numeric',
+    hour12: false,
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    weekday: 'short'
   });
-  const de=document.getElementById('lock-date');
-  if(de) de.textContent=fmtDate(n);
+  const parts = fmt.formatToParts(new Date());
+  const p = {};
+  parts.forEach(x => { p[x.type] = x.value; });
+  return {
+    hours:   parseInt(p.hour,   10),
+    minutes: parseInt(p.minute, 10),
+    day:     parseInt(p.day,    10),
+    month:   parseInt(p.month,  10) - 1, // 0-based
+    weekday: p.weekday // 'Mon', 'Tue', etc.
+  };
 }
-setInterval(tick,1000); tick();
+
+// Map English short weekday (from Intl) to Spanish full
+const WDAY_ES = {Mon:'Lunes',Tue:'Martes',Wed:'Miércoles',Thu:'Jueves',Fri:'Viernes',Sat:'Sábado',Sun:'Domingo'};
+const MONTH_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function tick() {
+  const t = nowInCDV();
+  const timeStr = `${t.hours}:${String(t.minutes).padStart(2,'0')}`;
+  const dateStr = `${WDAY_ES[t.weekday] || t.weekday}, ${t.day} de ${MONTH_ES[t.month]}`;
+
+  ['lock-time','status-time'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = timeStr;
+  });
+  const de = document.getElementById('lock-date');
+  if (de) de.textContent = dateStr;
+}
+setInterval(tick, 1000); tick();
 
 // ── INIT PHONE ──
 function initPhone() {
+  initViews();   // ensure clean view state on PWA launch
   buildGrid();
   buildGallery();
 }
@@ -1023,7 +1046,25 @@ function closeLightbox() {
 }
 
 // ── NAVIGATION ──
+// State: only ONE view visible at a time, all others have class 'hidden'
+// The active view has neither 'hidden' nor 'slide-left' and no inline transforms.
 let currentView = 'view-lock';
+
+// On init: make sure lock is visible and all others are hidden (CSS already does this,
+// but clear any stale inline styles just in case)
+function initViews() {
+  document.querySelectorAll('.phone-view').forEach(v => {
+    v.style.transform = '';
+    v.style.opacity   = '';
+    v.style.transition = '';
+    if (v.id !== 'view-lock') {
+      v.classList.add('hidden');
+      v.classList.remove('slide-left');
+    } else {
+      v.classList.remove('hidden','slide-left');
+    }
+  });
+}
 
 function showView(to, dir) {
   if (currentView === to) return;
@@ -1031,22 +1072,37 @@ function showView(to, dir) {
   const toEl   = document.getElementById(to);
   if (!fromEl || !toEl) return;
 
+  // Clear any inline styles so CSS classes take over cleanly
+  fromEl.style.transform  = '';
+  fromEl.style.opacity    = '';
+  fromEl.style.transition = '';
+
+  // Hide the current view
   if (dir === 'forward') {
     fromEl.classList.add('slide-left');
-    setTimeout(() => { fromEl.classList.add('hidden'); fromEl.classList.remove('slide-left'); }, 340);
+    setTimeout(() => {
+      fromEl.classList.add('hidden');
+      fromEl.classList.remove('slide-left');
+    }, 340);
   } else {
     fromEl.classList.add('hidden');
+    fromEl.classList.remove('slide-left');
   }
 
+  // Prepare destination: place it off-screen without transition
   toEl.classList.remove('hidden','slide-left');
-  toEl.style.transform = dir === 'forward' ? 'translateX(100%)' : 'translateX(-100%)';
-  toEl.style.opacity = '0';
   toEl.style.transition = 'none';
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    toEl.style.transition = 'transform .34s cubic-bezier(.4,0,.2,1), opacity .34s';
-    toEl.style.transform  = 'translateX(0)';
-    toEl.style.opacity    = '1';
-  }));
+  toEl.style.opacity    = '1';
+  toEl.style.transform  = dir === 'forward' ? 'translateX(100%)' : 'translateX(-40%)';
+
+  // Animate in on next frame
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      toEl.style.transition = 'transform .32s cubic-bezier(.4,0,.2,1)';
+      toEl.style.transform  = 'translateX(0)';
+    });
+  });
+
   currentView = to;
 }
 
@@ -1063,9 +1119,8 @@ function openApp(a) {
 }
 
 // ── HOME BUTTON ──
-// Works on lock screen (unlock), any app (go home), and call screen (interrupt)
 function homeButtonPress() {
-  // If a lightbox is open inside gallery, close it first
+  // If gallery lightbox is open, close it first
   const lb = document.getElementById('gallery-lightbox');
   if (lb && lb.classList.contains('open')) {
     closeLightbox();
@@ -1077,16 +1132,13 @@ function homeButtonPress() {
     return;
   }
   if (currentView === 'view-active-call') {
-    // During call: force end the call and go home
     endCallWith('home');
     return;
   }
   if (currentView === 'view-home') {
-    // Already home – pressing home goes back to lock (classic behavior)
     showView('view-lock','backward');
     return;
   }
-  // Any other app → go home
   goHome();
 }
 
@@ -1251,10 +1303,8 @@ function finishCall() {
   }
 }
 
-// Lock screen tap also unlocks
-document.getElementById('view-lock').addEventListener('click', function() {
-  unlockPhone();
-});
+// Lock screen tap handled by onclick="unlockPhone()" in HTML
+
 </script>
 </body>
 </html>
