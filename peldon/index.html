@@ -868,25 +868,307 @@ html,body{
 <audio id="audio-goodbye" preload="auto"></audio>
 
 <script>
-// ── DETECTION ──
-const ua = navigator.userAgent;
-const isIOS = /iPhone/.test(ua) && !window.MSStream;
-const isStandalone = window.navigator.standalone === true
-  || window.matchMedia('(display-mode: standalone)').matches;
+// ════════════════════════════════════════════
+//  ALL FUNCTIONS DEFINED FIRST, THEN BOOT
+// ════════════════════════════════════════════
 
+// ── SCREEN SWITCHER ──
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
 
-if (!isIOS) {
-  showScreen('screen-desktop');
-} else if (!isStandalone) {
-  showScreen('screen-addtohome');
-} else {
-  showScreen('screen-phone');
-  initPhone();
+// ── CLOCK (CD Victoria = America/Monterrey) ──
+const TZ = 'America/Monterrey';
+const WDAY_ES  = {Mon:'Lunes',Tue:'Martes',Wed:'Miércoles',Thu:'Jueves',Fri:'Viernes',Sat:'Sábado',Sun:'Domingo'};
+const MONTH_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function tick() {
+  try {
+    const now = new Date();
+    // Get time parts in CD Victoria timezone
+    const parts = {};
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ,
+      hour: '2-digit', minute: '2-digit', hour12: false,
+      weekday: 'short', day: 'numeric', month: 'numeric'
+    }).formatToParts(now).forEach(p => { parts[p.type] = p.value; });
+
+    const h   = parts.hour   === '24' ? '0' : parts.hour;   // midnight fix
+    const m   = parts.minute;
+    const timeStr = `${parseInt(h,10)}:${m}`;
+    const dateStr = `${WDAY_ES[parts.weekday] || parts.weekday}, ${parseInt(parts.day,10)} de ${MONTH_ES[parseInt(parts.month,10)-1]}`;
+
+    document.querySelectorAll('#lock-time, #status-time').forEach(el => { el.textContent = timeStr; });
+    const de = document.getElementById('lock-date');
+    if (de) de.textContent = dateStr;
+  } catch(e) {
+    // Fallback to device local time if Intl fails
+    const n = new Date();
+    const ts = `${n.getHours()}:${String(n.getMinutes()).padStart(2,'0')}`;
+    document.querySelectorAll('#lock-time, #status-time').forEach(el => { el.textContent = ts; });
+  }
 }
+
+// ── INIT PHONE ──
+function initPhone() {
+  initViews();
+  buildGrid();
+  buildGallery();
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ── APP GRID ──
+function buildGrid() {
+  const grid = document.getElementById('apps-grid');
+  if (!grid) return;
+  const apps = [
+    { cls:'ic-photos',  label:'Fotos',   action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="6" width="22" height="17" rx="3" fill="white" fill-opacity=".9"/><circle cx="10" cy="13" r="2.5" fill="rgba(184,108,16,.8)"/><path d="M3 18l5-5 4 4 3-3 5 5" stroke="rgba(184,108,16,.6)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="20" cy="9" r="1.5" fill="rgba(184,108,16,.8)"/></svg>` },
+    { cls:'ic-music',   label:'Música',  action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
+    { cls:'ic-settings',label:'Ajustes', action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="white" stroke-opacity=".85" stroke-width="1.6" fill="none"/><path d="M14 5v2M14 21v2M5 14H3M25 14h-2M7.05 7.05l1.41 1.41M19.54 19.54l1.41 1.41M7.05 20.95l1.41-1.41M19.54 8.46l1.41-1.41" stroke="white" stroke-opacity=".85" stroke-width="1.6" stroke-linecap="round"/></svg>` },
+    { cls:'ic-msg',     label:'Mensajes',action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 4h20a2 2 0 012 2v12a2 2 0 01-2 2H8l-6 6V6a2 2 0 012-2z" fill="white" fill-opacity=".9"/><path d="M8 11h12M8 15h7" stroke="rgba(26,139,46,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>` },
+    { cls:'ic-gallery', label:'Galería', action:'gallery',svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
+  ];
+  grid.innerHTML = '';
+  apps.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'app-icon';
+    if (a.action) el.onclick = () => openApp(a.action);
+    el.innerHTML = `<div class="app-icon-wrap ${a.cls}">${a.svg}</div><div class="app-label">${a.label}</div>`;
+    grid.appendChild(el);
+  });
+}
+
+// ── GALLERY ──
+const PHOTO_EXTS = ['jpg','jpeg','png','gif','webp','avif'];
+const FOTOS_PATH = 'fotos/';
+
+function buildGallery() {
+  fetch(FOTOS_PATH)
+    .then(r => r.text())
+    .then(html => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const files = Array.from(doc.querySelectorAll('a[href]'))
+        .map(a => a.getAttribute('href'))
+        .filter(h => PHOTO_EXTS.some(e => h.toLowerCase().split('?')[0].endsWith('.'+e)))
+        .map(h => h.split('/').pop());
+      files.length ? renderPhotos(files) : showGalleryEmpty();
+    })
+    .catch(showGalleryEmpty);
+}
+
+function renderPhotos(files) {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = '';
+  grid.style = '';
+  files.forEach(file => {
+    const div = document.createElement('div');
+    div.className = 'gallery-thumb';
+    const img = document.createElement('img');
+    img.src = FOTOS_PATH + file;
+    img.alt = file;
+    img.loading = 'lazy';
+    img.onerror = () => div.remove();
+    img.onclick = () => openLightbox(FOTOS_PATH + file);
+    div.appendChild(img);
+    grid.appendChild(div);
+  });
+}
+
+function showGalleryEmpty() {
+  const grid = document.getElementById('gallery-grid');
+  Object.assign(grid.style, {display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'});
+  grid.innerHTML = `<svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="opacity:.35;margin-bottom:12px"><rect x="4" y="10" width="44" height="34" rx="7" stroke="rgba(255,190,210,.8)" stroke-width="2" fill="none"/><circle cx="17" cy="23" r="4" fill="rgba(255,190,210,.5)"/><path d="M4 34l12-10 9 9 7-7 16 14" stroke="rgba(255,190,210,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><div style="color:rgba(255,190,210,.55);font-size:.88rem;line-height:1.5;text-align:center;max-width:200px;">Agrega imágenes a la carpeta <b style="color:rgba(255,190,210,.8)">fotos/</b> del proyecto para verlas aquí.</div>`;
+}
+
+function openLightbox(src) {
+  document.getElementById('gallery-lightbox-img').src = src;
+  document.getElementById('gallery-lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('gallery-lightbox').classList.remove('open');
+}
+
+// ── NAVIGATION ──
+let currentView = 'view-lock';
+
+function initViews() {
+  document.querySelectorAll('.phone-view').forEach(v => {
+    v.style.cssText = '';   // wipe ALL inline styles
+    if (v.id === 'view-lock') {
+      v.classList.remove('hidden','slide-left');
+    } else {
+      v.classList.add('hidden');
+      v.classList.remove('slide-left');
+    }
+  });
+  currentView = 'view-lock';
+}
+
+function showView(to, dir) {
+  if (currentView === to) return;
+  const fromEl = document.getElementById(currentView);
+  const toEl   = document.getElementById(to);
+  if (!fromEl || !toEl) return;
+
+  // Wipe inline styles from source
+  fromEl.style.cssText = '';
+
+  if (dir === 'forward') {
+    fromEl.classList.add('slide-left');
+    setTimeout(() => { fromEl.classList.add('hidden'); fromEl.classList.remove('slide-left'); }, 350);
+  } else {
+    fromEl.classList.add('hidden');
+    fromEl.classList.remove('slide-left');
+  }
+
+  // Place destination off-screen instantly, then animate in
+  toEl.classList.remove('hidden','slide-left');
+  toEl.style.transition = 'none';
+  toEl.style.transform  = dir === 'forward' ? 'translateX(100%)' : 'translateX(-30%)';
+  toEl.style.opacity    = dir === 'forward' ? '1' : '0.6';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    toEl.style.transition = 'transform .30s cubic-bezier(.4,0,.2,1), opacity .25s';
+    toEl.style.transform  = 'translateX(0)';
+    toEl.style.opacity    = '1';
+  }));
+
+  currentView = to;
+}
+
+function unlockPhone() { showView('view-home', 'forward'); }
+function goHome()      { showView('view-home', 'backward'); }
+function openApp(a) {
+  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', gallery:'view-gallery' };
+  if (map[a]) showView(map[a], 'forward');
+}
+
+// ── HOME BUTTON ──
+function homeButtonPress() {
+  const lb = document.getElementById('gallery-lightbox');
+  if (lb && lb.classList.contains('open')) { closeLightbox(); return; }
+  if (currentView === 'view-lock')        { unlockPhone(); return; }
+  if (currentView === 'view-active-call') { endCallWith('home'); return; }
+  if (currentView === 'view-home')        { showView('view-lock','backward'); return; }
+  goHome();
+}
+
+// ── AUDIO ──
+const audCalling = document.getElementById('audio-calling');
+const audGoodbye = document.getElementById('audio-goodbye');
+audCalling.src = 'llamada.mp3';
+audGoodbye.src = 'adios.mp3';
+
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return; audioUnlocked = true;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = ctx.createBuffer(1,1,22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf; src.connect(ctx.destination); src.start(0); ctx.resume();
+  } catch(e) {}
+}
+document.addEventListener('touchstart', unlockAudio, {once:true});
+document.addEventListener('click',      unlockAudio, {once:true});
+
+// ── CALL LOGIC ──
+let callTimer   = null;
+let callSeconds = 0;
+let callState   = 'idle';
+let callDest    = null;
+let ringTimeout = null;
+
+function resetCallUI() {
+  const s = document.getElementById('call-status');
+  const t = document.getElementById('call-timer');
+  const w = document.getElementById('call-wave');
+  if (s) s.textContent = 'Llamando…';
+  if (t) t.textContent = '\u00A0';
+  if (w) w.classList.add('off');
+}
+
+function startCall() {
+  unlockAudio();
+  callState = 'ringing'; callDest = null; callSeconds = 0;
+  clearInterval(callTimer); clearTimeout(ringTimeout);
+  showView('view-active-call','forward');
+  resetCallUI();
+  document.getElementById('home-indicator').classList.add('no-home');
+  audCalling.currentTime = 0; audCalling.loop = true;
+  audCalling.onended = () => { if (callState==='ringing'||callState==='active') endCallWith(callDest||'phone-app'); };
+  audCalling.play().catch(()=>{});
+  ringTimeout = setTimeout(() => {
+    if (callState !== 'ringing') return;
+    callState = 'active'; audCalling.loop = false;
+    const s = document.getElementById('call-status');
+    const w = document.getElementById('call-wave');
+    if (s) s.textContent = 'En llamada';
+    if (w) w.classList.remove('off');
+    clearInterval(callTimer);
+    callTimer = setInterval(() => {
+      callSeconds++;
+      const el = document.getElementById('call-timer');
+      if (el) el.textContent = `${String(Math.floor(callSeconds/60)).padStart(2,'0')}:${String(callSeconds%60).padStart(2,'0')}`;
+    }, 1000);
+  }, 6000);
+}
+
+function callFromContact() { openApp('phone-app'); setTimeout(startCall, 300); }
+function hangUp() { if (callState==='idle'||callState==='ending') return; endCallWith('phone-app'); }
+
+function endCallWith(destination) {
+  if (callState === 'ending') return;
+  callState = 'ending'; callDest = destination;
+  clearTimeout(ringTimeout); clearInterval(callTimer);
+  audCalling.loop = false; audCalling.onended = null;
+  audCalling.pause(); audCalling.currentTime = 0;
+  const s = document.getElementById('call-status');
+  if (s) s.textContent = 'Llamada finalizada';
+  audGoodbye.currentTime = 0; audGoodbye.loop = false;
+  const onEnd = () => { audGoodbye.removeEventListener('ended',onEnd); finishCall(); };
+  audGoodbye.addEventListener('ended', onEnd);
+  audGoodbye.play().catch(() => setTimeout(finishCall, 800));
+  setTimeout(() => { if (callState==='ending') finishCall(); }, 15000);
+}
+
+function finishCall() {
+  if (callState !== 'ending') return;
+  callState = 'idle';
+  audGoodbye.pause(); audGoodbye.currentTime = 0;
+  const w = document.getElementById('call-wave');
+  if (w) w.classList.add('off');
+  document.getElementById('home-indicator').classList.remove('no-home');
+  currentView = 'view-active-call';
+  resetCallUI();
+  if (callDest === 'home') showView('view-home','backward');
+  else showView('view-phone-app','backward');
+}
+
+// ════════════════════════════════════════════
+//  BOOT — runs after all functions are defined
+// ════════════════════════════════════════════
+(function boot() {
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone/.test(ua) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true
+    || window.matchMedia('(display-mode: standalone)').matches;
+
+  if (!isIOS) {
+    showScreen('screen-desktop');
+  } else if (!isStandalone) {
+    showScreen('screen-addtohome');
+  } else {
+    showScreen('screen-phone');
+    initPhone();
+  }
+
+  // Clock runs on ALL screens (lock screen visible even before standalone check)
+  tick();
+  setInterval(tick, 1000);
+})();
 
 // ── CLOCK (CD Victoria, Tamaulipas = America/Monterrey) ──
 const TZ = 'America/Monterrey';
