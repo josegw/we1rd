@@ -943,11 +943,15 @@ function buildGrid() {
 // ── GALLERY ──
 const PHOTO_EXTS = ['jpg','jpeg','png','gif','webp','avif'];
 
-// Busca primero en tu carpeta real y luego en "fotos/" por compatibilidad.
-// En GitHub Pages normalmente NO se puede leer el listado de una carpeta con fetch('fotos/'),
-// por eso también se intenta leer un archivo fotos.json si existe.
-const GALLERY_PATHS = ['we1rd/peldon/fotos/', '/we1rd/peldon/fotos/', 'fotos/'];
-const GITHUB_REPO = ''; // Opcional: escribe 'usuario/repositorio' si usas dominio personalizado de GitHub Pages.
+// IMPORTANTE:
+// Como este index.html está dentro de repo/peldon/, la carpeta fotos se llama desde aquí como "fotos/".
+// NO uses "repo/peldon/fotos/" dentro del HTML, porque eso duplicaría la ruta.
+//
+// Para GitHub Pages en formato usuario.github.io/repo/peldon/ el código intenta detectar
+// automáticamente owner/repo y leer la carpeta peldon/fotos mediante la API de GitHub.
+// Si usas dominio personalizado y no carga, llena GITHUB_REPO como "tuUsuario/repo".
+const GALLERY_PATHS = ['fotos/'];
+const GITHUB_REPO = ''; // Ejemplo si usas dominio personalizado: 'tuUsuario/repo'
 const GITHUB_BRANCH = 'main';
 
 function isPhotoFile(path) {
@@ -991,7 +995,7 @@ async function findGalleryPhotos() {
 
 async function readPhotoManifest(folder) {
   try {
-    const res = await fetch(joinPath(folder, 'fotos.json'), { cache:'no-store' });
+    const res = await fetch(joinPath(folder, 'fotos.json'), { cache:'force-cache' });
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -1010,7 +1014,7 @@ async function readPhotoManifest(folder) {
 
 async function readDirectoryListing(folder) {
   try {
-    const res = await fetch(folder, { cache:'no-store' });
+    const res = await fetch(folder, { cache:'force-cache' });
     if (!res.ok) return [];
 
     const html = await res.text();
@@ -1060,7 +1064,7 @@ async function readGithubFolder(folder) {
 
     const path = githubFolderPath(folder, info.repo, info.currentDir);
     const api = `https://api.github.com/repos/${info.owner}/${info.repo}/contents/${path}?ref=${GITHUB_BRANCH}`;
-    const res = await fetch(api, { cache:'no-store' });
+    const res = await fetch(api, { cache:'force-cache' });
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -1080,24 +1084,63 @@ function renderPhotos(photos) {
   const grid = document.getElementById('gallery-grid');
   grid.innerHTML = '';
   grid.style = '';
-  photos.forEach(src => {
+
+  const frag = document.createDocumentFragment();
+  const thumbs = [];
+
+  photos.forEach((src, index) => {
     const div = document.createElement('div');
     div.className = 'gallery-thumb';
+
     const img = document.createElement('img');
-    img.src = src;
     img.alt = src.split('/').pop();
-    img.loading = 'lazy';
-    img.onerror = () => div.remove();
+    img.decoding = 'async';
+    img.loading = index < 12 ? 'eager' : 'lazy';
+    img.fetchPriority = index < 8 ? 'high' : 'low';
     img.onclick = () => openLightbox(src);
+
     div.appendChild(img);
-    grid.appendChild(div);
+    frag.appendChild(div);
+    thumbs.push({ div, img, src, index });
   });
+
+  grid.appendChild(frag);
+
+  // Carga progresiva: primero las visibles, luego las demás.
+  // Así la app no se congela ni muestra cuadros negros por tanto tiempo.
+  const loadOne = ({ div, img, src }) => {
+    if (img.dataset.loaded === '1') return;
+    img.dataset.loaded = '1';
+
+    img.onload = () => div.classList.add('loaded');
+    img.onerror = () => div.remove();
+    img.src = src;
+  };
+
+  const firstBatch = thumbs.slice(0, 12);
+  firstBatch.forEach((item, i) => setTimeout(() => loadOne(item), i * 35));
+
+  const rest = thumbs.slice(12);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const item = thumbs.find(t => t.img === entry.target);
+        if (item) loadOne(item);
+        io.unobserve(entry.target);
+      });
+    }, { root:grid, rootMargin:'450px 0px', threshold:0.01 });
+
+    rest.forEach(item => io.observe(item.img));
+  } else {
+    rest.forEach((item, i) => setTimeout(() => loadOne(item), 450 + i * 60));
+  }
 }
 
 function showGalleryEmpty() {
   const grid = document.getElementById('gallery-grid');
   Object.assign(grid.style, {display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'});
-  grid.innerHTML = `<svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="opacity:.35;margin-bottom:12px"><rect x="4" y="10" width="44" height="34" rx="7" stroke="rgba(255,190,210,.8)" stroke-width="2" fill="none"/><circle cx="17" cy="23" r="4" fill="rgba(255,190,210,.5)"/><path d="M4 34l12-10 9 9 7-7 16 14" stroke="rgba(255,190,210,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><div style="color:rgba(255,190,210,.55);font-size:.88rem;line-height:1.5;text-align:center;max-width:220px;">No pude leer automáticamente la carpeta <b style="color:rgba(255,190,210,.8)">we1rd/peldon/fotos/</b>.<br>Crea un archivo <b style="color:rgba(255,190,210,.8)">fotos.json</b> dentro de esa carpeta con la lista de imágenes.</div>`;
+  grid.innerHTML = `<svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="opacity:.35;margin-bottom:12px"><rect x="4" y="10" width="44" height="34" rx="7" stroke="rgba(255,190,210,.8)" stroke-width="2" fill="none"/><circle cx="17" cy="23" r="4" fill="rgba(255,190,210,.5)"/><path d="M4 34l12-10 9 9 7-7 16 14" stroke="rgba(255,190,210,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><div style="color:rgba(255,190,210,.55);font-size:.88rem;line-height:1.5;text-align:center;max-width:240px;">No pude leer automáticamente <b style="color:rgba(255,190,210,.8)">fotos/</b>.<br>En GitHub Pages esto se arregla con la API de GitHub o con un <b style="color:rgba(255,190,210,.8)">fotos.json</b> dentro de la carpeta.</div>`;
 }
 
 function openLightbox(src) {
