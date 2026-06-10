@@ -549,6 +549,34 @@ html,body{
   line-height:1.72;white-space:pre-wrap;
 }
 .note-full-body strong{color:#fff;font-weight:850;}
+.note-check-line{
+  display:flex;align-items:flex-start;gap:9px;
+  margin:3px 0;
+  white-space:normal;
+}
+.note-check-box{
+  width:17px;height:17px;flex:0 0 17px;margin-top:5px;
+  border-radius:5px;
+  border:1.4px solid rgba(255,190,210,.55);
+  background:rgba(255,255,255,.045);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 7px rgba(0,0,0,.22);
+  position:relative;
+}
+.note-check-line.checked .note-check-box{
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  border-color:rgba(255,240,244,.75);
+}
+.note-check-line.checked .note-check-box::after{
+  content:'';position:absolute;left:4px;top:1.5px;
+  width:5px;height:9px;
+  border:solid #fff;border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+.note-check-text{flex:1;min-width:0;}
+.note-check-line.checked .note-check-text{
+  text-decoration:line-through;
+  color:rgba(255,240,244,.56);
+}
 .notes-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   color:var(--muted);font-size:.88rem;line-height:1.5;text-align:center;padding:22px;
@@ -1096,8 +1124,6 @@ function buildGrid() {
   const apps = [
     { cls:'ic-music',   label:'Música',  action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
     { cls:'ic-notes',   label:'Notas',   action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
-    { cls:'ic-settings',label:'Ajustes', action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="3.5" stroke="white" stroke-opacity=".85" stroke-width="1.6" fill="none"/><path d="M14 5v2M14 21v2M5 14H3M25 14h-2M7.05 7.05l1.41 1.41M19.54 19.54l1.41 1.41M7.05 20.95l1.41-1.41M19.54 8.46l1.41-1.41" stroke="white" stroke-opacity=".85" stroke-width="1.6" stroke-linecap="round"/></svg>` },
-    { cls:'ic-msg',     label:'Mensajes',action:'',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 4h20a2 2 0 012 2v12a2 2 0 01-2 2H8l-6 6V6a2 2 0 012-2z" fill="white" fill-opacity=".9"/><path d="M8 11h12M8 15h7" stroke="rgba(26,139,46,.7)" stroke-width="1.6" stroke-linecap="round"/></svg>` },
     { cls:'ic-gallery', label:'Galería', action:'gallery',svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
   ];
   grid.innerHTML = '';
@@ -1536,12 +1562,28 @@ function escapeHTML(str) {
     .replace(/'/g, '&#039;');
 }
 
-function noteMarkup(text) {
+function inlineNoteMarkup(text) {
   return escapeHTML(text).replace(/\*\*(.+?)\*\*/gs, '<strong>$1</strong>');
 }
 
+function noteMarkup(text) {
+  const lines = String(text).replace(/\r\n/g, '\n').split('\n');
+  return lines.map(line => {
+    const match = line.match(/^\s*([-\/])\s+(.+)$/);
+    if (match) {
+      const checked = match[1] === '/';
+      return `<div class="note-check-line${checked ? ' checked' : ''}"><span class="note-check-box"></span><span class="note-check-text">${inlineNoteMarkup(match[2])}</span></div>`;
+    }
+    return inlineNoteMarkup(line);
+  }).join('\n');
+}
+
 function plainNoteText(text) {
-  return String(text).replace(/\*\*(.+?)\*\*/gs, '$1').replace(/\s+/g, ' ').trim();
+  return String(text)
+    .replace(/^\s*[-\/]\s+/gm, '')
+    .replace(/\*\*(.+?)\*\*/gs, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 async function buildNotes(force=false) {
