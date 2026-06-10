@@ -444,17 +444,6 @@ html,body{
   padding:14px 14px 18px;
   display:flex;flex-direction:column;gap:12px;
 }
-.music-hero{
-  padding:14px 14px 16px;
-  border-radius:20px;
-  background:
-    radial-gradient(ellipse at 20% 10%,rgba(192,51,85,.28),transparent 55%),
-    linear-gradient(145deg,rgba(158,30,58,.18),rgba(255,255,255,.045));
-  border:1px solid rgba(255,255,255,.10);
-  box-shadow:0 8px 28px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.10);
-}
-.music-hero-title{font-size:1.22rem;font-weight:800;color:var(--cream);letter-spacing:-.02em;}
-.music-hero-sub{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:4px;}
 .music-card{
   background:rgba(255,255,255,.055);
   border:1px solid rgba(255,255,255,.09);
@@ -476,18 +465,44 @@ html,body{
 .music-play.playing{filter:brightness(1.08);}
 .music-info{flex:1;min-width:0;}
 .music-title{font-size:.94rem;font-weight:700;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.music-file{font-size:.68rem;color:rgba(255,255,255,.42);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.music-artist{font-size:.68rem;color:rgba(255,255,255,.48);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .music-time{font-size:.72rem;color:var(--rose-pale);font-variant-numeric:tabular-nums;font-weight:600;}
-.music-bar{
-  width:100%;height:6px;border-radius:20px;overflow:hidden;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.06);
+.music-seek{
+  width:100%;height:30px;margin:0;
+  appearance:none;-webkit-appearance:none;
+  background:transparent;cursor:pointer;
+  touch-action:pan-x;
+  display:block;
 }
-.music-fill{
-  height:100%;width:0%;border-radius:20px;
+.music-seek:disabled{opacity:.55;}
+.music-seek::-webkit-slider-runnable-track{
+  height:7px;border-radius:20px;
+  background:linear-gradient(90deg,var(--vino-bright) var(--progress,0%), rgba(255,255,255,.11) var(--progress,0%));
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.music-seek::-webkit-slider-thumb{
+  appearance:none;-webkit-appearance:none;
+  width:18px;height:18px;border-radius:50%;
+  margin-top:-6px;
+  background:linear-gradient(135deg,var(--rose-pale),#fff);
+  border:2px solid var(--vino-light);
+  box-shadow:0 3px 13px rgba(192,51,85,.55);
+}
+.music-seek::-moz-range-track{
+  height:7px;border-radius:20px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.07);
+}
+.music-seek::-moz-range-progress{
+  height:7px;border-radius:20px;
   background:linear-gradient(90deg,var(--vino-bright),var(--rose-pale));
-  box-shadow:0 0 12px rgba(192,51,85,.55);
-  transition:width .12s linear;
+}
+.music-seek::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose-pale),#fff);
+  border:2px solid var(--vino-light);
+  box-shadow:0 3px 13px rgba(192,51,85,.55);
 }
 .music-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -896,7 +911,7 @@ html,body{
             <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Inicio
           </div>
-          <div class="app-nav-title">Música</div>
+          <div class="app-nav-title">Música que te dedico</div>
           <div style="min-width:60px;"></div>
         </div>
         <div class="music-list" id="music-list">
@@ -1021,6 +1036,7 @@ let musicLoaded = false;
 let musicTracks = [];
 let currentMusicIndex = -1;
 let musicRaf = null;
+let musicUserSeeking = false;
 const musicAudio = new Audio();
 musicAudio.preload = 'metadata';
 
@@ -1034,13 +1050,14 @@ function formatMusicTime(value) {
 function normalizeMusicItem(item) {
   if (typeof item === 'string') {
     const file = item.trim();
-    return file ? { file, title:file.replace(/\.[^/.]+$/, '') } : null;
+    return file ? { file, title:file.replace(/\.[^/.]+$/, ''), artist:'Artista desconocido' } : null;
   }
   if (!item || typeof item !== 'object') return null;
   const file = String(item.archivo || item.file || item.src || item.url || '').trim();
   const title = String(item.nombre || item.titulo || item.title || file.replace(/\.[^/.]+$/, '')).trim();
+  const artist = String(item.artista || item.artist || item.autor || 'Artista desconocido').trim();
   if (!file || !file.toLowerCase().split('?')[0].endsWith('.mp3')) return null;
-  return { file, title:title || file };
+  return { file, title:title || file, artist:artist || 'Artista desconocido' };
 }
 
 async function buildMusic() {
@@ -1068,12 +1085,7 @@ function renderMusicTracks() {
 
   if (!musicTracks.length) { showMusicEmpty(); return; }
 
-  list.innerHTML = `
-    <div class="music-hero">
-      <div class="music-hero-title">Música que te dedico</div>
-      <div class="music-hero-sub">Presiona play para escuchar cada canción. Si eliges otra, la anterior se pausa automáticamente.</div>
-    </div>
-  `;
+  list.innerHTML = '';
 
   musicTracks.forEach((track, index) => {
     const card = document.createElement('div');
@@ -1087,20 +1099,51 @@ function renderMusicTracks() {
         </button>
         <div class="music-info">
           <div class="music-title">${track.title}</div>
-          <div class="music-file">${track.file}</div>
+          <div class="music-artist">${track.artist}</div>
         </div>
         <div class="music-time" id="music-time-${index}">0:00/0:00</div>
       </div>
-      <div class="music-bar"><div class="music-fill" id="music-fill-${index}"></div></div>
+      <input class="music-seek" id="music-seek-${index}" type="range" min="0" max="0" value="0" step="0.01" aria-label="Avanzar ${track.title.replace(/"/g,'&quot;')}">
     `;
     list.appendChild(card);
+    setupMusicSeek(index);
   });
+}
+
+function setupMusicSeek(index) {
+  const seek = document.getElementById(`music-seek-${index}`);
+  if (!seek) return;
+
+  const beginSeek = () => { musicUserSeeking = true; };
+  const finishSeek = () => { musicUserSeeking = false; seekToValue(true); };
+
+  const seekToValue = (commit=false) => {
+    const max = Number(seek.max) || 0;
+    const value = Number(seek.value) || 0;
+    const pct = max ? Math.min(100, (value / max) * 100) : 0;
+    seek.style.setProperty('--progress', `${pct}%`);
+
+    const time = document.getElementById(`music-time-${index}`);
+    if (time) time.textContent = `${formatMusicTime(value)}/${formatMusicTime(max)}`;
+
+    if (commit && max && currentMusicIndex === index) {
+      musicAudio.currentTime = Math.min(value, max);
+      updateMusicProgress();
+    }
+  };
+
+  seek.addEventListener('pointerdown', beginSeek);
+  seek.addEventListener('touchstart', beginSeek, {passive:true});
+  seek.addEventListener('input', () => seekToValue(false));
+  seek.addEventListener('change', finishSeek);
+  seek.addEventListener('pointerup', finishSeek);
+  seek.addEventListener('touchend', finishSeek);
 }
 
 function showMusicEmpty() {
   const list = document.getElementById('music-list');
   if (!list) return;
-  list.innerHTML = `<div class="music-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">musica/canciones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"archivo":"cancion.mp3","nombre":"Mi canción"}]</code></div>`;
+  list.innerHTML = `<div class="music-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">musica/canciones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"archivo":"cancion.mp3","nombre":"Mi canción","artista":"Artista"}]</code></div>`;
 }
 
 function setMusicButton(index, playing) {
@@ -1115,21 +1158,30 @@ function setMusicButton(index, playing) {
 }
 
 function resetMusicRow(index) {
-  const fill = document.getElementById(`music-fill-${index}`);
+  const seek = document.getElementById(`music-seek-${index}`);
   const time = document.getElementById(`music-time-${index}`);
-  if (fill) fill.style.width = '0%';
-  if (time) time.textContent = '0:00/0:00';
+  if (seek) {
+    seek.value = 0;
+    seek.style.setProperty('--progress','0%');
+  }
+  const duration = (index === currentMusicIndex && Number.isFinite(musicAudio.duration)) ? musicAudio.duration : Number(seek?.max || 0);
+  if (time) time.textContent = `0:00/${formatMusicTime(duration)}`;
   setMusicButton(index, false);
 }
 
 function updateMusicProgress() {
   if (currentMusicIndex < 0) return;
-  const duration = musicAudio.duration || 0;
+  const duration = Number.isFinite(musicAudio.duration) ? musicAudio.duration : 0;
   const current = musicAudio.currentTime || 0;
-  const fill = document.getElementById(`music-fill-${currentMusicIndex}`);
+  const seek = document.getElementById(`music-seek-${currentMusicIndex}`);
   const time = document.getElementById(`music-time-${currentMusicIndex}`);
-  if (fill) fill.style.width = duration ? `${Math.min(100, (current / duration) * 100)}%` : '0%';
-  if (time) time.textContent = `${formatMusicTime(current)}/${formatMusicTime(duration)}`;
+  const progress = duration ? Math.min(100, (current / duration) * 100) : 0;
+  if (seek) {
+    if (duration) seek.max = String(duration);
+    if (!musicUserSeeking) seek.value = String(Math.min(current, duration || current));
+    seek.style.setProperty('--progress', `${progress}%`);
+  }
+  if (time && !musicUserSeeking) time.textContent = `${formatMusicTime(current)}/${formatMusicTime(duration)}`;
 
   if (!musicAudio.paused && !musicAudio.ended) {
     musicRaf = requestAnimationFrame(updateMusicProgress);
@@ -1153,6 +1205,12 @@ function toggleMusic(index) {
     return;
   }
 
+  if (currentMusicIndex === index && musicAudio.paused) {
+    setMusicButton(index, true);
+    musicAudio.play().then(updateMusicProgress).catch(() => setMusicButton(index, false));
+    return;
+  }
+
   if (currentMusicIndex >= 0 && currentMusicIndex !== index) {
     resetMusicRow(currentMusicIndex);
   }
@@ -1162,7 +1220,7 @@ function toggleMusic(index) {
   musicAudio.currentTime = 0;
   setMusicButton(index, true);
   updateMusicProgress();
-  musicAudio.play().catch(() => setMusicButton(index, false));
+  musicAudio.play().then(updateMusicProgress).catch(() => setMusicButton(index, false));
 }
 
 musicAudio.addEventListener('loadedmetadata', updateMusicProgress);
