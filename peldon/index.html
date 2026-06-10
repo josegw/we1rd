@@ -445,17 +445,6 @@ html,body{
   padding:14px 14px 18px;
   display:flex;flex-direction:column;gap:12px;
 }
-.music-hero{
-  padding:14px 14px 16px;
-  border-radius:20px;
-  background:
-    radial-gradient(ellipse at 20% 10%,rgba(192,51,85,.28),transparent 55%),
-    linear-gradient(145deg,rgba(158,30,58,.18),rgba(255,255,255,.045));
-  border:1px solid rgba(255,255,255,.10);
-  box-shadow:0 8px 28px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.10);
-}
-.music-hero-title{font-size:1.22rem;font-weight:800;color:var(--cream);letter-spacing:-.02em;}
-.music-hero-sub{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:4px;}
 .music-card{
   background:rgba(255,255,255,.055);
   border:1px solid rgba(255,255,255,.09);
@@ -479,16 +468,40 @@ html,body{
 .music-title{font-size:.94rem;font-weight:700;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .music-file{font-size:.68rem;color:rgba(255,255,255,.42);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .music-time{font-size:.72rem;color:var(--rose-pale);font-variant-numeric:tabular-nums;font-weight:600;}
-.music-bar{
-  width:100%;height:6px;border-radius:20px;overflow:hidden;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.06);
+.music-seek{
+  width:100%;height:18px;display:block;
+  -webkit-appearance:none;appearance:none;
+  background:transparent;cursor:pointer;
+  touch-action:pan-x;
 }
-.music-fill{
-  height:100%;width:0%;border-radius:20px;
+.music-seek::-webkit-slider-runnable-track{
+  height:7px;border-radius:20px;
+  background:linear-gradient(90deg,var(--vino-bright) var(--seek-progress,0%),rgba(255,255,255,.12) var(--seek-progress,0%));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.music-seek::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:17px;height:17px;border-radius:50%;
+  margin-top:-6px;
+  background:linear-gradient(135deg,var(--rose-pale),var(--vino-light));
+  border:2px solid rgba(255,240,244,.9);
+  box-shadow:0 3px 12px rgba(192,51,85,.55);
+}
+.music-seek::-moz-range-track{
+  height:7px;border-radius:20px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.08);
+}
+.music-seek::-moz-range-progress{
+  height:7px;border-radius:20px;
   background:linear-gradient(90deg,var(--vino-bright),var(--rose-pale));
-  box-shadow:0 0 12px rgba(192,51,85,.55);
-  transition:width .12s linear;
+}
+.music-seek::-moz-range-thumb{
+  width:17px;height:17px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose-pale),var(--vino-light));
+  border:2px solid rgba(255,240,244,.9);
+  box-shadow:0 3px 12px rgba(192,51,85,.55);
 }
 .music-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -545,33 +558,40 @@ html,body{
 #view-gallery{background:#0A0003;}
 .gallery-grid{
   flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:9px;
+  padding:10px;
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:3px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:5px;
   align-content:start;
   background:#0A0003;
 }
 .gallery-thumb{
   aspect-ratio:1/1;cursor:pointer;overflow:hidden;
-  background:rgba(255,255,255,.055);
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
   position:relative;
-  border:1px solid rgba(255,240,244,.14);
-  border-radius:7px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  border:1px solid rgba(255,240,244,.20);
+  border-radius:8px;
+  box-shadow:0 1px 0 rgba(255,255,255,.04),inset 0 0 0 1px rgba(0,0,0,.22);
+  isolation:isolate;
+}
+.gallery-thumb::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  background:linear-gradient(110deg,rgba(255,255,255,.04),rgba(255,255,255,.10),rgba(255,255,255,.04));
+  opacity:.55;
 }
 .gallery-thumb::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  border-radius:6px;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  border-radius:7px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
 }
 .gallery-thumb img{
+  position:absolute;inset:0;z-index:1;
   width:100%;height:100%;object-fit:cover;
   transition:transform .18s,opacity .25s;
   display:block;opacity:0;
 }
 .gallery-thumb.loaded img{opacity:1;}
-.gallery-thumb:active img{transform:scale(.93);}
+.gallery-thumb:active img{transform:scale(.94);}
 
 /* Photo lightbox */
 .gallery-lightbox{
@@ -1116,8 +1136,9 @@ function normalizeMusicItem(item) {
   if (!item || typeof item !== 'object') return null;
   const file = String(item.archivo || item.file || item.src || item.url || '').trim();
   const title = String(item.nombre || item.titulo || item.title || file.replace(/\.[^/.]+$/, '')).trim();
+  const artist = String(item.artista || item.artist || item.autor || '').trim();
   if (!file || !file.toLowerCase().split('?')[0].endsWith('.mp3')) return null;
-  return { file, title:title || file };
+  return { file, title:title || file, artist:artist || 'Artista desconocido' };
 }
 
 async function buildMusic() {
@@ -1145,12 +1166,7 @@ function renderMusicTracks() {
 
   if (!musicTracks.length) { showMusicEmpty(); return; }
 
-  list.innerHTML = `
-    <div class="music-hero">
-      <div class="music-hero-title">Música que te dedico</div>
-      <div class="music-hero-sub">Presiona play para escuchar cada canción. Si eliges otra, la anterior se pausa automáticamente.</div>
-    </div>
-  `;
+  list.innerHTML = '';
 
   musicTracks.forEach((track, index) => {
     const card = document.createElement('div');
@@ -1163,12 +1179,12 @@ function renderMusicTracks() {
           <svg class="music-ico-pause" width="18" height="18" viewBox="0 0 18 18" fill="none" style="display:none"><rect x="4" y="3" width="3.5" height="12" rx="1" fill="white" fill-opacity=".95"/><rect x="10.5" y="3" width="3.5" height="12" rx="1" fill="white" fill-opacity=".95"/></svg>
         </button>
         <div class="music-info">
-          <div class="music-title">${track.title}</div>
-          <div class="music-file">${track.file}</div>
+          <div class="music-title">${escapeHTML(track.title)}</div>
+          <div class="music-file">${escapeHTML(track.artist)}</div>
         </div>
         <div class="music-time" id="music-time-${index}">0:00/0:00</div>
       </div>
-      <div class="music-bar"><div class="music-fill" id="music-fill-${index}"></div></div>
+      <input class="music-seek" id="music-seek-${index}" type="range" min="0" max="0" value="0" step="0.01" oninput="seekMusic(${index}, this.value)" onchange="seekMusic(${index}, this.value)" aria-label="Cambiar tiempo de ${escapeHTML(track.title)}">
     `;
     list.appendChild(card);
   });
@@ -1177,7 +1193,7 @@ function renderMusicTracks() {
 function showMusicEmpty() {
   const list = document.getElementById('music-list');
   if (!list) return;
-  list.innerHTML = `<div class="music-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">musica/canciones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"archivo":"cancion.mp3","nombre":"Mi canción"}]</code></div>`;
+  list.innerHTML = `<div class="music-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">musica/canciones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"archivo":"cancion.mp3","nombre":"Mi canción","artista":"Artista"}]</code></div>`;
 }
 
 function setMusicButton(index, playing) {
@@ -1192,24 +1208,47 @@ function setMusicButton(index, playing) {
 }
 
 function resetMusicRow(index) {
-  const fill = document.getElementById(`music-fill-${index}`);
+  const seek = document.getElementById(`music-seek-${index}`);
   const time = document.getElementById(`music-time-${index}`);
-  if (fill) fill.style.width = '0%';
+  if (seek) {
+    seek.value = 0;
+    seek.max = 0;
+    seek.style.setProperty('--seek-progress','0%');
+  }
   if (time) time.textContent = '0:00/0:00';
   setMusicButton(index, false);
 }
 
 function updateMusicProgress() {
   if (currentMusicIndex < 0) return;
-  const duration = musicAudio.duration || 0;
-  const current = musicAudio.currentTime || 0;
-  const fill = document.getElementById(`music-fill-${currentMusicIndex}`);
+  const duration = Number.isFinite(musicAudio.duration) ? musicAudio.duration : 0;
+  const current = Number.isFinite(musicAudio.currentTime) ? musicAudio.currentTime : 0;
+  const seek = document.getElementById(`music-seek-${currentMusicIndex}`);
   const time = document.getElementById(`music-time-${currentMusicIndex}`);
-  if (fill) fill.style.width = duration ? `${Math.min(100, (current / duration) * 100)}%` : '0%';
+  if (seek) {
+    seek.max = duration || 0;
+    seek.value = Math.min(current, duration || current);
+    const pct = duration ? Math.min(100, (current / duration) * 100) : 0;
+    seek.style.setProperty('--seek-progress', `${pct}%`);
+  }
   if (time) time.textContent = `${formatMusicTime(current)}/${formatMusicTime(duration)}`;
 
   if (!musicAudio.paused && !musicAudio.ended) {
     musicRaf = requestAnimationFrame(updateMusicProgress);
+  }
+}
+
+function seekMusic(index, value) {
+  const seek = document.getElementById(`music-seek-${index}`);
+  const seconds = Number(value) || 0;
+  const max = Number(seek && seek.max) || 0;
+  const pct = max ? Math.min(100, (seconds / max) * 100) : 0;
+  if (seek) seek.style.setProperty('--seek-progress', `${pct}%`);
+
+  if (currentMusicIndex !== index) return;
+  if (Number.isFinite(musicAudio.duration) && musicAudio.duration > 0) {
+    musicAudio.currentTime = Math.min(seconds, musicAudio.duration);
+    updateMusicProgress();
   }
 }
 
@@ -1223,10 +1262,15 @@ function toggleMusic(index) {
   const track = musicTracks[index];
   if (!track) return;
 
-  if (currentMusicIndex === index && !musicAudio.paused) {
-    musicAudio.pause();
-    setMusicButton(index, false);
-    stopMusicProgressLoop();
+  if (currentMusicIndex === index) {
+    if (!musicAudio.paused) {
+      musicAudio.pause();
+      setMusicButton(index, false);
+      stopMusicProgressLoop();
+      return;
+    }
+    setMusicButton(index, true);
+    musicAudio.play().then(() => { stopMusicProgressLoop(); updateMusicProgress(); }).catch(() => setMusicButton(index, false));
     return;
   }
 
@@ -1239,7 +1283,7 @@ function toggleMusic(index) {
   musicAudio.currentTime = 0;
   setMusicButton(index, true);
   updateMusicProgress();
-  musicAudio.play().catch(() => setMusicButton(index, false));
+  musicAudio.play().then(() => { stopMusicProgressLoop(); updateMusicProgress(); }).catch(() => setMusicButton(index, false));
 }
 
 musicAudio.addEventListener('loadedmetadata', updateMusicProgress);
