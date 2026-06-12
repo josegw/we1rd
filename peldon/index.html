@@ -288,6 +288,8 @@ html,body{
 /* Gallery – warm rose/vino gradient matching site palette */
 .ic-gallery  {background:linear-gradient(145deg,#8B1535,#5A0820);}
 .ic-notes    {background:linear-gradient(145deg,#D6A126,#8A5B09);}
+.ic-reasons  {background:linear-gradient(145deg,#B72A52,#6B0D28);}
+.ic-chat     {background:linear-gradient(145deg,#1B8B48,#0B4E28);}
 
 /* ══ APP NAV BAR ══ */
 .app-nav{
@@ -578,6 +580,106 @@ html,body{
   color:rgba(255,240,244,.56);
 }
 .notes-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--muted);font-size:.88rem;line-height:1.5;text-align:center;padding:22px;
+}
+
+
+/* ══ REASONS ══ */
+#view-reasons{background:#0A0003;}
+.reasons-wrap{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 14px 20px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.reason-feature{
+  border-radius:22px;padding:18px 16px;
+  background:
+    radial-gradient(ellipse at 18% 12%,rgba(255,190,210,.22),transparent 55%),
+    linear-gradient(145deg,rgba(158,30,58,.24),rgba(255,255,255,.045));
+  border:1px solid rgba(255,240,244,.12);
+  box-shadow:0 8px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.09);
+}
+.reason-kicker{font-size:.72rem;font-weight:800;color:var(--rose-pale);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.reason-feature-text{font-size:1.08rem;font-weight:760;color:var(--cream);line-height:1.42;letter-spacing:-.01em;}
+.reason-random-btn{
+  margin-top:13px;width:100%;border:0;outline:0;border-radius:14px;
+  padding:11px 13px;cursor:pointer;color:#fff;font-weight:800;font-size:.82rem;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  box-shadow:0 5px 18px rgba(158,30,58,.42),inset 0 1px 0 rgba(255,255,255,.18);
+}
+.reason-random-btn:active{transform:scale(.985);}
+.reason-list{display:flex;flex-direction:column;gap:9px;}
+.reason-card{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,240,244,.10);
+  border-radius:16px;padding:12px 13px;
+  display:flex;gap:10px;align-items:flex-start;
+  box-shadow:0 4px 14px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.reason-num{
+  width:25px;height:25px;flex:0 0 25px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  color:#fff;font-size:.68rem;font-weight:900;
+  box-shadow:0 3px 10px rgba(158,30,58,.35);
+}
+.reason-text{font-size:.9rem;color:rgba(255,240,244,.88);line-height:1.45;}
+.reasons-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--muted);font-size:.88rem;line-height:1.5;text-align:center;padding:22px;
+}
+
+/* ══ CHAT ══ */
+#view-chat-list,#view-chat-detail{background:#0A0003;}
+.chat-list{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:10px 12px 18px;
+}
+.chat-row{
+  display:flex;align-items:center;gap:11px;
+  padding:12px 10px;border-radius:16px;cursor:pointer;
+  background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.03));
+  border:1px solid rgba(255,240,244,.09);
+  box-shadow:0 4px 14px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.chat-row:active{transform:scale(.985);background:rgba(255,255,255,.08);}
+.chat-avatar{
+  width:48px;height:48px;flex:0 0 48px;border-radius:50%;overflow:hidden;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 15px rgba(158,30,58,.38);
+}
+.chat-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+.chat-meta{flex:1;min-width:0;}
+.chat-name{font-size:.98rem;font-weight:800;color:var(--cream);line-height:1.25;}
+.chat-preview{font-size:.76rem;color:rgba(255,255,255,.52);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.chat-chevron{color:rgba(255,255,255,.32);font-size:1rem;}
+.chat-thread{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:12px 11px 18px;
+  display:flex;flex-direction:column;gap:8px;
+  background:
+    radial-gradient(ellipse at 20% 5%,rgba(158,30,58,.12),transparent 45%),
+    #0A0003;
+}
+.chat-bubble{
+  max-width:78%;padding:9px 11px;border-radius:18px;
+  font-size:.88rem;line-height:1.35;white-space:pre-wrap;word-break:break-word;
+  box-shadow:0 3px 10px rgba(0,0,0,.18);
+}
+.chat-bubble.me{
+  align-self:flex-end;color:#fff;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  border-bottom-right-radius:6px;
+}
+.chat-bubble.her{
+  align-self:flex-start;color:rgba(255,240,244,.92);
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.08);
+  border-bottom-left-radius:6px;
+}
+.chat-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   color:var(--muted);font-size:.88rem;line-height:1.5;text-align:center;padding:22px;
 }
@@ -1028,6 +1130,52 @@ html,body{
         </div>
       </div>
 
+
+      <!-- REASONS -->
+      <div class="phone-view hidden" id="view-reasons">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Razones</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="reasons-wrap" id="reasons-wrap">
+          <!-- reasons injected by JS -->
+        </div>
+      </div>
+
+      <!-- CHAT LIST -->
+      <div class="phone-view hidden" id="view-chat-list">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Chats</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="chat-list" id="chat-list">
+          <!-- single chat injected by JS -->
+        </div>
+      </div>
+
+      <!-- CHAT DETAIL -->
+      <div class="phone-view hidden" id="view-chat-detail">
+        <div class="app-nav">
+          <div class="back-btn" onclick="showView('view-chat-list','backward')">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Chats
+          </div>
+          <div class="app-nav-title">Mi Amor</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="chat-thread" id="chat-thread">
+          <!-- messages injected by JS -->
+        </div>
+      </div>
+
       <!-- GALLERY -->
       <div class="phone-view hidden" id="view-gallery">
         <div class="app-nav">
@@ -1124,6 +1272,8 @@ function buildGrid() {
   const apps = [
     { cls:'ic-music',   label:'Música',  action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
     { cls:'ic-notes',   label:'Notas',   action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
+    { cls:'ic-reasons', label:'Razones', action:'reasons',    svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S5 18 5 10.5A5.3 5.3 0 0114 6a5.3 5.3 0 019 4.5C23 18 14 24 14 24z" fill="white" fill-opacity=".9"/><path d="M14 9v6" stroke="rgba(183,42,82,.75)" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="18.5" r="1.2" fill="rgba(183,42,82,.75)"/></svg>` },
+    { cls:'ic-chat',    label:'Chat',    action:'chat',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 5h18a2.5 2.5 0 012.5 2.5v9A2.5 2.5 0 0123 19H11l-6 5v-5.5A2.5 2.5 0 012.5 16V7.5A2.5 2.5 0 015 5z" fill="white" fill-opacity=".9"/><path d="M8 10.5h12M8 14.5h8" stroke="rgba(27,139,72,.72)" stroke-width="1.7" stroke-linecap="round"/></svg>` },
     { cls:'ic-gallery', label:'Galería', action:'gallery',svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
   ];
   grid.innerHTML = '';
@@ -1728,6 +1878,140 @@ function notesBack() {
   }
 }
 
+
+// ── REASONS ──
+const REASONS_PATH = 'razones/';
+const REASONS_MANIFEST = 'razones.json';
+let reasonsLoaded = false;
+let reasonsData = [];
+
+function normalizeReasonItem(item) {
+  if (typeof item === 'string') return item.trim();
+  if (item && typeof item === 'object') return String(item.texto || item.reason || item.razon || '').trim();
+  return '';
+}
+
+async function buildReasons(force=false) {
+  if (reasonsLoaded && !force) { renderReasons(); return; }
+  const wrap = document.getElementById('reasons-wrap');
+  if (!wrap) return;
+  wrap.className = 'reasons-empty';
+  wrap.innerHTML = 'Cargando razones…';
+  try {
+    const res = await fetch(joinPath(REASONS_PATH, REASONS_MANIFEST), { cache:'force-cache' });
+    if (!res.ok) throw new Error('No reasons manifest');
+    const data = await res.json();
+    const raw = Array.isArray(data) ? data : (Array.isArray(data.razones) ? data.razones : []);
+    reasonsData = raw.map(normalizeReasonItem).filter(Boolean);
+    reasonsLoaded = true;
+    renderReasons();
+  } catch(e) {
+    showReasonsEmpty();
+  }
+}
+
+function renderReasons(featureIndex=null) {
+  const wrap = document.getElementById('reasons-wrap');
+  if (!wrap) return;
+  if (!reasonsData.length) { showReasonsEmpty(); return; }
+  wrap.className = 'reasons-wrap';
+  const index = featureIndex == null ? Math.floor(Math.random() * reasonsData.length) : featureIndex;
+  const featured = reasonsData[index] || reasonsData[0];
+  wrap.innerHTML = `
+    <div class="reason-feature">
+      <div class="reason-kicker">Una razón</div>
+      <div class="reason-feature-text">${inlineNoteMarkup(featured)}</div>
+      <button class="reason-random-btn" type="button" onclick="randomReason()">Ver otra razón</button>
+    </div>
+    <div class="reason-list">
+      ${reasonsData.map((r,i)=>`<div class="reason-card"><div class="reason-num">${i+1}</div><div class="reason-text">${inlineNoteMarkup(r)}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+function randomReason() {
+  if (!reasonsData.length) return;
+  renderReasons(Math.floor(Math.random() * reasonsData.length));
+}
+
+function showReasonsEmpty() {
+  const wrap = document.getElementById('reasons-wrap');
+  if (!wrap) return;
+  wrap.className = 'reasons-empty';
+  wrap.innerHTML = `No pude cargar <b style="color:rgba(255,190,210,.8)">razones/razones.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">["Porque me haces feliz"]</code>`;
+}
+
+// ── CHAT ──
+const CHAT_PATH = 'chat/';
+const CHAT_MANIFEST = 'chat.json';
+let chatLoaded = false;
+let chatMessages = [];
+
+function normalizeChatMessage(item) {
+  if (typeof item === 'string') return { from:'me', text:item.trim() };
+  if (!item || typeof item !== 'object') return null;
+  const fromRaw = String(item.de || item.from || item.quien || 'yo').trim().toLowerCase();
+  const text = String(item.texto || item.text || item.mensaje || '').trim();
+  if (!text) return null;
+  const from = ['ella','mi amor','amor','her','tu','tú'].includes(fromRaw) ? 'her' : 'me';
+  return { from, text };
+}
+
+async function buildChat(force=false) {
+  if (chatLoaded && !force) { renderChatList(); return; }
+  const list = document.getElementById('chat-list');
+  if (!list) return;
+  list.innerHTML = `<div class="chat-empty">Cargando chat…</div>`;
+  try {
+    const res = await fetch(joinPath(CHAT_PATH, CHAT_MANIFEST), { cache:'force-cache' });
+    if (!res.ok) throw new Error('No chat manifest');
+    const data = await res.json();
+    const raw = Array.isArray(data) ? data : (Array.isArray(data.mensajes) ? data.mensajes : []);
+    chatMessages = raw.map(normalizeChatMessage).filter(Boolean);
+    chatLoaded = true;
+    renderChatList();
+  } catch(e) {
+    showChatEmpty();
+  }
+}
+
+function renderChatList() {
+  const list = document.getElementById('chat-list');
+  if (!list) return;
+  if (!chatMessages.length) { showChatEmpty(); return; }
+  const last = chatMessages[chatMessages.length - 1];
+  const preview = plainNoteText(last.text).slice(0, 70) || 'Toca para ver la conversación';
+  list.innerHTML = `
+    <div class="chat-row" onclick="openLoveChat()">
+      <div class="chat-avatar"><img src="pfp.png" alt="Mi Amor" onerror="this.style.display='none'"></div>
+      <div class="chat-meta">
+        <div class="chat-name">Mi Amor</div>
+        <div class="chat-preview">${escapeHTML(preview)}${preview.length >= 70 ? '…' : ''}</div>
+      </div>
+      <div class="chat-chevron">›</div>
+    </div>
+  `;
+}
+
+function openLoveChat() {
+  renderChatThread();
+  showView('view-chat-detail','forward');
+}
+
+function renderChatThread() {
+  const thread = document.getElementById('chat-thread');
+  if (!thread) return;
+  if (!chatMessages.length) { thread.innerHTML = `<div class="chat-empty">No hay mensajes todavía.</div>`; return; }
+  thread.innerHTML = chatMessages.map(m => `<div class="chat-bubble ${m.from === 'her' ? 'her' : 'me'}">${inlineNoteMarkup(m.text)}</div>`).join('');
+  requestAnimationFrame(() => { thread.scrollTop = thread.scrollHeight; });
+}
+
+function showChatEmpty() {
+  const list = document.getElementById('chat-list');
+  if (!list) return;
+  list.innerHTML = `<div class="chat-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">chat/chat.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"de":"yo","texto":"Hola amor"}]</code></div>`;
+}
+
 // ── NAVIGATION ──
 let currentView = 'view-lock';
 
@@ -1783,9 +2067,11 @@ function goHome() {
   showView('view-home', 'backward');
 }
 function openApp(a) {
-  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', notes:'view-notes', gallery:'view-gallery' };
+  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', gallery:'view-gallery' };
   if (a === 'music') buildMusic();
   if (a === 'notes') buildNotes();
+  if (a === 'reasons') buildReasons();
+  if (a === 'chat') buildChat();
   if (map[a]) showView(map[a], 'forward');
 }
 
