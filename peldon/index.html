@@ -751,6 +751,145 @@ html,body{
   align-items:center;justify-content:center;gap:10px;
   color:var(--muted);font-size:.88rem;padding:20px;text-align:center;
 }
+
+
+/* ══ REASONS CARD REDESIGN ══ */
+.reasons-wrap{
+  flex:1;overflow:hidden;-webkit-overflow-scrolling:touch;
+  padding:18px 16px 22px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:
+    radial-gradient(ellipse at 25% 10%,rgba(192,51,85,.18),transparent 50%),
+    radial-gradient(ellipse at 80% 90%,rgba(107,18,40,.30),transparent 55%),
+    #0A0003;
+}
+.reason-click-hint{
+  color:rgba(255,240,244,.72);font-size:.86rem;font-weight:750;letter-spacing:.02em;
+  text-shadow:0 2px 14px rgba(192,51,85,.35);
+  animation:reasonHintPulse 1.6s ease-in-out infinite;
+}
+@keyframes reasonHintPulse{0%,100%{opacity:.58;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+.reason-stage{width:100%;max-width:310px;perspective:1000px;}
+.reason-flip{
+  width:100%;height:350px;position:relative;transform-style:preserve-3d;
+  transition:transform .72s cubic-bezier(.2,.8,.2,1);cursor:pointer;
+}
+.reason-flip.flipped{transform:rotateY(180deg);cursor:default;}
+.reason-side{
+  position:absolute;inset:0;border-radius:28px;backface-visibility:hidden;overflow:hidden;
+  border:1px solid rgba(255,240,244,.20);
+  box-shadow:0 28px 70px rgba(0,0,0,.58),0 0 0 1px rgba(192,51,85,.20),inset 0 1px 0 rgba(255,255,255,.16);
+}
+.reason-front{
+  background:
+    radial-gradient(circle at 24% 18%,rgba(255,190,210,.24),transparent 30%),
+    radial-gradient(circle at 75% 75%,rgba(192,51,85,.28),transparent 42%),
+    linear-gradient(150deg,#3A0010 0%,#1A0007 52%,#0A0003 100%);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+}
+.reason-front::before,.reason-front::after{
+  content:'';position:absolute;border:1px solid rgba(255,240,244,.16);border-radius:24px;inset:16px;pointer-events:none;
+}
+.reason-front::after{inset:29px;border-style:dashed;opacity:.55;}
+.reason-seal{
+  width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  box-shadow:0 12px 30px rgba(192,51,85,.48),inset 0 1px 0 rgba(255,255,255,.22);
+  animation:sealFloat 2.2s ease-in-out infinite;
+}
+@keyframes sealFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.reason-front-title{font-size:1.18rem;font-weight:900;color:var(--cream);letter-spacing:-.02em;}
+.reason-front-sub{font-size:.78rem;color:rgba(255,240,244,.56);font-weight:600;}
+.reason-back{
+  transform:rotateY(180deg);
+  background:
+    linear-gradient(135deg,rgba(255,240,244,.10),rgba(255,255,255,.035)),
+    radial-gradient(ellipse at 50% 0%,rgba(192,51,85,.25),transparent 55%),
+    #120005;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px 22px;
+}
+.reason-back-kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--rose-pale);margin-bottom:14px;}
+.reason-back-text{font-size:1.18rem;line-height:1.45;font-weight:750;color:var(--cream);}
+.reason-next-btn{
+  width:100%;max-width:310px;border:0;outline:0;border-radius:18px;padding:13px 16px;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  color:#fff;font-size:.9rem;font-weight:900;cursor:pointer;
+  box-shadow:0 9px 26px rgba(192,51,85,.40),inset 0 1px 0 rgba(255,255,255,.18);
+  transform:translateY(4px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+}
+.reason-next-btn.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+.reason-next-btn:active{transform:scale(.985)}
+
+/* ══ CHAT COMPOSER + SECRET + KEYBOARD ══ */
+#view-chat-detail,#view-secret-message{background:#0A0003;}
+.chat-thread{padding-bottom:10px;}
+.chat-composer,.secret-composer{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 10px 10px;
+  border-top:1px solid rgba(255,255,255,.07);
+  background:rgba(10,0,3,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.compose-field{
+  min-height:38px;flex:1;border-radius:19px;padding:9px 13px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,240,244,.13);
+  color:rgba(255,240,244,.92);font-size:.88rem;line-height:1.25;
+  display:flex;align-items:center;white-space:pre-wrap;word-break:break-word;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.25);
+}
+.compose-field.placeholder{color:rgba(255,240,244,.42);}
+.compose-send{
+  width:0;min-width:0;height:38px;border:0;outline:0;border-radius:19px;padding:0;overflow:hidden;opacity:0;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));color:#fff;font-weight:900;font-size:.78rem;
+  box-shadow:0 4px 15px rgba(192,51,85,.38);transition:width .22s,min-width .22s,padding .22s,opacity .18s;cursor:pointer;
+}
+.compose-send.show{width:58px;min-width:58px;padding:0 10px;opacity:1;}
+.compose-send:active{transform:scale(.94)}
+.secret-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;padding:18px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(192,51,85,.15),transparent 55%),#050002;
+}
+.secret-card{
+  width:100%;max-width:320px;border-radius:24px;padding:18px 16px 14px;
+  background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.14);
+  box-shadow:0 22px 60px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.secret-title{font-size:1.02rem;font-weight:900;color:var(--cream);line-height:1.35;margin-bottom:14px;text-align:center;}
+.secret-card .secret-composer{padding:0;border-top:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;}
+.ios-keyboard{
+  position:absolute;left:0;right:0;bottom:0;z-index:230;padding:9px 7px 10px;
+  background:linear-gradient(180deg,rgba(42,0,8,.97),rgba(12,0,4,.99));
+  border-top:1px solid rgba(255,240,244,.14);
+  box-shadow:0 -18px 50px rgba(0,0,0,.55);transform:translateY(105%);transition:transform .24s ease;
+}
+.ios-keyboard.open{transform:translateY(0);}
+.kb-row{display:flex;justify-content:center;gap:5px;margin-bottom:7px;}
+.kb-key{
+  min-width:27px;height:38px;border:0;outline:0;border-radius:8px;
+  background:linear-gradient(180deg,rgba(255,240,244,.18),rgba(255,255,255,.08));
+  color:var(--cream);font-size:.95rem;font-weight:700;
+  box-shadow:0 2px 0 rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.14);cursor:pointer;
+}
+.kb-key:active{transform:translateY(1px);background:rgba(255,240,244,.25)}
+.kb-wide{min-width:44px;font-size:.78rem;color:rgba(255,240,244,.86)}
+.kb-space{min-width:128px;font-size:.78rem;color:rgba(255,240,244,.80)}
+.kb-send{min-width:56px;background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));color:#fff;}
+.ios-banner{
+  position:absolute;top:42px;left:12px;right:12px;z-index:300;
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:19px;
+  background:rgba(38,5,16,.82);border:1px solid rgba(255,240,244,.18);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  box-shadow:0 16px 42px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.18);
+  transform:translateY(-130%);opacity:0;pointer-events:none;transition:transform .34s cubic-bezier(.2,.8,.2,1),opacity .25s;
+}
+.ios-banner.show{transform:translateY(0);opacity:1;}
+.banner-icon{
+  width:35px;height:35px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 35px;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));box-shadow:0 4px 14px rgba(192,51,85,.42);
+}
+.banner-copy{min-width:0;flex:1;}
+.banner-title{font-size:.76rem;font-weight:900;color:var(--cream);line-height:1.15;}
+.banner-body{font-size:.74rem;color:rgba(255,240,244,.78);line-height:1.25;margin-top:1px;}
+
 </style>
 </head>
 <body>
@@ -1164,7 +1303,7 @@ html,body{
       <!-- CHAT DETAIL -->
       <div class="phone-view hidden" id="view-chat-detail">
         <div class="app-nav">
-          <div class="back-btn" onclick="showView('view-chat-list','backward')">
+          <div class="back-btn" onclick="closeAppKeyboard();showView('view-chat-list','backward')">
             <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Chats
           </div>
@@ -1173,6 +1312,23 @@ html,body{
         </div>
         <div class="chat-thread" id="chat-thread">
           <!-- messages injected by JS -->
+        </div>
+        <div class="chat-composer">
+          <div class="compose-field placeholder" id="love-compose-field" onclick="openAppKeyboard('love')">Mensaje</div>
+          <button class="compose-send" id="love-send-btn" type="button" onclick="sendLoveMessage()">Enviar</button>
+        </div>
+      </div>
+
+      <!-- SECRET MESSAGE -->
+      <div class="phone-view hidden" id="view-secret-message">
+        <div class="secret-wrap">
+          <div class="secret-card">
+            <div class="secret-title">Manda un mensaje a pancracio desde aqui:</div>
+            <div class="secret-composer">
+              <div class="compose-field placeholder" id="secret-compose-field" onclick="openAppKeyboard('secret')">Escribe tu mensaje</div>
+              <button class="compose-send" id="secret-send-btn" type="button" onclick="sendSecretMessage()">Enviar</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1201,6 +1357,23 @@ html,body{
       </div>
 
     </div><!-- /phone-content -->
+
+    <div class="ios-banner" id="ios-banner">
+      <div class="banner-icon">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 5h16a2 2 0 012 2v8a2 2 0 01-2 2H8l-5 4V7a2 2 0 012-2z" fill="white" fill-opacity=".92"/></svg>
+      </div>
+      <div class="banner-copy">
+        <div class="banner-title" id="ios-banner-title">Mensajes</div>
+        <div class="banner-body" id="ios-banner-body"></div>
+      </div>
+    </div>
+
+    <div class="ios-keyboard" id="ios-keyboard" aria-hidden="true">
+      <div class="kb-row" id="kb-row-1"></div>
+      <div class="kb-row" id="kb-row-2"></div>
+      <div class="kb-row" id="kb-row-3"></div>
+      <div class="kb-row" id="kb-row-4"></div>
+    </div>
 
     <!-- ══ HOME BUTTON (classic iPhone 4 style) ══ -->
     <div class="home-indicator" id="home-indicator" onclick="homeButtonPress()">
@@ -1261,6 +1434,7 @@ function initPhone() {
   initViews();
   buildGrid();
   buildGallery();
+  buildKeyboard();
   tick();
   setInterval(tick, 1000);
 }
@@ -1879,11 +2053,14 @@ function notesBack() {
 }
 
 
+
 // ── REASONS ──
 const REASONS_PATH = 'razones/';
 const REASONS_MANIFEST = 'razones.json';
 let reasonsLoaded = false;
 let reasonsData = [];
+let currentReasonIndex = 0;
+let reasonIsOpen = false;
 
 function normalizeReasonItem(item) {
   if (typeof item === 'string') return item.trim();
@@ -1892,7 +2069,7 @@ function normalizeReasonItem(item) {
 }
 
 async function buildReasons(force=false) {
-  if (reasonsLoaded && !force) { renderReasons(); return; }
+  if (reasonsLoaded && !force) { renderReasonCard(false); return; }
   const wrap = document.getElementById('reasons-wrap');
   if (!wrap) return;
   wrap.className = 'reasons-empty';
@@ -1904,34 +2081,61 @@ async function buildReasons(force=false) {
     const raw = Array.isArray(data) ? data : (Array.isArray(data.razones) ? data.razones : []);
     reasonsData = raw.map(normalizeReasonItem).filter(Boolean);
     reasonsLoaded = true;
-    renderReasons();
+    currentReasonIndex = Math.floor(Math.random() * Math.max(reasonsData.length, 1));
+    renderReasonCard(false);
   } catch(e) {
     showReasonsEmpty();
   }
 }
 
-function renderReasons(featureIndex=null) {
+function renderReasonCard(open=false) {
   const wrap = document.getElementById('reasons-wrap');
   if (!wrap) return;
   if (!reasonsData.length) { showReasonsEmpty(); return; }
+  reasonIsOpen = open;
   wrap.className = 'reasons-wrap';
-  const index = featureIndex == null ? Math.floor(Math.random() * reasonsData.length) : featureIndex;
-  const featured = reasonsData[index] || reasonsData[0];
+  const reason = reasonsData[currentReasonIndex] || reasonsData[0];
   wrap.innerHTML = `
-    <div class="reason-feature">
-      <div class="reason-kicker">Una razón</div>
-      <div class="reason-feature-text">${inlineNoteMarkup(featured)}</div>
-      <button class="reason-random-btn" type="button" onclick="randomReason()">Ver otra razón</button>
+    <div class="reason-click-hint" id="reason-click-hint" style="${open ? 'visibility:hidden' : ''}">click aqui</div>
+    <div class="reason-stage">
+      <div class="reason-flip ${open ? 'flipped' : ''}" id="reason-flip" onclick="flipReasonCard()">
+        <div class="reason-side reason-front">
+          <div class="reason-seal">
+            <svg width="38" height="34" viewBox="0 0 48 44" fill="none"><path d="M24 40S4 26 4 14a10 10 0 0118-6 10 10 0 0118 6c0 12-20 26-20 26z" fill="white" fill-opacity=".92"/></svg>
+          </div>
+          <div class="reason-front-title">Una razón para ti</div>
+          <div class="reason-front-sub">toca la tarjeta para abrirla</div>
+        </div>
+        <div class="reason-side reason-back">
+          <div class="reason-back-kicker">porque te amo</div>
+          <div class="reason-back-text">${inlineNoteMarkup(reason)}</div>
+        </div>
+      </div>
     </div>
-    <div class="reason-list">
-      ${reasonsData.map((r,i)=>`<div class="reason-card"><div class="reason-num">${i+1}</div><div class="reason-text">${inlineNoteMarkup(r)}</div></div>`).join('')}
-    </div>
+    <button class="reason-next-btn ${open ? 'visible' : ''}" id="reason-next-btn" type="button" onclick="nextReason(event)">Ver otra razon</button>
   `;
 }
 
-function randomReason() {
+function flipReasonCard() {
+  if (reasonIsOpen) return;
+  reasonIsOpen = true;
+  const card = document.getElementById('reason-flip');
+  const hint = document.getElementById('reason-click-hint');
+  const btn = document.getElementById('reason-next-btn');
+  if (card) card.classList.add('flipped');
+  if (hint) hint.style.visibility = 'hidden';
+  setTimeout(() => { if (btn) btn.classList.add('visible'); }, 360);
+}
+
+function nextReason(ev) {
+  if (ev) ev.stopPropagation();
   if (!reasonsData.length) return;
-  renderReasons(Math.floor(Math.random() * reasonsData.length));
+  if (reasonsData.length > 1) {
+    let next = currentReasonIndex;
+    while (next === currentReasonIndex) next = Math.floor(Math.random() * reasonsData.length);
+    currentReasonIndex = next;
+  }
+  renderReasonCard(false);
 }
 
 function showReasonsEmpty() {
@@ -1944,8 +2148,13 @@ function showReasonsEmpty() {
 // ── CHAT ──
 const CHAT_PATH = 'chat/';
 const CHAT_MANIFEST = 'chat.json';
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1515139827685916682/h-LKS3YI_ETqciTrKWC-KP_dkyenYJCnMdeyiQkoaay-vjLKnP1Y8owUsWRbFuAKzRKg';
+const DISCORD_MENTION = '<@1307562402958676048>';
 let chatLoaded = false;
 let chatMessages = [];
+let keyboardTarget = null;
+let keyboardValues = { love:'', secret:'' };
+let bannerTimer = null;
 
 function normalizeChatMessage(item) {
   if (typeof item === 'string') return { from:'me', text:item.trim() };
@@ -1961,7 +2170,7 @@ async function buildChat(force=false) {
   if (chatLoaded && !force) { renderChatList(); return; }
   const list = document.getElementById('chat-list');
   if (!list) return;
-  list.innerHTML = `<div class="chat-empty">Cargando chat…</div>`;
+  list.innerHTML = `<div class="chat-empty">Cargando chats…</div>`;
   try {
     const res = await fetch(joinPath(CHAT_PATH, CHAT_MANIFEST), { cache:'force-cache' });
     if (!res.ok) throw new Error('No chat manifest');
@@ -1971,16 +2180,17 @@ async function buildChat(force=false) {
     chatLoaded = true;
     renderChatList();
   } catch(e) {
-    showChatEmpty();
+    chatMessages = [];
+    chatLoaded = true;
+    renderChatList();
   }
 }
 
 function renderChatList() {
   const list = document.getElementById('chat-list');
   if (!list) return;
-  if (!chatMessages.length) { showChatEmpty(); return; }
   const last = chatMessages[chatMessages.length - 1];
-  const preview = plainNoteText(last.text).slice(0, 70) || 'Toca para ver la conversación';
+  const preview = last ? (plainNoteText(last.text).slice(0, 70) || 'Toca para ver la conversación') : 'Toca para ver la conversación';
   list.innerHTML = `
     <div class="chat-row" onclick="openLoveChat()">
       <div class="chat-avatar"><img src="pfp.png" alt="Mi Amor" onerror="this.style.display='none'"></div>
@@ -1990,11 +2200,23 @@ function renderChatList() {
       </div>
       <div class="chat-chevron">›</div>
     </div>
+    <div style="height:8px"></div>
+    <div class="chat-row" onclick="openSecretChat()">
+      <div class="chat-avatar">
+        <svg width="25" height="25" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.5 6 6.5.5-5 4.2 1.5 6.3L12 15.6 6.5 19 8 12.7l-5-4.2L9.5 8 12 2z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <div class="chat-meta">
+        <div class="chat-name">Secreto</div>
+        <div class="chat-preview">Da click aqui</div>
+      </div>
+      <div class="chat-chevron">›</div>
+    </div>
   `;
 }
 
 function openLoveChat() {
   renderChatThread();
+  updateKeyboardField('love');
   showView('view-chat-detail','forward');
 }
 
@@ -2006,12 +2228,131 @@ function renderChatThread() {
   requestAnimationFrame(() => { thread.scrollTop = thread.scrollHeight; });
 }
 
-function showChatEmpty() {
-  const list = document.getElementById('chat-list');
-  if (!list) return;
-  list.innerHTML = `<div class="chat-empty">No pude cargar <b style="color:rgba(255,190,210,.8)">chat/chat.json</b>.<br><br>Ejemplo:<br><code style="font-size:.72rem;color:rgba(255,255,255,.65)">[{"de":"yo","texto":"Hola amor"}]</code></div>`;
+function openSecretChat() {
+  keyboardValues.secret = '';
+  updateKeyboardField('secret');
+  closeAppKeyboard();
+  showView('view-secret-message','forward');
 }
 
+function showAppNotification(message, title='Mensajes') {
+  const banner = document.getElementById('ios-banner');
+  const t = document.getElementById('ios-banner-title');
+  const b = document.getElementById('ios-banner-body');
+  if (!banner || !t || !b) return;
+  clearTimeout(bannerTimer);
+  t.textContent = title;
+  b.textContent = message;
+  banner.classList.add('show');
+  bannerTimer = setTimeout(() => banner.classList.remove('show'), 3200);
+}
+
+function buildKeyboard() {
+  const rows = [
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l','ñ'],
+    ['z','x','c','v','b','n','m'],
+  ];
+  rows.forEach((row, idx) => {
+    const el = document.getElementById(`kb-row-${idx+1}`);
+    if (!el) return;
+    el.innerHTML = row.map(k => `<button class="kb-key" type="button" onclick="keyboardType('${k}')">${k}</button>`).join('');
+  });
+  const row4 = document.getElementById('kb-row-4');
+  if (row4) {
+    row4.innerHTML = `
+      <button class="kb-key kb-wide" type="button" onclick="keyboardBackspace()">⌫</button>
+      <button class="kb-key kb-space" type="button" onclick="keyboardType(' ')">espacio</button>
+      <button class="kb-key kb-wide" type="button" onclick="keyboardType('.')">.</button>
+      <button class="kb-key kb-send" type="button" onclick="keyboardSend()">enviar</button>
+    `;
+  }
+}
+
+function openAppKeyboard(target) {
+  keyboardTarget = target;
+  const kb = document.getElementById('ios-keyboard');
+  if (kb) {
+    kb.classList.add('open');
+    kb.setAttribute('aria-hidden','false');
+  }
+  updateKeyboardField(target);
+}
+
+function closeAppKeyboard() {
+  keyboardTarget = null;
+  const kb = document.getElementById('ios-keyboard');
+  if (kb) {
+    kb.classList.remove('open');
+    kb.setAttribute('aria-hidden','true');
+  }
+}
+
+function keyboardType(ch) {
+  if (!keyboardTarget) return;
+  keyboardValues[keyboardTarget] = (keyboardValues[keyboardTarget] || '') + ch;
+  updateKeyboardField(keyboardTarget);
+}
+
+function keyboardBackspace() {
+  if (!keyboardTarget) return;
+  keyboardValues[keyboardTarget] = (keyboardValues[keyboardTarget] || '').slice(0, -1);
+  updateKeyboardField(keyboardTarget);
+}
+
+function updateKeyboardField(target) {
+  const field = document.getElementById(target === 'secret' ? 'secret-compose-field' : 'love-compose-field');
+  const btn = document.getElementById(target === 'secret' ? 'secret-send-btn' : 'love-send-btn');
+  if (!field || !btn) return;
+  const val = keyboardValues[target] || '';
+  const hasText = val.trim().length > 0;
+  field.textContent = val || (target === 'secret' ? 'Escribe tu mensaje' : 'Mensaje');
+  field.classList.toggle('placeholder', !val);
+  btn.classList.toggle('show', hasText);
+}
+
+function keyboardSend() {
+  if (keyboardTarget === 'secret') sendSecretMessage();
+  else if (keyboardTarget === 'love') sendLoveMessage();
+}
+
+function sendLoveMessage() {
+  if (!(keyboardValues.love || '').trim()) return;
+  keyboardValues.love = '';
+  updateKeyboardField('love');
+  closeAppKeyboard();
+  showAppNotification('Mi Amor no puede recibir mensajes.', 'Mi Amor');
+}
+
+async function sendSecretMessage() {
+  const text = (keyboardValues.secret || '').trim();
+  if (!text) return;
+  const payload = {
+    content: DISCORD_MENTION,
+    embeds: [{
+      title: 'Mensaje secreto a Pancracio',
+      description: text.slice(0, 3900),
+      color: 12590650,
+      timestamp: new Date().toISOString()
+    }]
+  };
+  try {
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body:JSON.stringify(payload)
+    });
+    keyboardValues.secret = '';
+    updateKeyboardField('secret');
+    closeAppKeyboard();
+    showView('view-home','backward');
+    showAppNotification('Mensaje enviado correctamente :p', 'Secreto');
+  } catch(e) {
+    showAppNotification('No se pudo enviar el mensaje.', 'Secreto');
+  }
+}
+
+function showChatEmpty() { renderChatList(); }
 // ── NAVIGATION ──
 let currentView = 'view-lock';
 
@@ -2062,12 +2403,13 @@ function showView(to, dir) {
 
 function unlockPhone() { showView('view-home', 'forward'); }
 function goHome() {
+  closeAppKeyboard();
   if (currentView === 'view-music') stopAndResetMusic();
   if (currentView === 'view-notes') showNotesList();
   showView('view-home', 'backward');
 }
 function openApp(a) {
-  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', gallery:'view-gallery' };
+  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', secret:'view-secret-message', gallery:'view-gallery' };
   if (a === 'music') buildMusic();
   if (a === 'notes') buildNotes();
   if (a === 'reasons') buildReasons();
