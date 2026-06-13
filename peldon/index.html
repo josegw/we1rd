@@ -1176,6 +1176,229 @@ html,body{
 }
 .compose-send.show{width:54px !important;min-width:54px !important;padding:0 8px !important;}
 
+
+
+/* ══ ULTRA FIX: Razones como SOBRE real + sin elementos tapando el reverso ══ */
+#view-reasons .reasons-wrap{
+  justify-content:center !important;
+  gap:12px !important;
+  padding:16px 16px 22px !important;
+}
+#view-reasons .reason-click-hint{
+  margin-bottom:2px !important;
+  color:rgba(255,240,244,.66) !important;
+  font-size:.88rem !important;
+  font-weight:850 !important;
+  letter-spacing:.01em !important;
+}
+#view-reasons .reason-stage{
+  width:100% !important;
+  max-width:318px !important;
+  perspective:1200px !important;
+}
+#view-reasons .reason-flip{
+  height:356px !important;
+  transform-style:preserve-3d !important;
+  will-change:transform !important;
+}
+#view-reasons .reason-side{
+  border-radius:32px !important;
+  -webkit-backface-visibility:hidden !important;
+  backface-visibility:hidden !important;
+  transform-style:preserve-3d !important;
+  overflow:hidden !important;
+}
+
+/* Frente: ahora sí parece un sobre, no regalo/caja */
+#view-reasons .reason-front{
+  background:linear-gradient(180deg,#fff8fa 0%,#f8e4eb 58%,#f2cbd8 100%) !important;
+  border:1px solid rgba(255,240,244,.80) !important;
+  box-shadow:
+    0 30px 72px rgba(0,0,0,.62),
+    0 0 0 1px rgba(192,51,85,.18),
+    inset 0 1px 0 rgba(255,255,255,.96) !important;
+}
+#view-reasons .reason-envelope-art{
+  position:absolute !important;
+  inset:14px !important;
+  border-radius:27px !important;
+  overflow:hidden !important;
+  background:
+    radial-gradient(circle at 50% 18%,rgba(255,255,255,.85),transparent 30%),
+    linear-gradient(180deg,#fffdfd 0%,#f8e5ec 100%) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(120,34,54,.13),
+    inset 0 0 0 12px rgba(255,255,255,.35),
+    inset 0 -34px 60px rgba(225,128,158,.14) !important;
+}
+#view-reasons .reason-envelope-art::before{
+  content:'' !important;
+  position:absolute !important;
+  inset:18px !important;
+  border-radius:22px !important;
+  border:1px solid rgba(188,96,120,.22) !important;
+  pointer-events:none !important;
+  z-index:10 !important;
+}
+#view-reasons .reason-envelope-art::after{
+  content:'' !important;
+  position:absolute !important;
+  left:32px !important;
+  right:32px !important;
+  top:80px !important;
+  height:125px !important;
+  background:
+    linear-gradient(148deg,transparent 49.3%,rgba(188,96,120,.24) 50%,transparent 50.7%),
+    linear-gradient(32deg,transparent 49.3%,rgba(188,96,120,.24) 50%,transparent 50.7%) !important;
+  opacity:.7 !important;
+  z-index:4 !important;
+  pointer-events:none !important;
+}
+
+/* Partes del sobre */
+#view-reasons .reason-envelope-flap{
+  position:absolute !important;
+  left:28px !important;
+  right:28px !important;
+  top:66px !important;
+  bottom:auto !important;
+  height:142px !important;
+  clip-path:polygon(0 0,50% 74%,100% 0,100% 100%,0 100%) !important;
+  background:linear-gradient(180deg,#fffefe 0%,#f3d4dd 100%) !important;
+  filter:none !important;
+  box-shadow:0 9px 18px rgba(145,58,80,.09) !important;
+  z-index:3 !important;
+}
+#view-reasons .reason-envelope-body{
+  position:absolute !important;
+  left:28px !important;
+  right:28px !important;
+  bottom:34px !important;
+  height:145px !important;
+  clip-path:polygon(0 0,50% 45%,100% 0,100% 100%,0 100%) !important;
+  background:linear-gradient(180deg,#fffafa 0%,#f5d8e1 100%) !important;
+  box-shadow:0 -1px 0 rgba(188,96,120,.18),0 12px 24px rgba(120,38,60,.11) !important;
+  z-index:5 !important;
+}
+#view-reasons .reason-envelope-side-left,
+#view-reasons .reason-envelope-side-right{
+  position:absolute !important;
+  bottom:34px !important;
+  width:50% !important;
+  height:145px !important;
+  background:linear-gradient(145deg,#fff4f7 0%,#ecc2cf 100%) !important;
+  z-index:6 !important;
+  opacity:.96 !important;
+}
+#view-reasons .reason-envelope-side-left{
+  left:28px !important;
+  clip-path:polygon(0 0,100% 50%,0 100%) !important;
+}
+#view-reasons .reason-envelope-side-right{
+  right:28px !important;
+  clip-path:polygon(100% 0,0 50%,100% 100%) !important;
+}
+
+/* Quitamos listones/moño porque hacían que pareciera caja y tapaban la vuelta */
+#view-reasons .reason-ribbon-x,
+#view-reasons .reason-ribbon-y,
+#view-reasons .reason-bow,
+#view-reasons .reason-bow-knot{
+  display:none !important;
+}
+#view-reasons .reason-flower{
+  top:42px !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  z-index:7 !important;
+  opacity:.86 !important;
+}
+#view-reasons .reason-wax{
+  width:52px !important;
+  height:52px !important;
+  left:auto !important;
+  right:48px !important;
+  bottom:73px !important;
+  transform:rotate(-7deg) !important;
+  z-index:9 !important;
+  border-radius:16px !important;
+  background:linear-gradient(145deg,#e58ca5 0%,#bc365f 100%) !important;
+  box-shadow:0 9px 18px rgba(120,24,52,.26),inset 0 1px 0 rgba(255,255,255,.34) !important;
+  color:white !important;
+  font-size:1.55rem !important;
+}
+#view-reasons .reason-wax::before{
+  inset:7px !important;
+  border-radius:12px !important;
+  border:1px dashed rgba(255,255,255,.55) !important;
+}
+
+/* Reverso: una tarjeta limpia, sin el frente encima */
+#view-reasons .reason-flip.flipped .reason-front{
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+#view-reasons .reason-back{
+  z-index:2 !important;
+  transform:rotateY(180deg) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:34px 26px !important;
+  text-align:center !important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.34)),
+    linear-gradient(145deg,#fff7fa 0%,#f4d8e1 100%) !important;
+  border:1px solid rgba(255,240,244,.80) !important;
+  box-shadow:0 30px 72px rgba(0,0,0,.62),inset 0 0 0 14px rgba(255,255,255,.24) !important;
+}
+#view-reasons .reason-back::before{
+  content:'' !important;
+  position:absolute !important;
+  inset:24px !important;
+  border:1px solid rgba(158,30,58,.18) !important;
+  border-radius:24px !important;
+  pointer-events:none !important;
+}
+#view-reasons .reason-back::after{
+  content:'♡' !important;
+  position:absolute !important;
+  bottom:22px !important;
+  right:28px !important;
+  color:rgba(158,30,58,.18) !important;
+  font-size:2.2rem !important;
+  font-weight:900 !important;
+}
+#view-reasons .reason-back-kicker{
+  position:relative !important;
+  z-index:2 !important;
+  margin:0 0 18px !important;
+  color:#9E1E3A !important;
+  letter-spacing:.18em !important;
+  font-size:.72rem !important;
+  font-weight:950 !important;
+}
+#view-reasons .reason-back-text{
+  position:relative !important;
+  z-index:2 !important;
+  width:100% !important;
+  max-height:210px !important;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+  color:#4b1323 !important;
+  font-size:1.02rem !important;
+  line-height:1.42 !important;
+  font-weight:760 !important;
+  overflow-wrap:anywhere !important;
+}
+#view-reasons .reason-next-btn{
+  max-width:310px !important;
+  margin-top:2px !important;
+  border-radius:18px !important;
+}
+
 </style>
 </head>
 <body>
@@ -2600,12 +2823,8 @@ function buildKeyboard() {
       else if (action === 'shift') { keyboardShift = !keyboardShift; buildKeyboard(); }
       else if (action === 'mode') { keyboardMode = value || 'letters'; keyboardShift = false; buildKeyboard(); }
     };
-    if (window.PointerEvent) {
-      kb.addEventListener('pointerdown', press, {passive:false});
-    } else {
-      kb.addEventListener('touchstart', press, {passive:false});
-      kb.addEventListener('mousedown', press, {passive:false});
-    }
+    kb.addEventListener('pointerdown', press, {passive:false});
+    kb.addEventListener('touchstart', press, {passive:false});
   }
 }
 
