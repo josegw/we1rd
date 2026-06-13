@@ -1330,7 +1330,7 @@ html,body{
 .kb-key{touch-action:none !important;}
 
 
-/* ══ Voz: app Notas de voz recuperada ══ */
+/* ══ APP NOTAS DE VOZ ══ */
 .ic-voice{background:linear-gradient(145deg,#8d1e42,#591126);}
 #view-voice-notes{background:#0A0003;}
 .voice-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 26px;display:flex;flex-direction:column;gap:12px;}
@@ -1348,10 +1348,6 @@ html,body{
 .voice-seek::-moz-range-thumb{width:16px;height:16px;border:none;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.35);}
 .voice-time{font-size:.72rem;color:var(--rose-pale);font-variant-numeric:tabular-nums;font-weight:600;min-width:78px;text-align:right;}
 .voice-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;text-align:center;line-height:1.6;padding:22px;}
-
-
-
-/* ══ Teclado responsivo: hitbox extendida y cero selección accidental ══ */
 .ios-keyboard{touch-action:none !important;user-select:none !important;-webkit-user-select:none !important;-webkit-touch-callout:none !important;}
 .kb-key{touch-action:manipulation !important;user-select:none !important;-webkit-user-select:none !important;-webkit-touch-callout:none !important;cursor:pointer !important;}
 .kb-key *{pointer-events:none !important;}
@@ -1716,6 +1712,21 @@ html,body{
         </div>
       </div>
 
+      <!-- VOICE NOTES -->
+      <div class="phone-view hidden" id="view-voice-notes">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Notas de voz</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="voice-list" id="voice-list">
+          <!-- voice notes injected by JS -->
+        </div>
+      </div>
+
       <!-- NOTES -->
       <div class="phone-view hidden" id="view-notes">
         <div class="app-nav">
@@ -1921,7 +1932,7 @@ function buildGrid() {
   if (!grid) return;
   const apps = [
     { cls:'ic-music',   label:'Música',  action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
-    { cls:'ic-voice',   label:'Notas de voz', action:'voice',   svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="4.5" width="8" height="12" rx="4" fill="white" fill-opacity=".92"/><path d="M7.5 12.5a6.5 6.5 0 0013 0" stroke="white" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M14 18v3.2" stroke="white" stroke-opacity=".88" stroke-width="1.7" stroke-linecap="round"/><path d="M10.5 22.5h7" stroke="white" stroke-opacity=".65" stroke-width="1.7" stroke-linecap="round"/><path d="M19.5 8.3c1.3.4 2.2 1.5 2.2 3.2 0 1.7-.9 2.8-2.2 3.2" stroke="rgba(255,255,255,.56)" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
+    { cls:'ic-voice',   label:'Notas de voz', action:'voice',      svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="4.5" width="8" height="12" rx="4" fill="white" fill-opacity=".92"/><path d="M7.5 12.5a6.5 6.5 0 0013 0" stroke="white" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M14 18v3.2" stroke="white" stroke-opacity=".88" stroke-width="1.7" stroke-linecap="round"/><path d="M10.5 22.5h7" stroke="white" stroke-opacity=".65" stroke-width="1.7" stroke-linecap="round"/><path d="M19.5 8.3c1.3.4 2.2 1.5 2.2 3.2 0 1.7-.9 2.8-2.2 3.2" stroke="rgba(255,255,255,.56)" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
     { cls:'ic-notes',   label:'Notas',   action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
     { cls:'ic-reasons', label:'Razones', action:'reasons',    svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S5 18 5 10.5A5.3 5.3 0 0114 6a5.3 5.3 0 019 4.5C23 18 14 24 14 24z" fill="white" fill-opacity=".9"/><path d="M14 9v6" stroke="rgba(183,42,82,.75)" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="18.5" r="1.2" fill="rgba(183,42,82,.75)"/></svg>` },
     { cls:'ic-chat',    label:'Chat',    action:'chat',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 5h18a2.5 2.5 0 012.5 2.5v9A2.5 2.5 0 0123 19H11l-6 5v-5.5A2.5 2.5 0 012.5 16V7.5A2.5 2.5 0 015 5z" fill="white" fill-opacity=".9"/><path d="M8 10.5h12M8 14.5h8" stroke="rgba(27,139,72,.72)" stroke-width="1.7" stroke-linecap="round"/></svg>` },
@@ -2683,7 +2694,7 @@ function stopAndResetVoiceNotes() {
   currentVoiceIndex = -1;
 }
 
-REASONS_PATH = 'razones/';
+const REASONS_PATH = 'razones/';
 const REASONS_MANIFEST = 'razones.json';
 let reasonsLoaded = false;
 let reasonsData = [];
@@ -2919,42 +2930,38 @@ function buildKeyboard() {
 
   if (!kb.dataset.bound) {
     kb.dataset.bound = '1';
-    let lastGhostKey = '';
-    let lastGhostTime = 0;
+    let lastKeyHit = '';
+    let lastKeyTime = 0;
 
-    const getKeyFromPoint = (x, y) => {
-      const direct = document.elementFromPoint(x, y);
-      let key = direct && direct.closest ? direct.closest('.kb-key') : null;
-      if (key) return key;
-
-      // Área táctil extendida: ayuda cuando se escribe rápido y se toca el borde/gap.
+    const nearestKey = (x, y) => {
+      const keys = Array.from(kb.querySelectorAll('.kb-key'));
       let best = null;
       let bestDist = Infinity;
-      document.querySelectorAll('#ios-keyboard .kb-key').forEach(k => {
-        const r = k.getBoundingClientRect();
-        const pad = 9;
-        if (x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad) {
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          const d = Math.hypot(x - cx, y - cy);
-          if (d < bestDist) { bestDist = d; best = k; }
-        }
-      });
-      return best;
+      for (const key of keys) {
+        const r = key.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const dx = Math.max(Math.abs(x - cx) - r.width * 0.62, 0);
+        const dy = Math.max(Math.abs(y - cy) - r.height * 0.78, 0);
+        const d = dx * dx + dy * dy;
+        if (d < bestDist) { bestDist = d; best = key; }
+      }
+      return bestDist <= 900 ? best : null;
     };
 
-    const processKey = (key, ev) => {
+    const handleKeyPress = (key, ev, x, y) => {
+      if (!key && Number.isFinite(x) && Number.isFinite(y)) key = nearestKey(x, y);
       if (!key) return;
       if (ev) { ev.preventDefault(); ev.stopPropagation(); }
 
       const now = performance.now();
-      const ghostId = (key.dataset.action || '') + '|' + (key.dataset.value || '') + '|' + key.textContent;
-      if (ghostId === lastGhostKey && now - lastGhostTime < 14) return;
-      lastGhostKey = ghostId;
-      lastGhostTime = now;
+      const keyId = (key.dataset.action || '') + '|' + (key.dataset.value || '') + '|' + key.textContent;
+      if (keyId === lastKeyHit && now - lastKeyTime < 30) return;
+      lastKeyHit = keyId;
+      lastKeyTime = now;
 
       key.classList.add('pressed');
-      window.setTimeout(() => key.classList.remove('pressed'), 55);
+      window.setTimeout(() => key.classList.remove('pressed'), 48);
 
       const action = key.dataset.action;
       const value = key.dataset.value || '';
@@ -2964,21 +2971,22 @@ function buildKeyboard() {
       else if (action === 'mode') { keyboardMode = value || 'letters'; keyboardShift = false; buildKeyboard(); }
     };
 
-    const pointerHandler = (ev) => {
-      const key = getKeyFromPoint(ev.clientX, ev.clientY);
-      processKey(key, ev);
-    };
-
-    const touchHandler = (ev) => {
-      const t = ev.changedTouches && ev.changedTouches[0];
-      const key = t ? getKeyFromPoint(t.clientX, t.clientY) : null;
-      processKey(key, ev);
-    };
-
     if (window.PointerEvent) {
-      kb.addEventListener('pointerdown', pointerHandler, {passive:false, capture:true});
+      kb.addEventListener('pointerdown', (ev) => {
+        const key = ev.target.closest('.kb-key');
+        handleKeyPress(key, ev, ev.clientX, ev.clientY);
+      }, {passive:false});
     } else {
-      kb.addEventListener('touchstart', touchHandler, {passive:false, capture:true});
+      kb.addEventListener('touchstart', (ev) => {
+        const touch = ev.changedTouches && ev.changedTouches[0];
+        const target = touch ? document.elementFromPoint(touch.clientX, touch.clientY) : ev.target;
+        const key = target && target.closest ? target.closest('.kb-key') : null;
+        handleKeyPress(key, ev, touch ? touch.clientX : NaN, touch ? touch.clientY : NaN);
+      }, {passive:false});
+      kb.addEventListener('mousedown', (ev) => {
+        const key = ev.target.closest('.kb-key');
+        handleKeyPress(key, ev, ev.clientX, ev.clientY);
+      }, {passive:false});
     }
   }
 }
