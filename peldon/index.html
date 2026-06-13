@@ -1016,6 +1016,166 @@ html,body{
 .ios-alert-ok:active{background:rgba(158,30,58,.10);}
 .ios-banner{display:none !important;}
 
+
+
+/* ══ FINAL FIX: tarjeta de razones alineada + teclado iPhone responsivo ══ */
+:root{ --app-kb-h: 218px; }
+.reason-stage{max-width:320px !important;}
+.reason-flip{height:370px !important;}
+.reason-front{
+  background:
+    radial-gradient(circle at 50% 14%,rgba(255,255,255,.45),transparent 25%),
+    linear-gradient(145deg,#fff8fa 0%,#f7dce4 48%,#edb8c8 100%) !important;
+  display:block !important;
+}
+.reason-envelope-art{
+  inset:12px !important;
+  border-radius:26px !important;
+  background:
+    radial-gradient(circle at 50% 8%,rgba(255,255,255,.65),transparent 18%),
+    linear-gradient(180deg,#fffafb 0%,#f6e0e7 100%);
+  box-shadow:inset 0 0 0 1px rgba(130,45,64,.10), inset 0 18px 42px rgba(255,255,255,.45);
+}
+.reason-flower{
+  top:42px !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  opacity:.92 !important;
+}
+.reason-envelope-flap{
+  left:18px !important;right:18px !important;bottom:90px !important;height:142px !important;
+  background:linear-gradient(160deg,#fffefe 0%,#f2ced8 100%) !important;
+  clip-path:polygon(0 0,50% 77%,100% 0,100% 100%,0 100%) !important;
+  filter:drop-shadow(0 4px 6px rgba(120,45,60,.10));
+}
+.reason-envelope-body{
+  left:18px !important;right:18px !important;bottom:28px !important;height:166px !important;
+  background:linear-gradient(180deg,#fffefe 0%,#f3d4dd 100%) !important;
+  clip-path:polygon(0 0,50% 49%,100% 0,100% 100%,0 100%) !important;
+  box-shadow:0 12px 28px rgba(105,35,55,.13);
+}
+.reason-envelope-side-left,.reason-envelope-side-right{
+  bottom:28px !important;height:166px !important;width:50% !important;
+  background:linear-gradient(145deg,#f8e4ea 0%,#ebc5d0 100%) !important;
+}
+.reason-envelope-side-left{left:18px !important;clip-path:polygon(0 0,100% 50%,0 100%) !important;}
+.reason-envelope-side-right{right:18px !important;clip-path:polygon(100% 0,0 50%,100% 100%) !important;}
+.reason-ribbon-x,.reason-ribbon-y{
+  z-index:5 !important;
+  background:linear-gradient(90deg,#cf6685 0%,#f2a8ba 50%,#c95477 100%) !important;
+  box-shadow:0 7px 18px rgba(150,36,72,.18),inset 0 1px 0 rgba(255,255,255,.40) !important;
+}
+.reason-ribbon-x{
+  left:0 !important;right:0 !important;top:176px !important;height:24px !important;
+  transform:none !important;
+}
+.reason-ribbon-y{
+  width:24px !important;top:0 !important;bottom:0 !important;left:50% !important;
+  transform:translateX(-50%) !important;
+}
+.reason-bow{
+  z-index:7 !important;
+  top:146px !important;left:50% !important;width:118px !important;height:58px !important;
+  transform:translateX(-50%) !important;
+  animation:bowFloatAligned 2.5s ease-in-out infinite !important;
+}
+@keyframes bowFloatAligned{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+.reason-bow::before,.reason-bow::after{
+  border-color:#dd7896 !important;
+  background:rgba(240,166,186,.18) !important;
+}
+.reason-bow::before{left:1px !important;transform:rotate(16deg) !important;}
+.reason-bow::after{right:1px !important;transform:rotate(-16deg) !important;}
+.reason-bow-knot{top:22px !important;}
+.reason-wax{
+  z-index:8 !important;
+  left:50% !important;bottom:82px !important;
+  transform:translateX(-50%) !important;
+  border-radius:18px !important;
+}
+
+.ios-keyboard{
+  height:var(--app-kb-h) !important;
+  box-sizing:border-box !important;
+  padding:8px 5px 9px !important;
+  background:linear-gradient(180deg,rgba(88,18,36,.98) 0%,rgba(42,0,12,.99) 52%,rgba(16,0,5,.995) 100%) !important;
+  border-top:1px solid rgba(255,240,244,.18) !important;
+  box-shadow:0 -16px 46px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.08) !important;
+  touch-action:none !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+}
+.ios-keyboard.open{transform:translateY(0) !important;}
+.kb-row{
+  display:flex !important;
+  justify-content:center !important;
+  gap:5px !important;
+  margin-bottom:6px !important;
+  width:100% !important;
+}
+#kb-row-2{padding:0 13px !important;box-sizing:border-box !important;}
+#kb-row-4{margin-top:2px !important;margin-bottom:0 !important;}
+.kb-key{
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  height:40px !important;
+  border:0 !important;
+  border-radius:7px !important;
+  background:linear-gradient(180deg,#fff7fa 0%,#ead2db 100%) !important;
+  color:#190006 !important;
+  font-size:1.08rem !important;
+  font-weight:500 !important;
+  line-height:40px !important;
+  text-align:center !important;
+  padding:0 !important;
+  box-shadow:0 2px 0 rgba(0,0,0,.46),0 4px 9px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.75) !important;
+  -webkit-tap-highlight-color:transparent !important;
+  touch-action:manipulation !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+}
+.kb-key:active,.kb-key.pressed{
+  transform:translateY(1px) !important;
+  background:linear-gradient(180deg,#f4dce5 0%,#d7a9b8 100%) !important;
+}
+.kb-special{
+  flex:1.28 1 0 !important;
+  background:linear-gradient(180deg,rgba(255,240,244,.35),rgba(255,240,244,.20)) !important;
+  color:rgba(255,240,244,.96) !important;
+  font-size:.92rem !important;
+  font-weight:760 !important;
+  box-shadow:0 2px 0 rgba(0,0,0,.50),0 4px 9px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+.kb-special.active{
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light)) !important;
+  color:#fff !important;
+}
+.kb-space{
+  flex:3.7 1 0 !important;
+  font-size:.93rem !important;
+  font-weight:520 !important;
+}
+.kb-return,.kb-nums{flex:1.38 1 0 !important;font-size:.82rem !important;}
+.chat-composer,.secret-composer{
+  position:relative !important;
+  z-index:240 !important;
+  transition:transform .22s ease, box-shadow .22s ease !important;
+}
+.chat-composer.keyboard-open{
+  margin-bottom:0 !important;
+  transform:translateY(calc(-1 * var(--app-kb-h))) !important;
+  box-shadow:0 -8px 24px rgba(0,0,0,.22) !important;
+}
+.secret-card.keyboard-open{transform:translateY(-104px) !important;}
+.secret-composer.keyboard-open{transform:none !important;margin-bottom:0 !important;}
+.compose-field{
+  min-height:37px !important;
+  max-height:72px !important;
+  overflow-y:auto !important;
+  align-items:center !important;
+}
+.compose-send.show{width:54px !important;min-width:54px !important;padding:0 8px !important;}
+
 </style>
 </head>
 <body>
@@ -2396,30 +2556,64 @@ function closeAppNotification() {
   const modal = document.getElementById('ios-alert-backdrop');
   if (modal) modal.classList.remove('show');
 }
+let keyboardMode = 'letters';
+let keyboardShift = false;
+
+function keyboardButton(label, action, value='', extraClass='') {
+  const safeLabel = escapeHTML(label);
+  const safeValue = String(value).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<button class="kb-key ${extraClass}" type="button" data-action="${action}" data-value="${safeValue}">${safeLabel}</button>`;
+}
+
 function buildKeyboard() {
-  const rows = [
-    ['q','w','e','r','t','y','u','i','o','p'],
-    ['a','s','d','f','g','h','j','k','l','ñ'],
-    ['z','x','c','v','b','n','m'],
-  ];
-  rows.forEach((row, idx) => {
-    const el = document.getElementById(`kb-row-${idx+1}`);
-    if (!el) return;
-    el.innerHTML = row.map(k => `<button class="kb-key" type="button" onclick="keyboardType('${k}')">${k}</button>`).join('');
-  });
-  const row4 = document.getElementById('kb-row-4');
-  if (row4) {
-    row4.innerHTML = `
-      <button class="kb-key kb-wide" type="button" onclick="keyboardBackspace()">⌫</button>
-      <button class="kb-key kb-space" type="button" onclick="keyboardType(' ')">espacio</button>
-      <button class="kb-key kb-wide" type="button" onclick="keyboardType('.')">.</button>
-      <button class="kb-key kb-send" type="button" onclick="keyboardSend()">enviar</button>
-    `;
+  const kb = document.getElementById('ios-keyboard');
+  if (!kb) return;
+
+  if (keyboardMode === 'numbers') {
+    document.getElementById('kb-row-1').innerHTML = ['1','2','3','4','5','6','7','8','9','0'].map(k => keyboardButton(k,'type',k)).join('');
+    document.getElementById('kb-row-2').innerHTML = ['-','/',';',':','(',')','$','&','@','"'].map(k => keyboardButton(k,'type',k)).join('');
+    document.getElementById('kb-row-3').innerHTML = keyboardButton('ABC','mode','letters','kb-special kb-nums') + ['.',',','?','!','\''].map(k => keyboardButton(k,'type',k)).join('') + keyboardButton('⌫','backspace','','kb-special');
+    document.getElementById('kb-row-4').innerHTML = keyboardButton('ABC','mode','letters','kb-special kb-nums') + keyboardButton('espacio','space',' ','kb-space') + keyboardButton('intro','enter','\n','kb-special kb-return');
+  } else {
+    const row1 = ['q','w','e','r','t','y','u','i','o','p'];
+    const row2 = ['a','s','d','f','g','h','j','k','l','ñ'];
+    const row3 = ['z','x','c','v','b','n','m'];
+    const fmt = k => keyboardShift ? k.toUpperCase() : k;
+    document.getElementById('kb-row-1').innerHTML = row1.map(k => keyboardButton(fmt(k),'type',fmt(k))).join('');
+    document.getElementById('kb-row-2').innerHTML = row2.map(k => keyboardButton(fmt(k),'type',fmt(k))).join('');
+    document.getElementById('kb-row-3').innerHTML = keyboardButton('⇧','shift','','kb-special '+(keyboardShift?'active':'')) + row3.map(k => keyboardButton(fmt(k),'type',fmt(k))).join('') + keyboardButton('⌫','backspace','','kb-special');
+    document.getElementById('kb-row-4').innerHTML = keyboardButton('123','mode','numbers','kb-special kb-nums') + keyboardButton('espacio','space',' ','kb-space') + keyboardButton('intro','enter','\n','kb-special kb-return');
+  }
+
+  if (!kb.dataset.bound) {
+    kb.dataset.bound = '1';
+    const press = (ev) => {
+      const key = ev.target.closest('.kb-key');
+      if (!key) return;
+      ev.preventDefault();
+      key.classList.add('pressed');
+      setTimeout(() => key.classList.remove('pressed'), 95);
+      const action = key.dataset.action;
+      const value = key.dataset.value || '';
+      if (action === 'type' || action === 'space' || action === 'enter') keyboardType(value);
+      else if (action === 'backspace') keyboardBackspace();
+      else if (action === 'shift') { keyboardShift = !keyboardShift; buildKeyboard(); }
+      else if (action === 'mode') { keyboardMode = value || 'letters'; keyboardShift = false; buildKeyboard(); }
+    };
+    if (window.PointerEvent) {
+      kb.addEventListener('pointerdown', press, {passive:false});
+    } else {
+      kb.addEventListener('touchstart', press, {passive:false});
+      kb.addEventListener('mousedown', press, {passive:false});
+    }
   }
 }
 
 function openAppKeyboard(target) {
   keyboardTarget = target;
+  keyboardMode = 'letters';
+  keyboardShift = false;
+  buildKeyboard();
   const kb = document.getElementById('ios-keyboard');
   if (kb) {
     kb.classList.add('open');
@@ -2446,6 +2640,7 @@ function closeAppKeyboard() {
 function keyboardType(ch) {
   if (!keyboardTarget) return;
   keyboardValues[keyboardTarget] = (keyboardValues[keyboardTarget] || '') + ch;
+  if (keyboardShift && keyboardMode === 'letters' && ch.trim()) { keyboardShift = false; buildKeyboard(); }
   updateKeyboardField(keyboardTarget);
 }
 
