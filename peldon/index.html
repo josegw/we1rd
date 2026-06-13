@@ -2725,7 +2725,7 @@ function buildKeyboard() {
   if (keyboardMode === 'numbers') {
     document.getElementById('kb-row-1').innerHTML = ['1','2','3','4','5','6','7','8','9','0'].map(k => keyboardButton(k,'type',k)).join('');
     document.getElementById('kb-row-2').innerHTML = ['-','/',';',':','(',')','$','&','@','"'].map(k => keyboardButton(k,'type',k)).join('');
-    document.getElementById('kb-row-3').innerHTML = keyboardButton('ABC','mode','letters','kb-special kb-nums') + ['.',',','?','!','''].map(k => keyboardButton(k,'type',k)).join('') + keyboardButton('⌫','backspace','','kb-special');
+    document.getElementById('kb-row-3').innerHTML = keyboardButton('ABC','mode','letters','kb-special kb-nums') + ['.',',','?','!',"'"].map(k => keyboardButton(k,'type',k)).join('') + keyboardButton('⌫','backspace','','kb-special');
     document.getElementById('kb-row-4').innerHTML = keyboardButton('ABC','mode','letters','kb-special kb-nums') + keyboardButton('espacio','space',' ','kb-space') + keyboardButton('intro','enter','\n','kb-special kb-return');
   } else {
     const row1 = ['q','w','e','r','t','y','u','i','o','p'];
