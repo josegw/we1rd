@@ -890,6 +890,132 @@ html,body{
 .banner-title{font-size:.76rem;font-weight:900;color:var(--cream);line-height:1.15;}
 .banner-body{font-size:.74rem;color:rgba(255,240,244,.78);line-height:1.25;margin-top:1px;}
 
+
+
+/* ══ FIX: Razones envelope card, iOS keyboard visible composer, modal alert ══ */
+.reasons-wrap{
+  padding:18px 16px 20px !important;
+  justify-content:center !important;
+  gap:12px !important;
+  background:
+    radial-gradient(ellipse at 30% 5%,rgba(240,184,200,.16),transparent 42%),
+    radial-gradient(ellipse at 80% 92%,rgba(158,30,58,.22),transparent 54%),
+    linear-gradient(180deg,#120005 0%,#080002 100%) !important;
+}
+.reason-click-hint{
+  font-size:.86rem !important;
+  color:rgba(255,240,244,.72) !important;
+  font-weight:800 !important;
+  letter-spacing:.03em !important;
+}
+.reason-stage{max-width:318px !important;perspective:1200px !important;}
+.reason-flip{height:378px !important;}
+.reason-side{border-radius:30px !important;}
+.reason-front{
+  background:
+    radial-gradient(circle at 22% 14%,rgba(255,255,255,.20),transparent 22%),
+    linear-gradient(145deg,#fff5f7 0%,#f6dbe2 48%,#eeb8c8 100%) !important;
+  color:#4b1323 !important;
+  box-shadow:0 30px 78px rgba(0,0,0,.62),0 0 0 1px rgba(255,240,244,.22),inset 0 1px 0 rgba(255,255,255,.72) !important;
+}
+.reason-front::before{display:none !important;}
+.reason-front::after{display:none !important;}
+.reason-envelope-art{position:absolute;inset:0;overflow:hidden;border-radius:30px;}
+.reason-envelope-flap{
+  position:absolute;left:0;right:0;bottom:83px;height:150px;
+  background:linear-gradient(150deg,#fff8fa,#f1c9d4);
+  clip-path:polygon(0 0,50% 76%,100% 0,100% 100%,0 100%);
+  border-bottom:1px solid rgba(92,24,38,.12);
+}
+.reason-envelope-body{
+  position:absolute;left:0;right:0;bottom:0;height:178px;
+  background:linear-gradient(180deg,#fffafd 0%,#f3d5dd 100%);
+  clip-path:polygon(0 0,50% 50%,100% 0,100% 100%,0 100%);
+}
+.reason-envelope-side-left,.reason-envelope-side-right{
+  position:absolute;bottom:0;width:55%;height:178px;background:linear-gradient(150deg,#f7e3e8,#edd0d9);
+}
+.reason-envelope-side-left{left:0;clip-path:polygon(0 0,100% 50%,0 100%);}
+.reason-envelope-side-right{right:0;clip-path:polygon(100% 0,0 50%,100% 100%);}
+.reason-ribbon-x,.reason-ribbon-y{
+  position:absolute;background:linear-gradient(90deg,#d87593,#f0a6ba,#c94e73);
+  box-shadow:0 7px 18px rgba(156,39,76,.20),inset 0 1px 0 rgba(255,255,255,.35);
+  opacity:.94;
+}
+.reason-ribbon-x{left:-30px;right:-30px;top:116px;height:25px;transform:rotate(-15deg);}
+.reason-ribbon-y{width:25px;top:-28px;bottom:-28px;left:48%;transform:rotate(12deg);}
+.reason-bow{position:absolute;top:100px;left:50%;width:116px;height:58px;transform:translateX(-50%) rotate(-6deg);animation:bowFloat 2.4s ease-in-out infinite;}
+.reason-bow::before,.reason-bow::after{
+  content:'';position:absolute;top:7px;width:58px;height:36px;border-radius:50% 50% 48% 52%;
+  border:10px solid #df7b98;box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 6px 14px rgba(150,32,66,.20);
+}
+.reason-bow::before{left:0;transform:rotate(21deg);}
+.reason-bow::after{right:0;transform:rotate(-21deg);}
+.reason-bow-knot{position:absolute;left:50%;top:23px;width:24px;height:20px;border-radius:45%;transform:translateX(-50%);background:linear-gradient(135deg,#ef9cb2,#c75578);box-shadow:0 4px 10px rgba(120,26,55,.28);z-index:2;}
+@keyframes bowFloat{0%,100%{transform:translateX(-50%) translateY(0) rotate(-6deg)}50%{transform:translateX(-50%) translateY(-5px) rotate(-3deg)}}
+.reason-wax{
+  position:absolute;left:50%;bottom:88px;width:57px;height:50px;transform:translateX(-50%) rotate(-7deg);
+  border-radius:18px 16px 20px 17px;background:linear-gradient(145deg,#d98ba1,#a93c60);
+  border:2px solid rgba(120,28,55,.16);box-shadow:0 8px 18px rgba(122,23,52,.26),inset 0 1px 0 rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;color:#ffe8ef;font-size:1.25rem;font-weight:900;
+}
+.reason-wax::before{content:'';position:absolute;inset:8px;border:1px dashed rgba(255,240,244,.45);border-radius:13px;}
+.reason-flower{position:absolute;top:42px;left:50%;transform:translateX(-50%);opacity:.85;filter:drop-shadow(0 4px 8px rgba(50,20,15,.15));}
+.reason-front-title,.reason-front-sub,.reason-seal{display:none !important;}
+.reason-back{
+  background:
+    linear-gradient(150deg,rgba(255,245,248,.96),rgba(246,218,226,.96)),
+    #fff2f5 !important;
+  color:#4b1323 !important;
+  border:1px solid rgba(255,240,244,.25) !important;
+  padding:26px 24px !important;
+}
+.reason-back::before{
+  content:'';position:absolute;inset:18px;border:1px solid rgba(158,30,58,.16);border-radius:22px;pointer-events:none;
+}
+.reason-back-kicker{color:#9E1E3A !important;margin-bottom:18px !important;}
+.reason-back-text{color:#4b1323 !important;font-weight:760 !important;}
+.reason-next-btn{border-radius:18px !important;}
+
+.chat-composer.keyboard-open{margin-bottom:196px;box-shadow:0 -10px 30px rgba(0,0,0,.25);}
+.secret-card.keyboard-open{transform:translateY(-96px);transition:transform .22s ease;}
+.secret-composer.keyboard-open{box-shadow:none;}
+.ios-keyboard{
+  padding:8px 6px 9px !important;
+  background:linear-gradient(180deg,rgba(70,10,25,.98),rgba(20,0,7,.995)) !important;
+  border-top:1px solid rgba(255,240,244,.18) !important;
+}
+.kb-row{gap:4px !important;margin-bottom:7px !important;}
+.kb-key{
+  height:39px !important;min-width:28px !important;border-radius:7px !important;
+  background:linear-gradient(180deg,rgba(255,240,244,.24),rgba(255,240,244,.12)) !important;
+  box-shadow:0 2px 0 rgba(0,0,0,.42),0 6px 10px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.16) !important;
+  font-size:1rem !important;
+}
+.kb-wide{min-width:45px !important;font-size:.76rem !important;}
+.kb-space{min-width:126px !important;font-size:.78rem !important;}
+.kb-send{min-width:57px !important;background:linear-gradient(135deg,var(--vino-bright),var(--vino-light)) !important;}
+.compose-field{background:rgba(255,240,244,.10) !important;border-color:rgba(255,240,244,.18) !important;}
+
+.ios-alert-backdrop{
+  position:absolute;inset:0;z-index:360;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.48);opacity:0;pointer-events:none;transition:opacity .18s ease;
+}
+.ios-alert-backdrop.show{opacity:1;pointer-events:auto;}
+.ios-alert{
+  width:min(300px,82%);border-radius:18px;overflow:hidden;text-align:center;
+  background:linear-gradient(180deg,rgba(255,246,249,.96),rgba(239,221,228,.94));
+  color:#220009;box-shadow:0 18px 58px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.35);
+  transform:scale(.94);transition:transform .18s ease;
+}
+.ios-alert-backdrop.show .ios-alert{transform:scale(1);}
+.ios-alert-title{font-size:1.05rem;font-weight:850;line-height:1.25;padding:20px 18px 4px;color:#28000b;}
+.ios-alert-body{font-size:.88rem;line-height:1.35;padding:0 20px 18px;color:#3d1120;}
+.ios-alert-actions{border-top:1px solid rgba(60,0,15,.14);display:flex;}
+.ios-alert-ok{width:100%;height:48px;border:0;background:rgba(255,255,255,.20);color:#9E1E3A;font-size:1.05rem;font-weight:750;cursor:pointer;}
+.ios-alert-ok:active{background:rgba(158,30,58,.10);}
+.ios-banner{display:none !important;}
+
 </style>
 </head>
 <body>
@@ -1365,6 +1491,16 @@ html,body{
       <div class="banner-copy">
         <div class="banner-title" id="ios-banner-title">Mensajes</div>
         <div class="banner-body" id="ios-banner-body"></div>
+      </div>
+    </div>
+
+    <div class="ios-alert-backdrop" id="ios-alert-backdrop" onclick="closeAppNotification()">
+      <div class="ios-alert" onclick="event.stopPropagation()">
+        <div class="ios-alert-title" id="ios-alert-title">Mensajes</div>
+        <div class="ios-alert-body" id="ios-alert-body"></div>
+        <div class="ios-alert-actions">
+          <button class="ios-alert-ok" type="button" onclick="closeAppNotification()">OK</button>
+        </div>
       </div>
     </div>
 
@@ -2100,11 +2236,25 @@ function renderReasonCard(open=false) {
     <div class="reason-stage">
       <div class="reason-flip ${open ? 'flipped' : ''}" id="reason-flip" onclick="flipReasonCard()">
         <div class="reason-side reason-front">
-          <div class="reason-seal">
-            <svg width="38" height="34" viewBox="0 0 48 44" fill="none"><path d="M24 40S4 26 4 14a10 10 0 0118-6 10 10 0 0118 6c0 12-20 26-20 26z" fill="white" fill-opacity=".92"/></svg>
+          <div class="reason-envelope-art" aria-hidden="true">
+            <div class="reason-flower">
+              <svg width="42" height="44" viewBox="0 0 42 44" fill="none">
+                <path d="M21 18c-2 9-5 16-8 22M21 18c3 8 6 14 10 21" stroke="#6b7b25" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M20 19c-6-1-8-6-5-9 4-4 8 1 6 9Z" fill="#d86f83"/>
+                <path d="M22 18c5-4 10-2 10 2 0 5-7 6-10-2Z" fill="#c95a74"/>
+                <path d="M21 17c-1-7 4-10 7-7 3 3 0 8-7 7Z" fill="#e48ba0"/>
+                <path d="M16 28c-4-3-8-2-10 2 5 1 8 0 10-2ZM27 27c4-4 8-4 11-1-4 3-8 3-11 1Z" fill="#6f812b"/>
+              </svg>
+            </div>
+            <div class="reason-ribbon-x"></div>
+            <div class="reason-ribbon-y"></div>
+            <div class="reason-envelope-flap"></div>
+            <div class="reason-envelope-side-left"></div>
+            <div class="reason-envelope-side-right"></div>
+            <div class="reason-envelope-body"></div>
+            <div class="reason-bow"><div class="reason-bow-knot"></div></div>
+            <div class="reason-wax">♡</div>
           </div>
-          <div class="reason-front-title">Una razón para ti</div>
-          <div class="reason-front-sub">toca la tarjeta para abrirla</div>
         </div>
         <div class="reason-side reason-back">
           <div class="reason-back-kicker">porque te amo</div>
@@ -2115,7 +2265,6 @@ function renderReasonCard(open=false) {
     <button class="reason-next-btn ${open ? 'visible' : ''}" id="reason-next-btn" type="button" onclick="nextReason(event)">Ver otra razon</button>
   `;
 }
-
 function flipReasonCard() {
   if (reasonIsOpen) return;
   reasonIsOpen = true;
@@ -2202,9 +2351,7 @@ function renderChatList() {
     </div>
     <div style="height:8px"></div>
     <div class="chat-row" onclick="openSecretChat()">
-      <div class="chat-avatar">
-        <svg width="25" height="25" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.5 6 6.5.5-5 4.2 1.5 6.3L12 15.6 6.5 19 8 12.7l-5-4.2L9.5 8 12 2z" fill="white" fill-opacity=".9"/></svg>
-      </div>
+      <div class="chat-avatar"><img src="negro.png" alt="Secreto" onerror="this.style.display='none'"></div>
       <div class="chat-meta">
         <div class="chat-name">Secreto</div>
         <div class="chat-preview">Da click aqui</div>
@@ -2236,17 +2383,19 @@ function openSecretChat() {
 }
 
 function showAppNotification(message, title='Mensajes') {
-  const banner = document.getElementById('ios-banner');
-  const t = document.getElementById('ios-banner-title');
-  const b = document.getElementById('ios-banner-body');
-  if (!banner || !t || !b) return;
-  clearTimeout(bannerTimer);
+  const modal = document.getElementById('ios-alert-backdrop');
+  const t = document.getElementById('ios-alert-title');
+  const b = document.getElementById('ios-alert-body');
+  if (!modal || !t || !b) return;
   t.textContent = title;
   b.textContent = message;
-  banner.classList.add('show');
-  bannerTimer = setTimeout(() => banner.classList.remove('show'), 3200);
+  modal.classList.add('show');
 }
 
+function closeAppNotification() {
+  const modal = document.getElementById('ios-alert-backdrop');
+  if (modal) modal.classList.remove('show');
+}
 function buildKeyboard() {
   const rows = [
     ['q','w','e','r','t','y','u','i','o','p'],
@@ -2276,6 +2425,9 @@ function openAppKeyboard(target) {
     kb.classList.add('open');
     kb.setAttribute('aria-hidden','false');
   }
+  document.querySelectorAll('.chat-composer,.secret-composer').forEach(el => el.classList.toggle('keyboard-open', true));
+  const secretCard = document.querySelector('.secret-card');
+  if (secretCard) secretCard.classList.toggle('keyboard-open', target === 'secret');
   updateKeyboardField(target);
 }
 
@@ -2286,6 +2438,9 @@ function closeAppKeyboard() {
     kb.classList.remove('open');
     kb.setAttribute('aria-hidden','true');
   }
+  document.querySelectorAll('.chat-composer,.secret-composer').forEach(el => el.classList.remove('keyboard-open'));
+  const secretCard = document.querySelector('.secret-card');
+  if (secretCard) secretCard.classList.remove('keyboard-open');
 }
 
 function keyboardType(ch) {
