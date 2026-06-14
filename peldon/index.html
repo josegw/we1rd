@@ -1717,6 +1717,9 @@ html,body{
   filter:drop-shadow(0 5px 9px rgba(192,51,85,.25));
 }
 .falling-heart svg{width:100%;height:100%;display:block;}
+.falling-cry{filter:drop-shadow(0 5px 10px rgba(90,10,28,.34));}
+.falling-cry svg{filter:drop-shadow(0 0 8px rgba(240,184,200,.12));}
+.heart-spark.bad{background:rgba(255,120,150,.88);box-shadow:0 0 14px rgba(255,80,120,.55);}
 .heart-spark{
   position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(255,240,244,.86);
   box-shadow:0 0 14px rgba(255,190,210,.65);pointer-events:none;z-index:9;animation:heartSpark .34s ease forwards;
@@ -2399,7 +2402,7 @@ html,body{
           </div>
         </div>
         <div class="vault-video-screen" id="vault-video-screen">
-          <video id="vault-video" playsinline webkit-playsinline preload="metadata"></video>
+          <video id="vault-video" playsinline webkit-playsinline preload="none"></video>
         </div>
       </div>
 
@@ -3906,7 +3909,12 @@ let heartCatcherX = 0.5;
 let fallingHearts = [];
 
 function heartSVGMarkup() {
-  return `<svg viewBox="0 0 40 36" fill="none"><path d="M20 33S4 22.4 4 10.8C4 5.9 7.8 2.3 12.4 2.3c3.1 0 5.7 1.7 7.6 4.4 1.9-2.7 4.5-4.4 7.6-4.4 4.6 0 8.4 3.6 8.4 8.5C36 22.4 20 33 20 33z" fill="url(#fallHeartGrad)"/><path d="M11.5 6.2c-2 .8-3.2 2.6-3.2 4.8" stroke="rgba(255,255,255,.48)" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="fallHeartGrad" x1="5" y1="3" x2="34" y2="33"><stop stop-color="#F0B8C8"/><stop offset="1" stop-color="#C03355"/></linearGradient></defs></svg>`;
+  // Sin IDs de <defs> para evitar que otros corazones pierdan el relleno cuando uno se elimina.
+  return `<svg viewBox="0 0 40 36" fill="none"><path d="M20 33S4 22.4 4 10.8C4 5.9 7.8 2.3 12.4 2.3c3.1 0 5.7 1.7 7.6 4.4 1.9-2.7 4.5-4.4 7.6-4.4 4.6 0 8.4 3.6 8.4 8.5C36 22.4 20 33 20 33z" fill="#C03355"/><path d="M20 33S4 22.4 4 10.8C4 5.9 7.8 2.3 12.4 2.3c3.1 0 5.7 1.7 7.6 4.4 1.9-2.7 4.5-4.4 7.6-4.4 4.6 0 8.4 3.6 8.4 8.5C36 22.4 20 33 20 33z" fill="rgba(240,184,200,.42)"/><path d="M11.5 6.2c-2 .8-3.2 2.6-3.2 4.8" stroke="rgba(255,255,255,.48)" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+
+function crySVGMarkup() {
+  return `<svg viewBox="0 0 42 42" fill="none"><circle cx="21" cy="21" r="17" fill="#F0B8C8"/><circle cx="21" cy="21" r="17" fill="rgba(192,51,85,.18)"/><path d="M13.2 16.3c1.8-1.6 3.8-1.6 5.4 0" stroke="#5A1026" stroke-width="2.1" stroke-linecap="round"/><path d="M23.4 16.3c1.8-1.6 3.8-1.6 5.4 0" stroke="#5A1026" stroke-width="2.1" stroke-linecap="round"/><path d="M15.8 28.6c2.8-3.2 7.6-3.2 10.4 0" stroke="#5A1026" stroke-width="2.3" stroke-linecap="round"/><path d="M15.6 18.6c-.8 1.7-1.7 2.9-1.7 4a1.7 1.7 0 003.4 0c0-1.1-.9-2.3-1.7-4z" fill="#8fc8ff"/><path d="M26.4 18.6c-.8 1.7-1.7 2.9-1.7 4a1.7 1.7 0 003.4 0c0-1.1-.9-2.3-1.7-4z" fill="#8fc8ff"/><path d="M9.4 11.8c2.4-3 6.4-4.8 11.6-4.8" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
 
 function updateHeartHUD() {
@@ -3982,7 +3990,6 @@ function initHeartGame() {
   if (catcher) catcher.style.left = '50%';
   updateHeartHUD();
   resetHeartIntro();
-  bindHeartControls();
 }
 
 function spawnFallingHeart() {
@@ -3990,24 +3997,31 @@ function spawnFallingHeart() {
   if (!stage) return;
   const rect = stage.getBoundingClientRect();
   const el = document.createElement('div');
-  el.className = 'falling-heart';
-  const size = 24 + Math.random() * 18;
+  const isCry = Math.random() < 0.22;
+  el.className = isCry ? 'falling-heart falling-cry' : 'falling-heart';
+  const size = isCry ? (28 + Math.random() * 14) : (24 + Math.random() * 18);
   const x = 10 + Math.random() * Math.max(20, rect.width - 44);
   el.style.width = `${size}px`;
-  el.style.height = `${size * .9}px`;
+  el.style.height = `${size}px`;
   el.style.left = `${x}px`;
-  el.style.top = '-34px';
-  el.innerHTML = heartSVGMarkup();
+  el.style.top = '-44px';
+  el.innerHTML = isCry ? crySVGMarkup() : heartSVGMarkup();
   stage.appendChild(el);
-  fallingHearts.push({ el, x, y:-34, size, speed:92 + Math.random() * 88, sway:Math.random() * Math.PI * 2, caught:false });
+  fallingHearts.push({
+    el, x, y:-44, size,
+    kind:isCry ? 'cry' : 'heart',
+    speed:(isCry ? 112 : 92) + Math.random() * 88,
+    sway:Math.random() * Math.PI * 2,
+    caught:false
+  });
 }
 
-function addHeartSpark(x, y) {
+function addHeartSpark(x, y, bad=false) {
   const stage = document.getElementById('heart-game-stage');
   if (!stage) return;
   for (let i = 0; i < 5; i++) {
     const s = document.createElement('div');
-    s.className = 'heart-spark';
+    s.className = bad ? 'heart-spark bad' : 'heart-spark';
     s.style.left = `${x + (Math.random() * 30 - 15)}px`;
     s.style.top = `${y + (Math.random() * 24 - 12)}px`;
     stage.appendChild(s);
@@ -4034,21 +4048,31 @@ function heartGameLoop(ts) {
       const stageRect = stage.getBoundingClientRect();
       const catchX = heartCatcherX * stageRect.width;
       const catchY = stageRect.height - 31;
+      let caughtCandidate = null;
       fallingHearts.forEach(h => {
+        if (!h.el || !h.el.isConnected || h.caught) return;
         h.y += h.speed * dt;
         const sway = Math.sin(ts / 260 + h.sway) * 10;
         h.el.style.transform = `translate(${sway}px, ${h.y}px) rotate(${Math.sin(ts / 420 + h.sway) * 12}deg)`;
         const hx = h.x + h.size / 2 + sway;
         const hy = h.y + h.size / 2;
         const caught = hy > catchY - 14 && hy < catchY + 22 && Math.abs(hx - catchX) < 50;
-        if (caught && !h.caught) {
-          h.caught = true;
-          heartGameScore += 1;
-          addHeartSpark(hx, hy);
-          h.el.remove();
-        }
+        if (caught && (!caughtCandidate || hy > caughtCandidate.hy)) caughtCandidate = { h, hx, hy };
       });
-      fallingHearts = fallingHearts.filter(h => h.el.isConnected && h.y < stageRect.height + 50 && !h.caught);
+      if (caughtCandidate) {
+        const { h, hx, hy } = caughtCandidate;
+        h.caught = true;
+        if (h.kind === 'cry') {
+          heartGameScore = Math.max(0, heartGameScore - 5);
+          addHeartSpark(hx, hy, true);
+        } else {
+          heartGameScore += 1;
+          addHeartSpark(hx, hy, false);
+        }
+        if (h.el && h.el.isConnected) h.el.remove();
+        updateHeartHUD();
+      }
+      fallingHearts = fallingHearts.filter(h => h.el && h.el.isConnected && h.y < stageRect.height + 50 && !h.caught);
     }
     if (heartGameTimeLeft <= 0) {
       finishHeartGame();
@@ -4207,8 +4231,14 @@ function normalizeVaultVideo(item) {
     return file ? { file } : null;
   }
   if (!item || typeof item !== 'object') return null;
-  const file = String(item.archivo || item.file || item.src || item.url || '').trim();
+  const file = String(item.archivo || item.file || item.src || item.url || item.link || item.enlace || '').trim();
   return file ? { file } : null;
+}
+
+function resolveVaultVideoSrc(file) {
+  if (/^(https?:|blob:|data:)/i.test(file)) return file;
+  if (/^\/\//.test(file)) return `${location.protocol}${file}`;
+  return joinPath(VAULT_PATH, file);
 }
 
 async function loadVaultVideos(force=false) {
@@ -4231,6 +4261,8 @@ function stopVaultVideo() {
   const video = document.getElementById('vault-video');
   if (video) {
     try { video.pause(); } catch(e) {}
+    video.onended = null;
+    video.onerror = null;
     video.removeAttribute('src');
     try { video.load(); } catch(e) {}
   }
@@ -4252,22 +4284,29 @@ function vaultConstructionNotice() {
 }
 
 async function unlockVault() {
-  const videos = await loadVaultVideos(true);
+  const videos = await loadVaultVideos(false);
   if (!videos.length) { vaultConstructionNotice(); return; }
   const selected = videos[Math.floor(Math.random() * videos.length)];
   const screen = document.getElementById('vault-video-screen');
   const video = document.getElementById('vault-video');
   if (!screen || !video) { vaultConstructionNotice(); return; }
-  const src = /^https?:\/\//i.test(selected.file) ? selected.file : joinPath(VAULT_PATH, selected.file);
-  screen.classList.add('show');
-  video.src = src;
-  video.currentTime = 0;
+  const src = resolveVaultVideoSrc(selected.file);
+
+  // Carga ligera: sólo se asigna el src del video seleccionado y no se precargan todos.
+  stopVaultVideo();
+  video.preload = 'none';
+  video.playsInline = true;
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
   video.onended = () => { resetVault(true); showView('view-home','backward'); };
   video.onerror = () => { vaultConstructionNotice(); };
+  screen.classList.add('show');
+  video.src = src;
+  try { video.load(); } catch(e) {}
   try {
     await video.play();
   } catch(e) {
-    // Si Safari bloquea algo raro, al menos muestra el video para que el usuario lo toque.
+    // Si Safari bloquea algo raro, se queda visible para que el usuario lo toque.
     screen.classList.add('show');
   }
 }
