@@ -1647,6 +1647,131 @@ html,body{
 .vault-card.shake{animation:vaultShake .28s linear;}
 @keyframes vaultShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
 
+
+
+/* ══ FINAL PATCH: iconos unificados, scroll apps nuevas, juego de caída, caja fuerte video ══ */
+.ic-phone{background:linear-gradient(145deg,#8C1F3E 0%,#4A0A1D 58%,#210008 100%) !important;}
+.ic-contacts{background:linear-gradient(145deg,#7F1837 0%,#3A0617 62%,#160004 100%) !important;}
+.ic-msg{background:linear-gradient(145deg,#9E1E3A 0%,#5A1026 58%,#1A0006 100%) !important;}
+.ic-music{background:linear-gradient(145deg,#A4274A 0%,#64122B 58%,#210008 100%) !important;}
+.ic-photos,.ic-gallery{background:linear-gradient(145deg,#8B1535 0%,#4A0A1D 60%,#190005 100%) !important;}
+.ic-settings{background:linear-gradient(145deg,#6B1228 0%,#3A0010 58%,#140004 100%) !important;}
+.ic-notes{background:linear-gradient(145deg,#A73757 0%,#6B1228 58%,#24000A 100%) !important;}
+.ic-reasons{background:linear-gradient(145deg,#B72A52 0%,#721630 58%,#28000A 100%) !important;}
+.ic-chat{background:linear-gradient(145deg,#8E2444 0%,#521023 58%,#1A0006 100%) !important;}
+.ic-voice{background:linear-gradient(145deg,#9E1E3A 0%,#5A1026 58%,#1A0006 100%) !important;}
+.ic-heartgame{background:linear-gradient(145deg,#C03355 0%,#761A32 58%,#26000A 100%) !important;}
+.ic-counter{background:linear-gradient(145deg,#A52A50 0%,#61152C 58%,#1F0008 100%) !important;}
+.ic-vault{background:linear-gradient(145deg,#7A1A35 0%,#3B0819 62%,#120004 100%) !important;}
+.app-icon-wrap{
+  border:1px solid rgba(255,240,244,.08);
+  box-shadow:0 5px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.20),inset 0 -18px 35px rgba(20,0,8,.22) !important;
+}
+.app-icon-wrap::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(circle at 30% 20%,rgba(255,240,244,.24),transparent 38%);
+}
+
+#view-heart-game,#view-counter,#view-vault{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#view-heart-game{background:#0A0003;}
+.heart-game-wrap{
+  flex:1;min-height:0;overflow:hidden !important;
+  padding:10px 10px 12px !important;
+  display:flex !important;flex-direction:column !important;
+  background:radial-gradient(ellipse at 26% 8%,rgba(192,51,85,.13),transparent 46%),#0A0003 !important;
+}
+.heart-game-stage{
+  flex:1;min-height:0 !important;position:relative;overflow:hidden;border-radius:24px;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(255,240,244,.10),transparent 28%),
+    linear-gradient(180deg,rgba(58,0,16,.92),rgba(10,0,3,.98)) !important;
+  border:1px solid rgba(255,240,244,.12);
+  box-shadow:0 14px 36px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.08);
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.heart-game-hud{
+  position:absolute;top:10px;left:10px;right:10px;z-index:12;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;pointer-events:none;
+}
+.heart-hud-pill{
+  min-width:76px;border-radius:999px;padding:7px 10px;text-align:center;
+  background:rgba(15,0,5,.46);border:1px solid rgba(255,240,244,.13);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 20px rgba(0,0,0,.22);
+}
+.heart-hud-label{font-size:.57rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,240,244,.54);}
+.heart-hud-value{font-size:1rem;font-weight:900;color:var(--cream);font-variant-numeric:tabular-nums;line-height:1.05;margin-top:1px;}
+.heart-pause-mini{
+  pointer-events:auto;width:44px;height:36px;border-radius:14px;border:1px solid rgba(255,240,244,.13);
+  background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.heart-pause-mini:active{transform:scale(.96);}
+.heart-catcher{
+  position:absolute;bottom:16px;left:50%;width:82px;height:42px;z-index:8;
+  transform:translateX(-50%);pointer-events:none;
+}
+.heart-catcher svg{width:100%;height:100%;display:block;filter:drop-shadow(0 9px 13px rgba(0,0,0,.35));}
+.falling-heart{
+  position:absolute;width:28px;height:26px;z-index:6;pointer-events:none;
+  filter:drop-shadow(0 5px 9px rgba(192,51,85,.25));
+}
+.falling-heart svg{width:100%;height:100%;display:block;}
+.heart-spark{
+  position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(255,240,244,.86);
+  box-shadow:0 0 14px rgba(255,190,210,.65);pointer-events:none;z-index:9;animation:heartSpark .34s ease forwards;
+}
+@keyframes heartSpark{0%{opacity:1;transform:scale(.6)}100%{opacity:0;transform:scale(2.7)}}
+.heart-game-overlay,.heart-pause-menu{
+  position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  text-align:center;padding:24px;background:rgba(8,0,2,.70);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.heart-game-overlay.hidden,.heart-pause-menu.hidden{display:none !important;}
+.heart-panel{
+  width:min(290px,92%);border-radius:24px;padding:20px 18px;
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.04));
+  border:1px solid rgba(255,240,244,.14);box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.10);
+}
+.heart-panel-icon{width:70px;height:62px;margin:0 auto 14px;}
+.heart-panel h3{font-size:1.18rem;font-weight:900;color:var(--cream);line-height:1.25;}
+.heart-panel p{font-size:.84rem;line-height:1.52;color:rgba(255,255,255,.66);margin-top:8px;}
+.heart-panel-actions{display:flex;flex-direction:column;gap:9px;margin-top:16px;}
+.heart-btn-main,.heart-btn-secondary{
+  height:44px;border:0;outline:0;border-radius:15px;cursor:pointer;font-size:.86rem;font-weight:900;
+}
+.heart-btn-main{background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));color:#fff;box-shadow:0 8px 22px rgba(192,51,85,.38),inset 0 1px 0 rgba(255,255,255,.18);}
+.heart-btn-secondary{background:rgba(255,255,255,.08);color:var(--cream);border:1px solid rgba(255,240,244,.12);}
+.heart-btn-main:active,.heart-btn-secondary:active{transform:scale(.985);}
+
+#view-counter .counter-wrap{overflow-y:auto !important;min-height:0;padding-bottom:26px !important;}
+#view-vault{overflow:hidden;}
+.vault-wrap{
+  flex:1;min-height:0;overflow-y:auto !important;-webkit-overflow-scrolling:touch;
+  display:flex;align-items:center;justify-content:center;padding:14px;
+  background:radial-gradient(ellipse at 28% 8%,rgba(192,51,85,.11),transparent 45%),#0A0003 !important;
+}
+.vault-card{
+  width:100%;max-width:318px;border-radius:28px;padding:20px 16px 18px;
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.032));
+  border:1px solid rgba(255,240,244,.13);box-shadow:0 24px 62px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.10);
+}
+.vault-dots{display:flex;justify-content:center;gap:8px;margin:2px 0 20px !important;}
+.vault-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,240,244,.16);}
+.vault-dot.filled{background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));}
+.vault-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:0 !important;}
+.vault-key{
+  height:55px;border:0;outline:0;border-radius:18px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,240,244,.18),rgba(255,255,255,.08));
+  color:var(--cream);font-size:1.14rem;font-weight:850;
+  box-shadow:0 4px 12px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.vault-key.alt{font-size:.76rem;color:rgba(255,240,244,.84);}
+.vault-video-screen{
+  position:absolute;inset:0;z-index:90;background:#000;display:none;align-items:center;justify-content:center;
+}
+.vault-video-screen.show{display:flex;}
+.vault-video-screen video{width:100%;height:100%;object-fit:contain;background:#000;}
+
 </style>
 </head>
 <body>
@@ -2130,6 +2255,7 @@ html,body{
 
 
 
+
       <!-- HEARTS GAME -->
       <div class="phone-view hidden" id="view-heart-game">
         <div class="app-nav">
@@ -2141,29 +2267,56 @@ html,body{
           <div style="min-width:60px;"></div>
         </div>
         <div class="heart-game-wrap">
-          <div class="heart-game-head">
-            <div class="heart-game-title">Atrapa los corazones</div>
-            <div class="heart-game-sub">Toca la mayor cantidad de corazones antes de que se termine el tiempo.</div>
-            <div class="heart-game-stats">
-              <div class="heart-stat">
-                <div class="heart-stat-label">Puntos</div>
-                <div class="heart-stat-value" id="heart-score">0</div>
-              </div>
-              <div class="heart-stat">
-                <div class="heart-stat-label">Tiempo</div>
-                <div class="heart-stat-value" id="heart-time">30</div>
-              </div>
-            </div>
-          </div>
           <div class="heart-game-stage" id="heart-game-stage">
-            <div class="heart-game-overlay" id="heart-game-overlay">
-              <h3>¿Lista para jugar?</h3>
-              <p>Cuando empieces, aparecerán corazones por toda la pantalla. Tócalos rápido para sumar puntos.</p>
+            <div class="heart-game-hud">
+              <div class="heart-hud-pill">
+                <div class="heart-hud-label">Puntos</div>
+                <div class="heart-hud-value" id="heart-score">0</div>
+              </div>
+              <button class="heart-pause-mini" type="button" onclick="toggleHeartPause()" aria-label="Pausar juego">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="3" width="3.5" height="12" rx="1" fill="white" fill-opacity=".9"/><rect x="10.5" y="3" width="3.5" height="12" rx="1" fill="white" fill-opacity=".9"/></svg>
+              </button>
+              <div class="heart-hud-pill">
+                <div class="heart-hud-label">Tiempo</div>
+                <div class="heart-hud-value" id="heart-time">45</div>
+              </div>
             </div>
-          </div>
-          <div class="heart-game-footer">
-            <div class="heart-game-message" id="heart-game-message">Presiona iniciar para comenzar una ronda de 30 segundos.</div>
-            <button class="heart-start-btn" type="button" id="heart-start-btn" onclick="startHeartGame()">Iniciar juego</button>
+            <div class="heart-catcher" id="heart-catcher">
+              <svg viewBox="0 0 100 52" fill="none">
+                <path d="M21 14h58l-8 27c-.9 3-3.4 5-6.5 5h-29c-3 0-5.7-2-6.5-5L21 14z" fill="url(#basketBody)"/>
+                <path d="M18 14h64" stroke="rgba(255,240,244,.88)" stroke-width="7" stroke-linecap="round"/>
+                <path d="M31 15c4-12 34-12 38 0" stroke="rgba(255,240,244,.58)" stroke-width="5" stroke-linecap="round"/>
+                <path d="M35 24h30M38 34h24" stroke="rgba(80,12,32,.45)" stroke-width="3" stroke-linecap="round"/>
+                <defs><linearGradient id="basketBody" x1="22" y1="14" x2="74" y2="48"><stop stop-color="#F0B8C8"/><stop offset="1" stop-color="#C03355"/></linearGradient></defs>
+              </svg>
+            </div>
+            <div class="heart-game-overlay" id="heart-game-overlay">
+              <div class="heart-panel">
+                <div class="heart-panel-icon">
+                  <svg viewBox="0 0 90 80" fill="none">
+                    <path d="M45 66S16 47 16 24.8C16 15.6 23.2 9 31.7 9c5.5 0 10.2 3 13.3 7.5C48.1 12 52.8 9 58.3 9 66.8 9 74 15.6 74 24.8 74 47 45 66 45 66z" fill="url(#introHeart)"/>
+                    <path d="M21 58h48l-6 15H27l-6-15z" fill="rgba(255,240,244,.82)"/>
+                    <defs><linearGradient id="introHeart" x1="18" y1="10" x2="70" y2="66"><stop stop-color="#F0B8C8"/><stop offset="1" stop-color="#C03355"/></linearGradient></defs>
+                  </svg>
+                </div>
+                <h3>Atrapa los corazones</h3>
+                <p>Mueve el dedo de izquierda a derecha para controlar la canasta y recoger los corazones que caen.</p>
+                <div class="heart-panel-actions">
+                  <button class="heart-btn-main" type="button" onclick="startHeartGame()">Empezar</button>
+                </div>
+              </div>
+            </div>
+            <div class="heart-pause-menu hidden" id="heart-pause-menu">
+              <div class="heart-panel">
+                <h3 id="heart-menu-title">Juego pausado</h3>
+                <p id="heart-menu-text">Puedes continuar la partida o reiniciarla desde cero.</p>
+                <div class="heart-panel-actions">
+                  <button class="heart-btn-main" type="button" id="heart-resume-btn" onclick="resumeHeartGame()">Continuar</button>
+                  <button class="heart-btn-secondary" type="button" onclick="startHeartGame()">Reiniciar</button>
+                  <button class="heart-btn-secondary" type="button" onclick="goHome()">Salir</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2180,7 +2333,7 @@ html,body{
         </div>
         <div class="counter-wrap">
           <div class="counter-hero">
-            <div class="counter-badge">❤ Desde nuestro inicio</div>
+            <div class="counter-badge">Desde nuestro inicio</div>
             <div class="counter-title">Nuestro contador</div>
             <div class="counter-main" id="counter-main">Llevamos juntos <strong>0 días</strong>.</div>
             <div class="counter-since">Desde el 25 de octubre de 2025</div>
@@ -2211,6 +2364,7 @@ html,body{
         </div>
       </div>
 
+
       <!-- VAULT -->
       <div class="phone-view hidden" id="view-vault">
         <div class="app-nav">
@@ -2223,25 +2377,10 @@ html,body{
         </div>
         <div class="vault-wrap">
           <div class="vault-card" id="vault-card">
-            <div class="vault-header">
-              <div class="vault-lock-icon">
-                <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-                  <path d="M10.5 15V11.5C10.5 7.9 13.4 5 17 5s6.5 2.9 6.5 6.5V15" stroke="rgba(255,240,244,.86)" stroke-width="2.2" stroke-linecap="round"/>
-                  <rect x="7" y="14" width="20" height="15" rx="5" fill="rgba(255,240,244,.92)"/>
-                  <circle cx="17" cy="21.5" r="2.3" fill="rgba(122,26,53,.85)"/>
-                  <path d="M17 21.5v3.3" stroke="rgba(122,26,53,.85)" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="vault-title">Caja fuerte</div>
-              <div class="vault-sub">Ingresa el código correcto para abrir el mensaje escondido.</div>
-            </div>
             <div class="vault-dots" id="vault-dots">
-              <div class="vault-dot"></div>
-              <div class="vault-dot"></div>
-              <div class="vault-dot"></div>
-              <div class="vault-dot"></div>
+              <div class="vault-dot"></div><div class="vault-dot"></div><div class="vault-dot"></div><div class="vault-dot"></div>
+              <div class="vault-dot"></div><div class="vault-dot"></div><div class="vault-dot"></div><div class="vault-dot"></div>
             </div>
-            <div class="vault-status" id="vault-status">Pista: nuestro día especial en formato <b style="color:#fff">DDMM</b>.</div>
             <div class="vault-keypad">
               <button class="vault-key" type="button" onclick="vaultPress('1')">1</button>
               <button class="vault-key" type="button" onclick="vaultPress('2')">2</button>
@@ -2256,12 +2395,10 @@ html,body{
               <button class="vault-key" type="button" onclick="vaultPress('0')">0</button>
               <button class="vault-key alt" type="button" onclick="vaultPress('back')">⌫</button>
             </div>
-            <div class="vault-secret" id="vault-secret">
-              <div class="vault-secret-kicker">Mensaje desbloqueado</div>
-              <div class="vault-secret-text">Si lograste abrir esta cajita es porque conoces la fecha que siempre voy a guardar en mi corazón. Gracias por estar conmigo desde el <b style="color:#fff">25 de octubre de 2025</b>. Te amo muchísimo, mi niña bonita. ❤</div>
-              <button class="vault-reset-btn" type="button" onclick="resetVault()">Bloquear de nuevo</button>
-            </div>
           </div>
+        </div>
+        <div class="vault-video-screen" id="vault-video-screen">
+          <video id="vault-video" playsinline webkit-playsinline preload="metadata"></video>
         </div>
       </div>
 
@@ -2363,15 +2500,15 @@ function buildGrid() {
   const grid = document.getElementById('apps-grid');
   if (!grid) return;
   const apps = [
-    { cls:'ic-music',   label:'Música',        action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
-    { cls:'ic-voice',   label:'Notas de voz', action:'voice',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="4.5" width="8" height="12" rx="4" fill="white" fill-opacity=".92"/><path d="M7.5 12.5a6.5 6.5 0 0013 0" stroke="white" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M14 18v3.2" stroke="white" stroke-opacity=".88" stroke-width="1.7" stroke-linecap="round"/><path d="M10.5 22.5h7" stroke="white" stroke-opacity=".65" stroke-width="1.7" stroke-linecap="round"/><path d="M19.5 8.3c1.3.4 2.2 1.5 2.2 3.2 0 1.7-.9 2.8-2.2 3.2" stroke="rgba(255,255,255,.56)" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
-    { cls:'ic-notes',   label:'Notas',         action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
-    { cls:'ic-reasons', label:'Razones',       action:'reasons',     svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S5 18 5 10.5A5.3 5.3 0 0114 6a5.3 5.3 0 019 4.5C23 18 14 24 14 24z" fill="white" fill-opacity=".9"/><path d="M14 9v6" stroke="rgba(183,42,82,.75)" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="18.5" r="1.2" fill="rgba(183,42,82,.75)"/></svg>` },
-    { cls:'ic-chat',    label:'Chat',          action:'chat',        svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 5h18a2.5 2.5 0 012.5 2.5v9A2.5 2.5 0 0123 19H11l-6 5v-5.5A2.5 2.5 0 012.5 16V7.5A2.5 2.5 0 015 5z" fill="white" fill-opacity=".9"/><path d="M8 10.5h12M8 14.5h8" stroke="rgba(27,139,72,.72)" stroke-width="1.7" stroke-linecap="round"/></svg>` },
-    { cls:'ic-gallery', label:'Galería',       action:'gallery',     svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
-    { cls:'ic-heartgame', label:'Corazones',   action:'heart-game',  svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S6 18.5 6 11.2A4.7 4.7 0 0114 7a4.7 4.7 0 018 4.2C22 18.5 14 24 14 24z" fill="white" fill-opacity=".92"/><path d="M8.3 7.2l1.1-2.4 1.1 2.4 2.5 1.1-2.5 1.1-1.1 2.4-1.1-2.4L5.8 8.3l2.5-1.1z" fill="rgba(255,255,255,.48)"/></svg>` },
-    { cls:'ic-counter', label:'Contador',      action:'counter',     svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="15" r="8.5" fill="white" fill-opacity=".9"/><path d="M14 10.5v5l3 2" stroke="rgba(161,35,75,.78)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 5h7" stroke="rgba(255,255,255,.68)" stroke-width="1.6" stroke-linecap="round"/><path d="M20.7 19.5c.4-.4 1-.4 1.4 0 .4-.4 1-.4 1.4 0 0 .7-1.4 1.8-1.4 1.8s-1.4-1.1-1.4-1.8z" fill="rgba(255,255,255,.52)"/></svg>` },
-    { cls:'ic-vault',   label:'Caja',          action:'vault',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M10 12V9.8A4 4 0 0114 6a4 4 0 014 3.8V12" stroke="white" stroke-opacity=".86" stroke-width="1.7" stroke-linecap="round"/><rect x="7.5" y="11.5" width="13" height="10" rx="3" fill="white" fill-opacity=".92"/><circle cx="14" cy="16.2" r="1.7" fill="rgba(122,26,53,.85)"/><path d="M14 16.2v2.4" stroke="rgba(122,26,53,.85)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+    { cls:'ic-music',   label:'Música',        action:'music',       svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><circle cx="9.2" cy="20.2" r="3.4" fill="white" fill-opacity=".9"/><circle cx="20.6" cy="17.2" r="3.4" fill="white" fill-opacity=".9"/><path d="M12.6 20.2V8.4l11.4-3v8.7" stroke="white" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round"/><path d="M12.8 9.1l11-2.8" stroke="rgba(255,190,210,.55)" stroke-width="1.2" stroke-linecap="round"/></svg>` },
+    { cls:'ic-voice',   label:'Notas de voz', action:'voice',       svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><rect x="10.2" y="4.2" width="8.6" height="12.8" rx="4.3" fill="white" fill-opacity=".92"/><path d="M7.4 12.3a7.1 7.1 0 0014.2 0" stroke="white" stroke-opacity=".9" stroke-width="1.8" stroke-linecap="round"/><path d="M14.5 19v3.5M10.7 23.6h7.6" stroke="white" stroke-opacity=".75" stroke-width="1.8" stroke-linecap="round"/><path d="M21.7 7.6c1.2 1 1.9 2.5 1.9 4.6s-.7 3.7-1.9 4.7" stroke="rgba(255,190,210,.58)" stroke-width="1.4" stroke-linecap="round"/></svg>` },
+    { cls:'ic-notes',   label:'Notas',         action:'notes',       svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><rect x="6" y="4.5" width="17" height="20" rx="3.6" fill="white" fill-opacity=".92"/><path d="M18.5 4.5V10h4.5" fill="rgba(255,190,210,.45)"/><path d="M10 11h8.4M10 15h8.4M10 19h5.8" stroke="rgba(107,18,40,.72)" stroke-width="1.6" stroke-linecap="round"/></svg>` },
+    { cls:'ic-reasons', label:'Razones',       action:'reasons',     svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M5.5 10.3h18v12.1a2 2 0 01-2 2h-14a2 2 0 01-2-2V10.3z" fill="white" fill-opacity=".9"/><path d="M5.8 10.7l8.7 6.8 8.7-6.8" stroke="rgba(183,42,82,.72)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 6.5c1.7-2.2 5.2-.7 4.8 2.1-.3 2.7-4.8 5.1-4.8 5.1s-4.5-2.4-4.8-5.1c-.4-2.8 3.1-4.3 4.8-2.1z" fill="rgba(255,190,210,.78)"/></svg>` },
+    { cls:'ic-chat',    label:'Chat',          action:'chat',        svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M5.4 5.7h18.2a2.8 2.8 0 012.8 2.8v8.7a2.8 2.8 0 01-2.8 2.8H12l-6.3 4.7V20A2.8 2.8 0 012.9 17.2V8.5a2.8 2.8 0 012.5-2.8z" fill="white" fill-opacity=".9"/><path d="M8.5 11h12M8.5 15.2h7.4" stroke="rgba(142,36,68,.72)" stroke-width="1.7" stroke-linecap="round"/></svg>` },
+    { cls:'ic-gallery', label:'Galería',       action:'gallery',     svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><rect x="4" y="5" width="21" height="18.5" rx="4" fill="white" fill-opacity=".9"/><circle cx="10" cy="10.5" r="2" fill="rgba(139,21,53,.72)"/><path d="M6.5 21l5.5-6.2 3.8 4 2.7-3.1 4.2 5.3" stroke="rgba(139,21,53,.72)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { cls:'ic-heartgame', label:'Corazones',   action:'heart-game',  svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M14.5 15.7s-6.2-4-6.2-8.7c0-2.2 1.7-3.8 3.7-3.8 1.4 0 2.4.7 2.5 1.2.2-.5 1.2-1.2 2.6-1.2 2 0 3.7 1.6 3.7 3.8 0 4.7-6.3 8.7-6.3 8.7z" fill="white" fill-opacity=".92"/><path d="M7.2 17.2h14.6l-2.5 7.2H9.7l-2.5-7.2z" fill="rgba(255,240,244,.82)"/><path d="M6.2 17.2h16.6" stroke="white" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/><path d="M10 17.1c.9-3 8.1-3 9 0" stroke="rgba(255,190,210,.68)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+    { cls:'ic-counter', label:'Contador',      action:'counter',     svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><circle cx="14.5" cy="15.3" r="8.7" fill="white" fill-opacity=".91"/><path d="M14.5 10.5v5.1l3.4 2.2" stroke="rgba(165,42,80,.78)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.2 5.7h8.6" stroke="white" stroke-opacity=".76" stroke-width="1.8" stroke-linecap="round"/><path d="M8 7.4l-1.6 1.7M21 7.4l1.6 1.7" stroke="rgba(255,190,210,.64)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+    { cls:'ic-vault',   label:'Caja',          action:'vault',       svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M10 12.2V9.8a4.5 4.5 0 019 0v2.4" stroke="white" stroke-opacity=".86" stroke-width="1.8" stroke-linecap="round"/><rect x="7" y="11.5" width="15" height="11.5" rx="3.5" fill="white" fill-opacity=".92"/><circle cx="14.5" cy="16.9" r="1.8" fill="rgba(122,26,53,.86)"/><path d="M14.5 16.9v2.6" stroke="rgba(122,26,53,.86)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
   ];
   grid.innerHTML = '';
   apps.forEach(a => {
@@ -3755,147 +3892,221 @@ function finishCall() {
 
 
 
+
 // ── HEARTS GAME ──
 let heartGameRunning = false;
+let heartGamePaused = false;
 let heartGameScore = 0;
-let heartGameTimeLeft = 30;
-let heartGameTicker = null;
-let heartGameSpawner = null;
-let heartGameTimeouts = [];
+let heartGameTimeLeft = 45;
+let heartGameLastTs = 0;
+let heartGameSpawnClock = 0;
+let heartGameFrame = null;
+let heartCatcherX = 0.5;
+let fallingHearts = [];
 
-function setHeartGameMessage(msg) {
-  const el = document.getElementById('heart-game-message');
-  if (el) el.innerHTML = msg;
+function heartSVGMarkup() {
+  return `<svg viewBox="0 0 40 36" fill="none"><path d="M20 33S4 22.4 4 10.8C4 5.9 7.8 2.3 12.4 2.3c3.1 0 5.7 1.7 7.6 4.4 1.9-2.7 4.5-4.4 7.6-4.4 4.6 0 8.4 3.6 8.4 8.5C36 22.4 20 33 20 33z" fill="url(#fallHeartGrad)"/><path d="M11.5 6.2c-2 .8-3.2 2.6-3.2 4.8" stroke="rgba(255,255,255,.48)" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="fallHeartGrad" x1="5" y1="3" x2="34" y2="33"><stop stop-color="#F0B8C8"/><stop offset="1" stop-color="#C03355"/></linearGradient></defs></svg>`;
 }
 
-function updateHeartGameStats() {
+function updateHeartHUD() {
   const scoreEl = document.getElementById('heart-score');
   const timeEl = document.getElementById('heart-time');
   if (scoreEl) scoreEl.textContent = String(heartGameScore);
-  if (timeEl) timeEl.textContent = String(heartGameTimeLeft);
+  if (timeEl) timeEl.textContent = String(Math.max(0, Math.ceil(heartGameTimeLeft)));
 }
 
-function clearHeartTargets() {
+function setCatcherPosition(clientX) {
   const stage = document.getElementById('heart-game-stage');
-  if (!stage) return;
-  stage.querySelectorAll('.heart-target').forEach(el => el.remove());
+  const catcher = document.getElementById('heart-catcher');
+  if (!stage || !catcher) return;
+  const rect = stage.getBoundingClientRect();
+  heartCatcherX = Math.min(0.96, Math.max(0.04, (clientX - rect.left) / rect.width));
+  catcher.style.left = `${heartCatcherX * 100}%`;
 }
 
-function clearHeartGameTimers() {
-  if (heartGameTicker) { clearInterval(heartGameTicker); heartGameTicker = null; }
-  if (heartGameSpawner) { clearInterval(heartGameSpawner); heartGameSpawner = null; }
-  heartGameTimeouts.forEach(id => clearTimeout(id));
-  heartGameTimeouts = [];
+function bindHeartControls() {
+  const stage = document.getElementById('heart-game-stage');
+  if (!stage || stage.dataset.bound === '1') return;
+  stage.dataset.bound = '1';
+  const move = ev => {
+    if (!heartGameRunning || heartGamePaused) return;
+    const p = ev.touches ? ev.touches[0] : ev;
+    if (!p) return;
+    setCatcherPosition(p.clientX);
+  };
+  stage.addEventListener('touchstart', ev => { move(ev); }, { passive:true });
+  stage.addEventListener('touchmove', ev => { move(ev); }, { passive:true });
+  stage.addEventListener('pointerdown', move);
+  stage.addEventListener('pointermove', ev => { if (ev.buttons || ev.pointerType === 'touch') move(ev); });
+}
+
+function clearFallingHearts() {
+  fallingHearts.forEach(h => { if (h.el && h.el.isConnected) h.el.remove(); });
+  fallingHearts = [];
+  document.querySelectorAll('.heart-spark').forEach(el => el.remove());
+}
+
+function resetHeartIntro() {
+  const overlay = document.getElementById('heart-game-overlay');
+  const menu = document.getElementById('heart-pause-menu');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.innerHTML = `
+      <div class="heart-panel">
+        <div class="heart-panel-icon">
+          <svg viewBox="0 0 90 80" fill="none"><path d="M45 66S16 47 16 24.8C16 15.6 23.2 9 31.7 9c5.5 0 10.2 3 13.3 7.5C48.1 12 52.8 9 58.3 9 66.8 9 74 15.6 74 24.8 74 47 45 66 45 66z" fill="url(#introHeart2)"/><path d="M21 58h48l-6 15H27l-6-15z" fill="rgba(255,240,244,.82)"/><defs><linearGradient id="introHeart2" x1="18" y1="10" x2="70" y2="66"><stop stop-color="#F0B8C8"/><stop offset="1" stop-color="#C03355"/></linearGradient></defs></svg>
+        </div>
+        <h3>Atrapa los corazones</h3>
+        <p>Mueve el dedo de izquierda a derecha para controlar la canasta y recoger los corazones que caen.</p>
+        <div class="heart-panel-actions"><button class="heart-btn-main" type="button" onclick="startHeartGame()">Empezar</button></div>
+      </div>`;
+  }
+  if (menu) menu.classList.add('hidden');
 }
 
 function initHeartGame() {
-  clearHeartGameTimers();
-  heartGameRunning = false;
+  stopHeartGame();
+  bindHeartControls();
   heartGameScore = 0;
-  heartGameTimeLeft = 30;
-  updateHeartGameStats();
-  clearHeartTargets();
-  const stage = document.getElementById('heart-game-stage');
-  const overlay = document.getElementById('heart-game-overlay');
-  const btn = document.getElementById('heart-start-btn');
-  if (stage) stage.classList.remove('running');
-  if (overlay) {
-    overlay.classList.remove('hidden');
-    overlay.innerHTML = '<h3>¿Lista para jugar?</h3><p>Cuando empieces, aparecerán corazones por toda la pantalla. Tócalos rápido para sumar puntos.</p>';
-  }
-  if (btn) btn.textContent = 'Iniciar juego';
-  setHeartGameMessage('Presiona iniciar para comenzar una ronda de 30 segundos.');
+  heartGameTimeLeft = 45;
+  heartCatcherX = 0.5;
+  const catcher = document.getElementById('heart-catcher');
+  if (catcher) catcher.style.left = '50%';
+  updateHeartHUD();
+  resetHeartIntro();
 }
 
-function spawnHeartTarget() {
+function spawnFallingHeart() {
   const stage = document.getElementById('heart-game-stage');
-  if (!stage || !heartGameRunning) return;
-  const heart = document.createElement('button');
-  heart.type = 'button';
-  heart.className = 'heart-target';
-  const size = 24 + Math.floor(Math.random() * 22);
-  const padding = 12;
+  if (!stage) return;
   const rect = stage.getBoundingClientRect();
-  const maxX = Math.max(padding, rect.width - size - padding);
-  const maxY = Math.max(88, rect.height - size - 18);
-  heart.style.left = `${Math.floor(Math.random() * maxX)}px`;
-  heart.style.top = `${Math.floor(48 + Math.random() * (maxY - 48))}px`;
-  heart.style.fontSize = `${size}px`;
-  heart.setAttribute('aria-label', 'Corazón');
-  heart.innerHTML = '<span>❤</span>';
-  heart.onclick = () => {
-    if (!heartGameRunning) return;
-    heartGameScore += 1;
-    updateHeartGameStats();
-    heart.classList.add('hit');
-    setHeartGameMessage('¡Sigue así! Cada corazón cuenta.');
-    setTimeout(() => heart.remove(), 140);
-  };
-  stage.appendChild(heart);
-  const timeout = setTimeout(() => {
-    if (heart.isConnected) {
-      heart.classList.add('miss');
-      setTimeout(() => heart.remove(), 160);
+  const el = document.createElement('div');
+  el.className = 'falling-heart';
+  const size = 24 + Math.random() * 18;
+  const x = 10 + Math.random() * Math.max(20, rect.width - 44);
+  el.style.width = `${size}px`;
+  el.style.height = `${size * .9}px`;
+  el.style.left = `${x}px`;
+  el.style.top = '-34px';
+  el.innerHTML = heartSVGMarkup();
+  stage.appendChild(el);
+  fallingHearts.push({ el, x, y:-34, size, speed:92 + Math.random() * 88, sway:Math.random() * Math.PI * 2, caught:false });
+}
+
+function addHeartSpark(x, y) {
+  const stage = document.getElementById('heart-game-stage');
+  if (!stage) return;
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'heart-spark';
+    s.style.left = `${x + (Math.random() * 30 - 15)}px`;
+    s.style.top = `${y + (Math.random() * 24 - 12)}px`;
+    stage.appendChild(s);
+    setTimeout(() => s.remove(), 360);
+  }
+}
+
+function heartGameLoop(ts) {
+  if (!heartGameRunning) return;
+  if (!heartGameLastTs) heartGameLastTs = ts;
+  const dt = Math.min(0.033, (ts - heartGameLastTs) / 1000);
+  heartGameLastTs = ts;
+  if (!heartGamePaused) {
+    heartGameTimeLeft -= dt;
+    heartGameSpawnClock -= dt;
+    if (heartGameSpawnClock <= 0) {
+      spawnFallingHeart();
+      heartGameSpawnClock = Math.max(.28, .72 - heartGameScore * .006);
     }
-  }, 1200 + Math.floor(Math.random() * 350));
-  heartGameTimeouts.push(timeout);
+    updateHeartHUD();
+    const stage = document.getElementById('heart-game-stage');
+    const catcher = document.getElementById('heart-catcher');
+    if (stage && catcher) {
+      const stageRect = stage.getBoundingClientRect();
+      const catchX = heartCatcherX * stageRect.width;
+      const catchY = stageRect.height - 31;
+      fallingHearts.forEach(h => {
+        h.y += h.speed * dt;
+        const sway = Math.sin(ts / 260 + h.sway) * 10;
+        h.el.style.transform = `translate(${sway}px, ${h.y}px) rotate(${Math.sin(ts / 420 + h.sway) * 12}deg)`;
+        const hx = h.x + h.size / 2 + sway;
+        const hy = h.y + h.size / 2;
+        const caught = hy > catchY - 14 && hy < catchY + 22 && Math.abs(hx - catchX) < 50;
+        if (caught && !h.caught) {
+          h.caught = true;
+          heartGameScore += 1;
+          addHeartSpark(hx, hy);
+          h.el.remove();
+        }
+      });
+      fallingHearts = fallingHearts.filter(h => h.el.isConnected && h.y < stageRect.height + 50 && !h.caught);
+    }
+    if (heartGameTimeLeft <= 0) {
+      finishHeartGame();
+      return;
+    }
+  }
+  heartGameFrame = requestAnimationFrame(heartGameLoop);
 }
 
 function startHeartGame() {
-  const stage = document.getElementById('heart-game-stage');
-  const overlay = document.getElementById('heart-game-overlay');
-  const btn = document.getElementById('heart-start-btn');
-  if (!stage || !overlay || !btn) return;
-  clearHeartGameTimers();
-  clearHeartTargets();
+  stopHeartGame();
+  bindHeartControls();
   heartGameRunning = true;
+  heartGamePaused = false;
   heartGameScore = 0;
-  heartGameTimeLeft = 30;
-  updateHeartGameStats();
-  stage.classList.add('running');
-  overlay.classList.add('hidden');
-  btn.textContent = 'Reiniciar juego';
-  setHeartGameMessage('¡Corre! Toca todos los corazones que puedas.');
-  for (let i = 0; i < 4; i++) {
-    const timeout = setTimeout(spawnHeartTarget, i * 140);
-    heartGameTimeouts.push(timeout);
-  }
-  heartGameSpawner = setInterval(spawnHeartTarget, 540);
-  heartGameTicker = setInterval(() => {
-    heartGameTimeLeft -= 1;
-    updateHeartGameStats();
-    if (heartGameTimeLeft <= 0) finishHeartGame();
-  }, 1000);
+  heartGameTimeLeft = 45;
+  heartGameSpawnClock = 0;
+  heartGameLastTs = 0;
+  const overlay = document.getElementById('heart-game-overlay');
+  const menu = document.getElementById('heart-pause-menu');
+  if (overlay) overlay.classList.add('hidden');
+  if (menu) menu.classList.add('hidden');
+  updateHeartHUD();
+  heartGameFrame = requestAnimationFrame(heartGameLoop);
+}
+
+function toggleHeartPause() {
+  if (!heartGameRunning) return;
+  heartGamePaused = true;
+  const menu = document.getElementById('heart-pause-menu');
+  const title = document.getElementById('heart-menu-title');
+  const text = document.getElementById('heart-menu-text');
+  const resume = document.getElementById('heart-resume-btn');
+  if (title) title.textContent = 'Juego pausado';
+  if (text) text.textContent = 'Puedes continuar la partida o reiniciarla desde cero.';
+  if (resume) resume.style.display = '';
+  if (menu) menu.classList.remove('hidden');
+}
+
+function resumeHeartGame() {
+  if (!heartGameRunning) return;
+  heartGamePaused = false;
+  heartGameLastTs = 0;
+  const menu = document.getElementById('heart-pause-menu');
+  if (menu) menu.classList.add('hidden');
 }
 
 function finishHeartGame() {
-  clearHeartGameTimers();
   heartGameRunning = false;
-  const stage = document.getElementById('heart-game-stage');
-  const overlay = document.getElementById('heart-game-overlay');
-  if (stage) stage.classList.remove('running');
-  if (overlay) {
-    overlay.classList.remove('hidden');
-    overlay.innerHTML = `<h3>Ronda terminada</h3><p>Lograste atrapar <b style="color:#fff">${heartGameScore}</b> corazones. ¿Quieres intentarlo otra vez?</p>`;
-  }
-  let msg = 'Jugaste una ronda muy linda. Presiona reiniciar para volver a intentarlo.';
-  if (heartGameScore >= 35) msg = '¡Récord hermoso! Eres toda una experta atrapando corazones. ❤';
-  else if (heartGameScore >= 20) msg = 'Muy bien hecho. Repartiste muchísimo amorcito en esta ronda.';
-  else if (heartGameScore >= 10) msg = 'Nada mal. La próxima ronda seguro atrapas todavía más.';
-  setHeartGameMessage(msg);
+  heartGamePaused = false;
+  if (heartGameFrame) { cancelAnimationFrame(heartGameFrame); heartGameFrame = null; }
+  updateHeartHUD();
+  const menu = document.getElementById('heart-pause-menu');
+  const title = document.getElementById('heart-menu-title');
+  const text = document.getElementById('heart-menu-text');
+  const resume = document.getElementById('heart-resume-btn');
+  if (title) title.textContent = 'Ronda terminada';
+  if (text) text.innerHTML = `Atrapaste <b style="color:#fff">${heartGameScore}</b> corazones. Puedes reiniciar para mejorar tu puntuación.`;
+  if (resume) resume.style.display = 'none';
+  if (menu) menu.classList.remove('hidden');
 }
 
 function stopHeartGame() {
-  clearHeartGameTimers();
   heartGameRunning = false;
-  clearHeartTargets();
-  const stage = document.getElementById('heart-game-stage');
-  const overlay = document.getElementById('heart-game-overlay');
-  if (stage) stage.classList.remove('running');
-  if (overlay) {
-    overlay.classList.remove('hidden');
-    overlay.innerHTML = '<h3>¿Lista para jugar?</h3><p>Cuando empieces, aparecerán corazones por toda la pantalla. Tócalos rápido para sumar puntos.</p>';
-  }
+  heartGamePaused = false;
+  if (heartGameFrame) { cancelAnimationFrame(heartGameFrame); heartGameFrame = null; }
+  clearFallingHearts();
 }
 
 // ── RELATIONSHIP COUNTER ──
@@ -3948,9 +4159,9 @@ function updateRelationshipCounter() {
   if (minutesEl) minutesEl.textContent = totalMinutes.toLocaleString('es-MX');
   if (nextEl) nextEl.textContent = String(next25);
   if (noteEl) {
-    if (next25 === 0) noteEl.innerHTML = '❤ <b>Hoy es día 25</b>. Toca celebrar otro mes juntos.';
-    else if (next25 === 1) noteEl.innerHTML = '❤ Falta <b>1 día</b> para volver a llegar al 25.';
-    else noteEl.innerHTML = `❤ Faltan <b>${next25} días</b> para volver a llegar al 25 y seguir sumando recuerdos.`;
+    if (next25 === 0) noteEl.innerHTML = '<b>Hoy es día 25</b>. Toca celebrar otro mes juntos.';
+    else if (next25 === 1) noteEl.innerHTML = 'Falta <b>1 día</b> para volver a llegar al 25.';
+    else noteEl.innerHTML = `Faltan <b>${next25} días</b> para volver a llegar al 25 y seguir sumando recuerdos.`;
   }
 }
 
@@ -3967,48 +4178,93 @@ function stopRelationshipCounter() {
   }
 }
 
+
 // ── VAULT ──
-const VAULT_PIN = '2510';
+const VAULT_PIN = '67210410';
+const VAULT_PATH = 'cajafuerte/';
+const VAULT_MANIFEST = 'videos.json';
 let vaultInput = '';
+let vaultVideosLoaded = false;
+let vaultVideos = [];
 
 function updateVaultDots() {
   const dots = document.querySelectorAll('#vault-dots .vault-dot');
   dots.forEach((dot, index) => dot.classList.toggle('filled', index < vaultInput.length));
 }
 
+function normalizeVaultVideo(item) {
+  if (typeof item === 'string') {
+    const file = item.trim();
+    return file ? { file } : null;
+  }
+  if (!item || typeof item !== 'object') return null;
+  const file = String(item.archivo || item.file || item.src || item.url || '').trim();
+  return file ? { file } : null;
+}
+
+async function loadVaultVideos(force=false) {
+  if (vaultVideosLoaded && !force) return vaultVideos;
+  try {
+    const res = await fetch(joinPath(VAULT_PATH, VAULT_MANIFEST), { cache:'no-store' });
+    if (!res.ok) throw new Error('No vault manifest');
+    const data = await res.json();
+    const raw = Array.isArray(data) ? data : (Array.isArray(data.videos) ? data.videos : []);
+    vaultVideos = raw.map(normalizeVaultVideo).filter(Boolean);
+  } catch(e) {
+    vaultVideos = [];
+  }
+  vaultVideosLoaded = true;
+  return vaultVideos;
+}
+
+function stopVaultVideo() {
+  const screen = document.getElementById('vault-video-screen');
+  const video = document.getElementById('vault-video');
+  if (video) {
+    try { video.pause(); } catch(e) {}
+    video.removeAttribute('src');
+    try { video.load(); } catch(e) {}
+  }
+  if (screen) screen.classList.remove('show');
+}
+
 function resetVault(silent=false) {
+  stopVaultVideo();
   vaultInput = '';
   updateVaultDots();
-  const status = document.getElementById('vault-status');
-  const secret = document.getElementById('vault-secret');
   const card = document.getElementById('vault-card');
-  if (status) {
-    status.classList.remove('error');
-    status.innerHTML = silent
-      ? 'Pista: nuestro día especial en formato <b style="color:#fff">DDMM</b>.'
-      : 'Caja fuerte bloqueada de nuevo. Pista: <b style="color:#fff">DDMM</b>.';
-  }
-  if (secret) secret.classList.remove('show');
   if (card) card.classList.remove('shake');
 }
 
-function unlockVault() {
-  const status = document.getElementById('vault-status');
-  const secret = document.getElementById('vault-secret');
-  if (status) {
-    status.classList.remove('error');
-    status.innerHTML = 'Código correcto. Mensaje desbloqueado. ❤';
+function vaultConstructionNotice() {
+  resetVault(true);
+  showView('view-home','backward');
+  showAppNotification('Area en construccion. Preguntale a tu pancracio de confianza cuando estara lista', 'Caja fuerte');
+}
+
+async function unlockVault() {
+  const videos = await loadVaultVideos(true);
+  if (!videos.length) { vaultConstructionNotice(); return; }
+  const selected = videos[Math.floor(Math.random() * videos.length)];
+  const screen = document.getElementById('vault-video-screen');
+  const video = document.getElementById('vault-video');
+  if (!screen || !video) { vaultConstructionNotice(); return; }
+  const src = /^https?:\/\//i.test(selected.file) ? selected.file : joinPath(VAULT_PATH, selected.file);
+  screen.classList.add('show');
+  video.src = src;
+  video.currentTime = 0;
+  video.onended = () => { resetVault(true); showView('view-home','backward'); };
+  video.onerror = () => { vaultConstructionNotice(); };
+  try {
+    await video.play();
+  } catch(e) {
+    // Si Safari bloquea algo raro, al menos muestra el video para que el usuario lo toque.
+    screen.classList.add('show');
   }
-  if (secret) secret.classList.add('show');
 }
 
 function rejectVault() {
-  const status = document.getElementById('vault-status');
   const card = document.getElementById('vault-card');
-  if (status) {
-    status.classList.add('error');
-    status.textContent = 'Ese código no es. Inténtalo otra vez.';
-  }
   if (card) {
     card.classList.remove('shake');
     void card.offsetWidth;
@@ -4019,14 +4275,11 @@ function rejectVault() {
 }
 
 function vaultPress(key) {
-  const secret = document.getElementById('vault-secret');
-  if (secret && secret.classList.contains('show')) return;
-  const status = document.getElementById('vault-status');
-  if (status && status.classList.contains('error')) status.classList.remove('error');
+  const screen = document.getElementById('vault-video-screen');
+  if (screen && screen.classList.contains('show')) return;
   if (key === 'clear') {
     vaultInput = '';
     updateVaultDots();
-    if (status) status.innerHTML = 'Pista: nuestro día especial en formato <b style="color:#fff">DDMM</b>.';
     return;
   }
   if (key === 'back') {
@@ -4034,10 +4287,10 @@ function vaultPress(key) {
     updateVaultDots();
     return;
   }
-  if (!/^[0-9]$/.test(key) || vaultInput.length >= 4) return;
+  if (!/^[0-9]$/.test(key) || vaultInput.length >= VAULT_PIN.length) return;
   vaultInput += key;
   updateVaultDots();
-  if (vaultInput.length === 4) {
+  if (vaultInput.length === VAULT_PIN.length) {
     if (vaultInput === VAULT_PIN) unlockVault();
     else setTimeout(rejectVault, 120);
   }
