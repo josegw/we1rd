@@ -1460,6 +1460,193 @@ html,body{
 #view-reasons .reason-side{border-radius:22px !important;}
 #view-reasons .reason-card-shadow,#view-reasons .reason-envelope-flap,#view-reasons .reason-envelope-side-left,#view-reasons .reason-envelope-side-right,#view-reasons .reason-envelope-body,#view-reasons .reason-ribbon-x,#view-reasons .reason-ribbon-y,#view-reasons .reason-flower,#view-reasons .reason-wax{display:none !important;}
 
+
+
+/* ══ NEW APPS: Corazones, Contador, Caja fuerte ══ */
+.ic-heartgame{background:linear-gradient(145deg,#C03355,#761A32);}
+.ic-counter{background:linear-gradient(145deg,#A1234B,#5A1026);}
+.ic-vault{background:linear-gradient(145deg,#7A1A35,#3B0819);}
+#view-heart-game,#view-counter,#view-vault{background:#0A0003;}
+
+/* Hearts game */
+.heart-game-wrap{
+  flex:1;display:flex;flex-direction:column;gap:12px;
+  padding:14px 14px 18px;
+  background:
+    radial-gradient(ellipse at 22% 10%,rgba(192,51,85,.12),transparent 45%),
+    radial-gradient(ellipse at 82% 92%,rgba(107,18,40,.18),transparent 50%),
+    #0A0003;
+}
+.heart-game-head{
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.10);
+  border-radius:18px;padding:14px;
+  box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.heart-game-title{font-size:1rem;font-weight:800;color:var(--cream);}
+.heart-game-sub{font-size:.77rem;line-height:1.45;color:rgba(255,255,255,.58);margin-top:3px;}
+.heart-game-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px;}
+.heart-stat{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,240,244,.10);
+  border-radius:14px;padding:11px 10px;text-align:center;
+}
+.heart-stat-label{font-size:.67rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.heart-stat-value{font-size:1.25rem;font-weight:850;color:var(--cream);margin-top:3px;font-variant-numeric:tabular-nums;}
+.heart-game-stage{
+  position:relative;flex:1;min-height:330px;overflow:hidden;border-radius:24px;
+  background:
+    radial-gradient(circle at 50% 8%,rgba(255,255,255,.08),transparent 28%),
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+  border:1px solid rgba(255,240,244,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 12px 34px rgba(0,0,0,.20);
+}
+.heart-game-stage::before,
+.heart-game-stage::after{
+  content:'';position:absolute;border-radius:50%;pointer-events:none;filter:blur(0px);
+  background:radial-gradient(circle,rgba(240,184,200,.18),transparent 65%);
+}
+.heart-game-stage::before{width:140px;height:140px;left:-30px;top:-36px;}
+.heart-game-stage::after{width:170px;height:170px;right:-40px;bottom:-50px;opacity:.8;}
+.heart-game-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:10px;padding:24px;text-align:center;z-index:2;pointer-events:none;
+}
+.heart-game-overlay.hidden{display:none;}
+.heart-game-overlay h3{font-size:1.2rem;font-weight:850;color:var(--cream);line-height:1.25;}
+.heart-game-overlay p{font-size:.84rem;line-height:1.5;color:rgba(255,255,255,.62);max-width:240px;}
+.heart-game-stage.running .heart-game-overlay{display:none;}
+.heart-start-btn{
+  border:0;outline:0;cursor:pointer;border-radius:16px;padding:13px 16px;
+  background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));
+  color:#fff;font-size:.88rem;font-weight:900;
+  box-shadow:0 8px 22px rgba(192,51,85,.40),inset 0 1px 0 rgba(255,255,255,.18);
+}
+.heart-start-btn:active{transform:scale(.985);}
+.heart-target{
+  position:absolute;display:flex;align-items:center;justify-content:center;
+  color:#ffd8e5;text-shadow:0 0 14px rgba(240,184,200,.40),0 6px 18px rgba(158,30,58,.36);
+  cursor:pointer;user-select:none;-webkit-user-select:none;
+  animation:heartPulse .95s ease-in-out infinite;
+  transition:transform .12s ease, opacity .18s ease;
+}
+.heart-target.hit{transform:scale(1.45);opacity:0;}
+.heart-target.miss{opacity:0;transform:translateY(-10px) scale(.8);}
+.heart-target span{display:block;line-height:1;}
+@keyframes heartPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.heart-game-footer{display:flex;flex-direction:column;gap:10px;}
+.heart-game-message{
+  min-height:40px;padding:11px 12px;border-radius:14px;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,240,244,.10);
+  color:rgba(255,240,244,.82);font-size:.82rem;line-height:1.45;text-align:center;
+}
+
+/* Counter */
+.counter-wrap{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 14px 20px;
+  display:flex;flex-direction:column;gap:12px;
+  background:
+    radial-gradient(ellipse at 25% 10%,rgba(192,51,85,.14),transparent 42%),
+    radial-gradient(ellipse at 80% 92%,rgba(107,18,40,.20),transparent 54%),
+    #0A0003;
+}
+.counter-hero{
+  border-radius:24px;padding:18px 16px;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(255,255,255,.10),transparent 28%),
+    linear-gradient(145deg,rgba(158,30,58,.22),rgba(255,255,255,.04));
+  border:1px solid rgba(255,240,244,.12);
+  box-shadow:0 10px 30px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.08);
+  text-align:center;
+}
+.counter-badge{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,240,244,.14);
+  color:var(--rose-pale);font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+}
+.counter-title{font-size:1.35rem;font-weight:900;color:var(--cream);margin-top:12px;letter-spacing:-.02em;}
+.counter-main{font-size:.94rem;line-height:1.5;color:rgba(255,240,244,.86);margin-top:7px;}
+.counter-main strong{color:#fff;}
+.counter-since{font-size:.77rem;color:rgba(255,255,255,.56);margin-top:8px;}
+.counter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.counter-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.10);border-radius:18px;padding:14px 12px;
+  box-shadow:0 7px 20px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.05);
+  text-align:center;
+}
+.counter-card-value{font-size:1.38rem;font-weight:900;color:var(--cream);font-variant-numeric:tabular-nums;line-height:1.05;}
+.counter-card-label{font-size:.72rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:6px;}
+.counter-card-sub{font-size:.7rem;color:rgba(255,255,255,.48);margin-top:4px;}
+.counter-note{
+  padding:13px 14px;border-radius:18px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,240,244,.10);
+  color:rgba(255,240,244,.80);font-size:.82rem;line-height:1.5;text-align:center;
+}
+.counter-note b{color:#fff;}
+
+/* Vault */
+.vault-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:
+    radial-gradient(ellipse at 25% 8%,rgba(192,51,85,.12),transparent 45%),
+    radial-gradient(ellipse at 82% 92%,rgba(107,18,40,.20),transparent 55%),
+    #0A0003;
+}
+.vault-card{
+  width:100%;max-width:328px;border-radius:28px;padding:18px 16px 16px;
+  background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.14);
+  box-shadow:0 24px 62px rgba(0,0,0,.60),inset 0 1px 0 rgba(255,255,255,.10);
+}
+.vault-header{text-align:center;padding:4px 8px 0;}
+.vault-lock-icon{
+  width:74px;height:74px;border-radius:22px;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,rgba(192,51,85,.30),rgba(255,255,255,.08));
+  border:1px solid rgba(255,240,244,.16);
+  box-shadow:0 10px 28px rgba(192,51,85,.18),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.vault-title{font-size:1.18rem;font-weight:900;color:var(--cream);letter-spacing:-.02em;}
+.vault-sub{font-size:.8rem;line-height:1.45;color:rgba(255,255,255,.58);margin-top:6px;}
+.vault-dots{display:flex;justify-content:center;gap:10px;margin:18px 0 14px;}
+.vault-dot{
+  width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,240,244,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+  transition:transform .12s ease, background .18s ease;
+}
+.vault-dot.filled{background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));transform:scale(1.05);}
+.vault-status{min-height:40px;text-align:center;font-size:.78rem;line-height:1.45;color:rgba(255,240,244,.70);}
+.vault-status.error{color:#ffc6d8;}
+.vault-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;}
+.vault-key{
+  height:54px;border:0;outline:0;border-radius:17px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,240,244,.18),rgba(255,255,255,.08));
+  color:var(--cream);font-size:1.12rem;font-weight:800;
+  box-shadow:0 4px 12px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.vault-key:active{transform:scale(.97);background:rgba(255,240,244,.20);}
+.vault-key.alt{font-size:.8rem;color:rgba(255,240,244,.84);}
+.vault-secret{
+  margin-top:14px;padding:16px 14px;border-radius:20px;
+  background:linear-gradient(145deg,rgba(192,51,85,.18),rgba(255,255,255,.05));
+  border:1px solid rgba(255,240,244,.15);
+  box-shadow:0 12px 28px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.08);
+  display:none;
+}
+.vault-secret.show{display:block;animation:vaultReveal .28s ease;}
+@keyframes vaultReveal{0%{opacity:0;transform:translateY(8px) scale(.98);}100%{opacity:1;transform:translateY(0) scale(1);}}
+.vault-secret-kicker{font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--rose-pale);margin-bottom:8px;text-align:center;}
+.vault-secret-text{font-size:.92rem;line-height:1.6;color:rgba(255,240,244,.90);text-align:center;}
+.vault-reset-btn{
+  margin-top:12px;width:100%;height:44px;border:0;outline:0;border-radius:15px;cursor:pointer;
+  background:rgba(255,255,255,.08);color:var(--cream);font-size:.82rem;font-weight:800;
+  border:1px solid rgba(255,240,244,.12);
+}
+.vault-reset-btn:active{transform:scale(.985);}
+.vault-card.shake{animation:vaultShake .28s linear;}
+@keyframes vaultShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+
 </style>
 </head>
 <body>
@@ -1941,6 +2128,143 @@ html,body{
         </div>
       </div>
 
+
+
+      <!-- HEARTS GAME -->
+      <div class="phone-view hidden" id="view-heart-game">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Corazones</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="heart-game-wrap">
+          <div class="heart-game-head">
+            <div class="heart-game-title">Atrapa los corazones</div>
+            <div class="heart-game-sub">Toca la mayor cantidad de corazones antes de que se termine el tiempo.</div>
+            <div class="heart-game-stats">
+              <div class="heart-stat">
+                <div class="heart-stat-label">Puntos</div>
+                <div class="heart-stat-value" id="heart-score">0</div>
+              </div>
+              <div class="heart-stat">
+                <div class="heart-stat-label">Tiempo</div>
+                <div class="heart-stat-value" id="heart-time">30</div>
+              </div>
+            </div>
+          </div>
+          <div class="heart-game-stage" id="heart-game-stage">
+            <div class="heart-game-overlay" id="heart-game-overlay">
+              <h3>¿Lista para jugar?</h3>
+              <p>Cuando empieces, aparecerán corazones por toda la pantalla. Tócalos rápido para sumar puntos.</p>
+            </div>
+          </div>
+          <div class="heart-game-footer">
+            <div class="heart-game-message" id="heart-game-message">Presiona iniciar para comenzar una ronda de 30 segundos.</div>
+            <button class="heart-start-btn" type="button" id="heart-start-btn" onclick="startHeartGame()">Iniciar juego</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RELATIONSHIP COUNTER -->
+      <div class="phone-view hidden" id="view-counter">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Nuestro tiempo</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="counter-wrap">
+          <div class="counter-hero">
+            <div class="counter-badge">❤ Desde nuestro inicio</div>
+            <div class="counter-title">Nuestro contador</div>
+            <div class="counter-main" id="counter-main">Llevamos juntos <strong>0 días</strong>.</div>
+            <div class="counter-since">Desde el 25 de octubre de 2025</div>
+          </div>
+          <div class="counter-grid">
+            <div class="counter-card">
+              <div class="counter-card-value" id="counter-total-days">0</div>
+              <div class="counter-card-label">Días</div>
+              <div class="counter-card-sub">a tu lado</div>
+            </div>
+            <div class="counter-card">
+              <div class="counter-card-value" id="counter-total-hours">0</div>
+              <div class="counter-card-label">Horas</div>
+              <div class="counter-card-sub">compartidas</div>
+            </div>
+            <div class="counter-card">
+              <div class="counter-card-value" id="counter-total-minutes">0</div>
+              <div class="counter-card-label">Minutos</div>
+              <div class="counter-card-sub">de amorcito</div>
+            </div>
+            <div class="counter-card">
+              <div class="counter-card-value" id="counter-next-anniv">0</div>
+              <div class="counter-card-label">Próximo 25</div>
+              <div class="counter-card-sub">días restantes</div>
+            </div>
+          </div>
+          <div class="counter-note" id="counter-note">Cargando contador…</div>
+        </div>
+      </div>
+
+      <!-- VAULT -->
+      <div class="phone-view hidden" id="view-vault">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Caja fuerte</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="vault-wrap">
+          <div class="vault-card" id="vault-card">
+            <div class="vault-header">
+              <div class="vault-lock-icon">
+                <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+                  <path d="M10.5 15V11.5C10.5 7.9 13.4 5 17 5s6.5 2.9 6.5 6.5V15" stroke="rgba(255,240,244,.86)" stroke-width="2.2" stroke-linecap="round"/>
+                  <rect x="7" y="14" width="20" height="15" rx="5" fill="rgba(255,240,244,.92)"/>
+                  <circle cx="17" cy="21.5" r="2.3" fill="rgba(122,26,53,.85)"/>
+                  <path d="M17 21.5v3.3" stroke="rgba(122,26,53,.85)" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="vault-title">Caja fuerte</div>
+              <div class="vault-sub">Ingresa el código correcto para abrir el mensaje escondido.</div>
+            </div>
+            <div class="vault-dots" id="vault-dots">
+              <div class="vault-dot"></div>
+              <div class="vault-dot"></div>
+              <div class="vault-dot"></div>
+              <div class="vault-dot"></div>
+            </div>
+            <div class="vault-status" id="vault-status">Pista: nuestro día especial en formato <b style="color:#fff">DDMM</b>.</div>
+            <div class="vault-keypad">
+              <button class="vault-key" type="button" onclick="vaultPress('1')">1</button>
+              <button class="vault-key" type="button" onclick="vaultPress('2')">2</button>
+              <button class="vault-key" type="button" onclick="vaultPress('3')">3</button>
+              <button class="vault-key" type="button" onclick="vaultPress('4')">4</button>
+              <button class="vault-key" type="button" onclick="vaultPress('5')">5</button>
+              <button class="vault-key" type="button" onclick="vaultPress('6')">6</button>
+              <button class="vault-key" type="button" onclick="vaultPress('7')">7</button>
+              <button class="vault-key" type="button" onclick="vaultPress('8')">8</button>
+              <button class="vault-key" type="button" onclick="vaultPress('9')">9</button>
+              <button class="vault-key alt" type="button" onclick="vaultPress('clear')">Borrar</button>
+              <button class="vault-key" type="button" onclick="vaultPress('0')">0</button>
+              <button class="vault-key alt" type="button" onclick="vaultPress('back')">⌫</button>
+            </div>
+            <div class="vault-secret" id="vault-secret">
+              <div class="vault-secret-kicker">Mensaje desbloqueado</div>
+              <div class="vault-secret-text">Si lograste abrir esta cajita es porque conoces la fecha que siempre voy a guardar en mi corazón. Gracias por estar conmigo desde el <b style="color:#fff">25 de octubre de 2025</b>. Te amo muchísimo, mi niña bonita. ❤</div>
+              <button class="vault-reset-btn" type="button" onclick="resetVault()">Bloquear de nuevo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /phone-content -->
 
     <div class="ios-banner" id="ios-banner">
@@ -2039,12 +2363,15 @@ function buildGrid() {
   const grid = document.getElementById('apps-grid');
   if (!grid) return;
   const apps = [
-    { cls:'ic-music',   label:'Música',  action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
-    { cls:'ic-voice',   label:'Notas de voz', action:'voice',   svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="4.5" width="8" height="12" rx="4" fill="white" fill-opacity=".92"/><path d="M7.5 12.5a6.5 6.5 0 0013 0" stroke="white" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M14 18v3.2" stroke="white" stroke-opacity=".88" stroke-width="1.7" stroke-linecap="round"/><path d="M10.5 22.5h7" stroke="white" stroke-opacity=".65" stroke-width="1.7" stroke-linecap="round"/><path d="M19.5 8.3c1.3.4 2.2 1.5 2.2 3.2 0 1.7-.9 2.8-2.2 3.2" stroke="rgba(255,255,255,.56)" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
-    { cls:'ic-notes',   label:'Notas',   action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
-    { cls:'ic-reasons', label:'Razones', action:'reasons',    svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S5 18 5 10.5A5.3 5.3 0 0114 6a5.3 5.3 0 019 4.5C23 18 14 24 14 24z" fill="white" fill-opacity=".9"/><path d="M14 9v6" stroke="rgba(183,42,82,.75)" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="18.5" r="1.2" fill="rgba(183,42,82,.75)"/></svg>` },
-    { cls:'ic-chat',    label:'Chat',    action:'chat',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 5h18a2.5 2.5 0 012.5 2.5v9A2.5 2.5 0 0123 19H11l-6 5v-5.5A2.5 2.5 0 012.5 16V7.5A2.5 2.5 0 015 5z" fill="white" fill-opacity=".9"/><path d="M8 10.5h12M8 14.5h8" stroke="rgba(27,139,72,.72)" stroke-width="1.7" stroke-linecap="round"/></svg>` },
-    { cls:'ic-gallery', label:'Galería', action:'gallery',svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
+    { cls:'ic-music',   label:'Música',        action:'music',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="9" cy="20" r="3.5" fill="white" fill-opacity=".85"/><circle cx="20" cy="17" r="3.5" fill="white" fill-opacity=".85"/><path d="M12.5 20V9l11-3v8" stroke="white" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>` },
+    { cls:'ic-voice',   label:'Notas de voz', action:'voice',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="4.5" width="8" height="12" rx="4" fill="white" fill-opacity=".92"/><path d="M7.5 12.5a6.5 6.5 0 0013 0" stroke="white" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M14 18v3.2" stroke="white" stroke-opacity=".88" stroke-width="1.7" stroke-linecap="round"/><path d="M10.5 22.5h7" stroke="white" stroke-opacity=".65" stroke-width="1.7" stroke-linecap="round"/><path d="M19.5 8.3c1.3.4 2.2 1.5 2.2 3.2 0 1.7-.9 2.8-2.2 3.2" stroke="rgba(255,255,255,.56)" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>` },
+    { cls:'ic-notes',   label:'Notas',         action:'notes',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="4" width="16" height="20" rx="3" fill="white" fill-opacity=".9"/><path d="M10 10h8M10 14h8M10 18h5" stroke="rgba(138,91,9,.75)" stroke-width="1.6" stroke-linecap="round"/><path d="M18 4v5h4" fill="rgba(255,214,120,.55)"/></svg>` },
+    { cls:'ic-reasons', label:'Razones',       action:'reasons',     svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S5 18 5 10.5A5.3 5.3 0 0114 6a5.3 5.3 0 019 4.5C23 18 14 24 14 24z" fill="white" fill-opacity=".9"/><path d="M14 9v6" stroke="rgba(183,42,82,.75)" stroke-width="1.8" stroke-linecap="round"/><circle cx="14" cy="18.5" r="1.2" fill="rgba(183,42,82,.75)"/></svg>` },
+    { cls:'ic-chat',    label:'Chat',          action:'chat',        svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 5h18a2.5 2.5 0 012.5 2.5v9A2.5 2.5 0 0123 19H11l-6 5v-5.5A2.5 2.5 0 012.5 16V7.5A2.5 2.5 0 015 5z" fill="white" fill-opacity=".9"/><path d="M8 10.5h12M8 14.5h8" stroke="rgba(27,139,72,.72)" stroke-width="1.7" stroke-linecap="round"/></svg>` },
+    { cls:'ic-gallery', label:'Galería',       action:'gallery',     svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/><rect x="4.5" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="4.5" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="4.5" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><rect x="15" y="15" width="8.5" height="8.5" rx="2" fill="rgba(255,255,255,.22)"/><path d="M5.5 12l3-3.5 2 2.5" stroke="rgba(255,190,210,.7)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 18.8c.6-.6 1.5-.6 2 0 .5-.6 1.4-.6 2 0 0 1-2 2.7-2 2.7s-2-1.7-2-2.7z" fill="rgba(255,160,190,.8)"/></svg>` },
+    { cls:'ic-heartgame', label:'Corazones',   action:'heart-game',  svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 24S6 18.5 6 11.2A4.7 4.7 0 0114 7a4.7 4.7 0 018 4.2C22 18.5 14 24 14 24z" fill="white" fill-opacity=".92"/><path d="M8.3 7.2l1.1-2.4 1.1 2.4 2.5 1.1-2.5 1.1-1.1 2.4-1.1-2.4L5.8 8.3l2.5-1.1z" fill="rgba(255,255,255,.48)"/></svg>` },
+    { cls:'ic-counter', label:'Contador',      action:'counter',     svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="15" r="8.5" fill="white" fill-opacity=".9"/><path d="M14 10.5v5l3 2" stroke="rgba(161,35,75,.78)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 5h7" stroke="rgba(255,255,255,.68)" stroke-width="1.6" stroke-linecap="round"/><path d="M20.7 19.5c.4-.4 1-.4 1.4 0 .4-.4 1-.4 1.4 0 0 .7-1.4 1.8-1.4 1.8s-1.4-1.1-1.4-1.8z" fill="rgba(255,255,255,.52)"/></svg>` },
+    { cls:'ic-vault',   label:'Caja',          action:'vault',       svg:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M10 12V9.8A4 4 0 0114 6a4 4 0 014 3.8V12" stroke="white" stroke-opacity=".86" stroke-width="1.7" stroke-linecap="round"/><rect x="7.5" y="11.5" width="13" height="10" rx="3" fill="white" fill-opacity=".92"/><circle cx="14" cy="16.2" r="1.7" fill="rgba(122,26,53,.85)"/><path d="M14 16.2v2.4" stroke="rgba(122,26,53,.85)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
   ];
   grid.innerHTML = '';
   apps.forEach(a => {
@@ -3278,17 +3605,26 @@ function goHome() {
   if (currentView === 'view-music') stopAndResetMusic();
   if (currentView === 'view-voice-notes') stopAndResetVoiceNotes();
   if (currentView === 'view-notes') showNotesList();
+  if (currentView === 'view-heart-game') stopHeartGame();
+  if (currentView === 'view-counter') stopRelationshipCounter();
+  if (currentView === 'view-vault') resetVault(true);
   showView('view-home', 'backward');
 }
 function openApp(a) {
   if (a !== 'music' && currentView === 'view-music') stopAndResetMusic();
   if (a !== 'voice' && currentView === 'view-voice-notes') stopAndResetVoiceNotes();
-  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', voice:'view-voice-notes', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', secret:'view-secret-message', gallery:'view-gallery' };
+  if (a !== 'heart-game' && currentView === 'view-heart-game') stopHeartGame();
+  if (a !== 'counter' && currentView === 'view-counter') stopRelationshipCounter();
+  if (a !== 'vault' && currentView === 'view-vault') resetVault(true);
+  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', voice:'view-voice-notes', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', secret:'view-secret-message', gallery:'view-gallery', 'heart-game':'view-heart-game', counter:'view-counter', vault:'view-vault' };
   if (a === 'music') buildMusic();
   if (a === 'voice') buildVoiceNotes();
   if (a === 'notes') buildNotes();
   if (a === 'reasons') buildReasons();
   if (a === 'chat') buildChat();
+  if (a === 'heart-game') initHeartGame();
+  if (a === 'counter') startRelationshipCounter();
+  if (a === 'vault') resetVault(true);
   if (map[a]) showView(map[a], 'forward');
 }
 
@@ -3415,6 +3751,296 @@ function finishCall() {
   resetCallUI();
   if (callDest === 'home') showView('view-home','backward');
   else showView('view-phone-app','backward');
+}
+
+
+
+// ── HEARTS GAME ──
+let heartGameRunning = false;
+let heartGameScore = 0;
+let heartGameTimeLeft = 30;
+let heartGameTicker = null;
+let heartGameSpawner = null;
+let heartGameTimeouts = [];
+
+function setHeartGameMessage(msg) {
+  const el = document.getElementById('heart-game-message');
+  if (el) el.innerHTML = msg;
+}
+
+function updateHeartGameStats() {
+  const scoreEl = document.getElementById('heart-score');
+  const timeEl = document.getElementById('heart-time');
+  if (scoreEl) scoreEl.textContent = String(heartGameScore);
+  if (timeEl) timeEl.textContent = String(heartGameTimeLeft);
+}
+
+function clearHeartTargets() {
+  const stage = document.getElementById('heart-game-stage');
+  if (!stage) return;
+  stage.querySelectorAll('.heart-target').forEach(el => el.remove());
+}
+
+function clearHeartGameTimers() {
+  if (heartGameTicker) { clearInterval(heartGameTicker); heartGameTicker = null; }
+  if (heartGameSpawner) { clearInterval(heartGameSpawner); heartGameSpawner = null; }
+  heartGameTimeouts.forEach(id => clearTimeout(id));
+  heartGameTimeouts = [];
+}
+
+function initHeartGame() {
+  clearHeartGameTimers();
+  heartGameRunning = false;
+  heartGameScore = 0;
+  heartGameTimeLeft = 30;
+  updateHeartGameStats();
+  clearHeartTargets();
+  const stage = document.getElementById('heart-game-stage');
+  const overlay = document.getElementById('heart-game-overlay');
+  const btn = document.getElementById('heart-start-btn');
+  if (stage) stage.classList.remove('running');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.innerHTML = '<h3>¿Lista para jugar?</h3><p>Cuando empieces, aparecerán corazones por toda la pantalla. Tócalos rápido para sumar puntos.</p>';
+  }
+  if (btn) btn.textContent = 'Iniciar juego';
+  setHeartGameMessage('Presiona iniciar para comenzar una ronda de 30 segundos.');
+}
+
+function spawnHeartTarget() {
+  const stage = document.getElementById('heart-game-stage');
+  if (!stage || !heartGameRunning) return;
+  const heart = document.createElement('button');
+  heart.type = 'button';
+  heart.className = 'heart-target';
+  const size = 24 + Math.floor(Math.random() * 22);
+  const padding = 12;
+  const rect = stage.getBoundingClientRect();
+  const maxX = Math.max(padding, rect.width - size - padding);
+  const maxY = Math.max(88, rect.height - size - 18);
+  heart.style.left = `${Math.floor(Math.random() * maxX)}px`;
+  heart.style.top = `${Math.floor(48 + Math.random() * (maxY - 48))}px`;
+  heart.style.fontSize = `${size}px`;
+  heart.setAttribute('aria-label', 'Corazón');
+  heart.innerHTML = '<span>❤</span>';
+  heart.onclick = () => {
+    if (!heartGameRunning) return;
+    heartGameScore += 1;
+    updateHeartGameStats();
+    heart.classList.add('hit');
+    setHeartGameMessage('¡Sigue así! Cada corazón cuenta.');
+    setTimeout(() => heart.remove(), 140);
+  };
+  stage.appendChild(heart);
+  const timeout = setTimeout(() => {
+    if (heart.isConnected) {
+      heart.classList.add('miss');
+      setTimeout(() => heart.remove(), 160);
+    }
+  }, 1200 + Math.floor(Math.random() * 350));
+  heartGameTimeouts.push(timeout);
+}
+
+function startHeartGame() {
+  const stage = document.getElementById('heart-game-stage');
+  const overlay = document.getElementById('heart-game-overlay');
+  const btn = document.getElementById('heart-start-btn');
+  if (!stage || !overlay || !btn) return;
+  clearHeartGameTimers();
+  clearHeartTargets();
+  heartGameRunning = true;
+  heartGameScore = 0;
+  heartGameTimeLeft = 30;
+  updateHeartGameStats();
+  stage.classList.add('running');
+  overlay.classList.add('hidden');
+  btn.textContent = 'Reiniciar juego';
+  setHeartGameMessage('¡Corre! Toca todos los corazones que puedas.');
+  for (let i = 0; i < 4; i++) {
+    const timeout = setTimeout(spawnHeartTarget, i * 140);
+    heartGameTimeouts.push(timeout);
+  }
+  heartGameSpawner = setInterval(spawnHeartTarget, 540);
+  heartGameTicker = setInterval(() => {
+    heartGameTimeLeft -= 1;
+    updateHeartGameStats();
+    if (heartGameTimeLeft <= 0) finishHeartGame();
+  }, 1000);
+}
+
+function finishHeartGame() {
+  clearHeartGameTimers();
+  heartGameRunning = false;
+  const stage = document.getElementById('heart-game-stage');
+  const overlay = document.getElementById('heart-game-overlay');
+  if (stage) stage.classList.remove('running');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.innerHTML = `<h3>Ronda terminada</h3><p>Lograste atrapar <b style="color:#fff">${heartGameScore}</b> corazones. ¿Quieres intentarlo otra vez?</p>`;
+  }
+  let msg = 'Jugaste una ronda muy linda. Presiona reiniciar para volver a intentarlo.';
+  if (heartGameScore >= 35) msg = '¡Récord hermoso! Eres toda una experta atrapando corazones. ❤';
+  else if (heartGameScore >= 20) msg = 'Muy bien hecho. Repartiste muchísimo amorcito en esta ronda.';
+  else if (heartGameScore >= 10) msg = 'Nada mal. La próxima ronda seguro atrapas todavía más.';
+  setHeartGameMessage(msg);
+}
+
+function stopHeartGame() {
+  clearHeartGameTimers();
+  heartGameRunning = false;
+  clearHeartTargets();
+  const stage = document.getElementById('heart-game-stage');
+  const overlay = document.getElementById('heart-game-overlay');
+  if (stage) stage.classList.remove('running');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.innerHTML = '<h3>¿Lista para jugar?</h3><p>Cuando empieces, aparecerán corazones por toda la pantalla. Tócalos rápido para sumar puntos.</p>';
+  }
+}
+
+// ── RELATIONSHIP COUNTER ──
+const RELATIONSHIP_START = new Date(2025, 9, 25, 0, 0, 0);
+let relationshipCounterTimer = null;
+
+function getRelationshipYMD(from, to) {
+  let years = to.getFullYear() - from.getFullYear();
+  let months = to.getMonth() - from.getMonth();
+  let days = to.getDate() - from.getDate();
+  if (days < 0) {
+    const prevMonthDays = new Date(to.getFullYear(), to.getMonth(), 0).getDate();
+    days += prevMonthDays;
+    months -= 1;
+  }
+  if (months < 0) {
+    months += 12;
+    years -= 1;
+  }
+  return { years, months, days };
+}
+
+function getDaysUntilNext25(now) {
+  const day = 25;
+  let target = new Date(now.getFullYear(), now.getMonth(), day, 0, 0, 0);
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetStart = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  if (todayStart > targetStart) target = new Date(now.getFullYear(), now.getMonth() + 1, day, 0, 0, 0);
+  const diff = target - todayStart;
+  return Math.round(diff / 86400000);
+}
+
+function updateRelationshipCounter() {
+  const now = new Date();
+  const diff = Math.max(0, now - RELATIONSHIP_START);
+  const totalDays = Math.floor(diff / 86400000);
+  const totalHours = Math.floor(diff / 3600000);
+  const totalMinutes = Math.floor(diff / 60000);
+  const exact = getRelationshipYMD(RELATIONSHIP_START, now);
+  const next25 = getDaysUntilNext25(now);
+  const main = document.getElementById('counter-main');
+  const daysEl = document.getElementById('counter-total-days');
+  const hoursEl = document.getElementById('counter-total-hours');
+  const minutesEl = document.getElementById('counter-total-minutes');
+  const nextEl = document.getElementById('counter-next-anniv');
+  const noteEl = document.getElementById('counter-note');
+  if (main) main.innerHTML = `Llevamos juntos <strong>${exact.years} años, ${exact.months} meses y ${exact.days} días</strong>.`;
+  if (daysEl) daysEl.textContent = totalDays.toLocaleString('es-MX');
+  if (hoursEl) hoursEl.textContent = totalHours.toLocaleString('es-MX');
+  if (minutesEl) minutesEl.textContent = totalMinutes.toLocaleString('es-MX');
+  if (nextEl) nextEl.textContent = String(next25);
+  if (noteEl) {
+    if (next25 === 0) noteEl.innerHTML = '❤ <b>Hoy es día 25</b>. Toca celebrar otro mes juntos.';
+    else if (next25 === 1) noteEl.innerHTML = '❤ Falta <b>1 día</b> para volver a llegar al 25.';
+    else noteEl.innerHTML = `❤ Faltan <b>${next25} días</b> para volver a llegar al 25 y seguir sumando recuerdos.`;
+  }
+}
+
+function startRelationshipCounter() {
+  stopRelationshipCounter();
+  updateRelationshipCounter();
+  relationshipCounterTimer = setInterval(updateRelationshipCounter, 1000);
+}
+
+function stopRelationshipCounter() {
+  if (relationshipCounterTimer) {
+    clearInterval(relationshipCounterTimer);
+    relationshipCounterTimer = null;
+  }
+}
+
+// ── VAULT ──
+const VAULT_PIN = '2510';
+let vaultInput = '';
+
+function updateVaultDots() {
+  const dots = document.querySelectorAll('#vault-dots .vault-dot');
+  dots.forEach((dot, index) => dot.classList.toggle('filled', index < vaultInput.length));
+}
+
+function resetVault(silent=false) {
+  vaultInput = '';
+  updateVaultDots();
+  const status = document.getElementById('vault-status');
+  const secret = document.getElementById('vault-secret');
+  const card = document.getElementById('vault-card');
+  if (status) {
+    status.classList.remove('error');
+    status.innerHTML = silent
+      ? 'Pista: nuestro día especial en formato <b style="color:#fff">DDMM</b>.'
+      : 'Caja fuerte bloqueada de nuevo. Pista: <b style="color:#fff">DDMM</b>.';
+  }
+  if (secret) secret.classList.remove('show');
+  if (card) card.classList.remove('shake');
+}
+
+function unlockVault() {
+  const status = document.getElementById('vault-status');
+  const secret = document.getElementById('vault-secret');
+  if (status) {
+    status.classList.remove('error');
+    status.innerHTML = 'Código correcto. Mensaje desbloqueado. ❤';
+  }
+  if (secret) secret.classList.add('show');
+}
+
+function rejectVault() {
+  const status = document.getElementById('vault-status');
+  const card = document.getElementById('vault-card');
+  if (status) {
+    status.classList.add('error');
+    status.textContent = 'Ese código no es. Inténtalo otra vez.';
+  }
+  if (card) {
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+  }
+  vaultInput = '';
+  updateVaultDots();
+}
+
+function vaultPress(key) {
+  const secret = document.getElementById('vault-secret');
+  if (secret && secret.classList.contains('show')) return;
+  const status = document.getElementById('vault-status');
+  if (status && status.classList.contains('error')) status.classList.remove('error');
+  if (key === 'clear') {
+    vaultInput = '';
+    updateVaultDots();
+    if (status) status.innerHTML = 'Pista: nuestro día especial en formato <b style="color:#fff">DDMM</b>.';
+    return;
+  }
+  if (key === 'back') {
+    vaultInput = vaultInput.slice(0, -1);
+    updateVaultDots();
+    return;
+  }
+  if (!/^[0-9]$/.test(key) || vaultInput.length >= 4) return;
+  vaultInput += key;
+  updateVaultDots();
+  if (vaultInput.length === 4) {
+    if (vaultInput === VAULT_PIN) unlockVault();
+    else setTimeout(rejectVault, 120);
+  }
 }
 
 // ════════════════════════════════════════════
