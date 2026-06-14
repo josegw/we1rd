@@ -1842,6 +1842,110 @@ html,body{
   background:#0A0003;
 }
 
+
+
+/* ══ APP: Nuestro ijito ══ */
+.ic-pet{background:linear-gradient(145deg,#A8244D,#4F0C22);}
+#view-pet{background:#0A0003;overflow:hidden;}
+.pet-wrap{
+  flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 14px 18px;display:flex;flex-direction:column;gap:12px;
+  background:
+    radial-gradient(ellipse at 24% 8%,rgba(240,184,200,.16),transparent 44%),
+    radial-gradient(ellipse at 82% 92%,rgba(107,18,40,.26),transparent 56%),
+    linear-gradient(180deg,#0A0003 0%,#130006 100%);
+}
+.pet-title-card{
+  border-radius:22px;padding:15px 15px 13px;text-align:center;
+  background:linear-gradient(145deg,rgba(255,240,244,.10),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.12);
+  box-shadow:0 10px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.pet-kicker{font-size:.68rem;letter-spacing:.10em;text-transform:uppercase;font-weight:900;color:var(--rose-pale);}
+.pet-name{font-size:1.38rem;font-weight:950;color:var(--cream);letter-spacing:-.03em;margin-top:4px;}
+.pet-sub{font-size:.78rem;line-height:1.45;color:rgba(255,255,255,.56);margin-top:5px;}
+.pet-stage{
+  min-height:292px;border-radius:28px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:
+    radial-gradient(circle at 50% 20%,rgba(255,255,255,.12),transparent 32%),
+    radial-gradient(circle at 20% 76%,rgba(192,51,85,.18),transparent 30%),
+    linear-gradient(180deg,#21000A 0%,#0B0003 100%);
+  border:1px solid rgba(255,240,244,.13);
+  box-shadow:0 16px 42px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);
+  isolation:isolate;
+}
+.pet-stage::before{
+  content:'';position:absolute;left:24px;right:24px;bottom:32px;height:28px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,0,0,.38),transparent 68%);filter:blur(2px);z-index:0;
+}
+.pet-star{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,240,244,.55);box-shadow:0 0 12px rgba(240,184,200,.36);}
+.pet-star.s1{left:34px;top:38px;}.pet-star.s2{right:42px;top:62px;width:3px;height:3px;}.pet-star.s3{left:62px;bottom:78px;width:4px;height:4px;}.pet-star.s4{right:74px;bottom:102px;width:3px;height:3px;}
+.pet-speech{
+  position:absolute;top:14px;left:14px;right:14px;z-index:3;
+  min-height:44px;padding:10px 12px;border-radius:18px;
+  background:rgba(255,240,244,.10);border:1px solid rgba(255,240,244,.13);
+  color:rgba(255,240,244,.88);font-size:.82rem;line-height:1.38;text-align:center;
+  box-shadow:0 10px 22px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.pet-creature{
+  position:relative;z-index:2;margin-top:32px;width:190px;height:190px;
+  display:flex;align-items:center;justify-content:center;
+  animation:petBreathe 2.5s ease-in-out infinite;
+  cursor:pointer;touch-action:manipulation;
+}
+.pet-creature.happy{animation:petBreathe 2.5s ease-in-out infinite,petHappy 1.2s ease-in-out infinite;}
+.pet-creature.sleepy{animation:petSleep 3s ease-in-out infinite;}
+.pet-creature.sad{animation:petSad 2s ease-in-out infinite;}
+@keyframes petBreathe{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.015);}}
+@keyframes petHappy{0%,100%{rotate:-1deg;}50%{rotate:1deg;}}
+@keyframes petSleep{0%,100%{transform:translateY(2px) scale(.99);}50%{transform:translateY(-2px) scale(1.005);}}
+@keyframes petSad{0%,100%{transform:translateY(2px);}50%{transform:translateY(5px);}}
+.pet-creature svg{width:100%;height:100%;filter:drop-shadow(0 14px 28px rgba(192,51,85,.24));}
+.pet-level-pill{
+  position:absolute;right:12px;bottom:12px;z-index:4;border-radius:999px;padding:7px 11px;
+  background:rgba(255,240,244,.10);border:1px solid rgba(255,240,244,.15);
+  color:var(--rose-pale);font-size:.72rem;font-weight:900;letter-spacing:.03em;
+}
+.pet-stats{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:9px;
+}
+.pet-stat{
+  padding:11px;border-radius:17px;
+  background:linear-gradient(145deg,rgba(255,240,244,.09),rgba(255,255,255,.035));
+  border:1px solid rgba(255,240,244,.11);
+  box-shadow:0 7px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.pet-stat-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;}
+.pet-stat-label{font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;font-weight:900;color:rgba(255,240,244,.58);}
+.pet-stat-num{font-size:.78rem;font-weight:900;color:var(--cream);font-variant-numeric:tabular-nums;}
+.pet-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,240,244,.08);}
+.pet-bar span{display:block;height:100%;width:50%;border-radius:999px;background:linear-gradient(90deg,var(--vino-bright),var(--rose-pale));transition:width .35s ease;}
+.pet-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.pet-action-btn{
+  min-height:58px;border:0;outline:0;border-radius:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(145deg,rgba(255,240,244,.13),rgba(255,255,255,.06));
+  border:1px solid rgba(255,240,244,.13);color:var(--cream);
+  font-size:.82rem;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.10);
+}
+.pet-action-btn:active{transform:scale(.975);background:rgba(255,240,244,.15);}
+.pet-action-btn svg{width:23px;height:23px;flex:0 0 23px;}
+.pet-footer-note{
+  padding:11px 13px;border-radius:17px;text-align:center;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,240,244,.10);
+  color:rgba(255,240,244,.66);font-size:.75rem;line-height:1.45;
+}
+.pet-pop{
+  position:absolute;z-index:10;left:50%;top:48%;transform:translate(-50%,-50%);
+  pointer-events:none;color:#fff;font-size:.92rem;font-weight:950;
+  background:rgba(158,30,58,.76);border:1px solid rgba(255,240,244,.25);
+  border-radius:999px;padding:8px 12px;box-shadow:0 10px 25px rgba(0,0,0,.28);
+  animation:petPop .8s ease forwards;
+}
+@keyframes petPop{0%{opacity:0;transform:translate(-50%,-35%) scale(.92);}18%{opacity:1;}100%{opacity:0;transform:translate(-50%,-88%) scale(1.03);}}
+@media (max-height:720px){.pet-stage{min-height:248px}.pet-creature{width:160px;height:160px}.pet-title-card{padding:12px}.pet-name{font-size:1.2rem}.pet-actions{gap:8px}.pet-action-btn{min-height:52px}.pet-wrap{padding-top:10px;gap:10px}}
+
 </style>
 </head>
 <body>
@@ -2451,6 +2555,58 @@ html,body{
         </div>
       </div>
 
+
+
+      <!-- PET APP -->
+      <div class="phone-view hidden" id="view-pet">
+        <div class="app-nav">
+          <div class="back-btn" onclick="goHome()">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5 8 14" stroke="#C03355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Inicio
+          </div>
+          <div class="app-nav-title">Nuestro ijito</div>
+          <div style="min-width:60px;"></div>
+        </div>
+        <div class="pet-wrap">
+          <div class="pet-title-card">
+            <div class="pet-kicker">Mascotita virtual</div>
+            <div class="pet-name">Nuestro ijito</div>
+            <div class="pet-sub">Cuídalo, juega con él y déjalo descansar. Su progreso se guarda en este iPhone.</div>
+          </div>
+          <div class="pet-stage" id="pet-stage">
+            <div class="pet-star s1"></div><div class="pet-star s2"></div><div class="pet-star s3"></div><div class="pet-star s4"></div>
+            <div class="pet-speech" id="pet-speech">Cargando a Nuestro ijito...</div>
+            <div class="pet-creature" id="pet-creature" onclick="petDoAction('pet')"></div>
+            <div class="pet-level-pill" id="pet-level-pill">Nivel 1</div>
+          </div>
+          <div class="pet-stats">
+            <div class="pet-stat"><div class="pet-stat-top"><div class="pet-stat-label">Cariño</div><div class="pet-stat-num" id="pet-love-num">0</div></div><div class="pet-bar"><span id="pet-love-bar"></span></div></div>
+            <div class="pet-stat"><div class="pet-stat-top"><div class="pet-stat-label">Comida</div><div class="pet-stat-num" id="pet-food-num">0</div></div><div class="pet-bar"><span id="pet-food-bar"></span></div></div>
+            <div class="pet-stat"><div class="pet-stat-top"><div class="pet-stat-label">Energía</div><div class="pet-stat-num" id="pet-energy-num">0</div></div><div class="pet-bar"><span id="pet-energy-bar"></span></div></div>
+            <div class="pet-stat"><div class="pet-stat-top"><div class="pet-stat-label">Diversión</div><div class="pet-stat-num" id="pet-fun-num">0</div></div><div class="pet-bar"><span id="pet-fun-bar"></span></div></div>
+          </div>
+          <div class="pet-actions">
+            <button class="pet-action-btn" type="button" onclick="petDoAction('feed')">
+              <svg viewBox="0 0 28 28" fill="none"><path d="M7 15.5h14l-1.3 5.2A4 4 0 0115.8 24h-3.6a4 4 0 01-3.9-3.3L7 15.5z" fill="white" fill-opacity=".9"/><path d="M6 15.5h16" stroke="rgba(255,240,244,.9)" stroke-width="2" stroke-linecap="round"/><path d="M10 10.5c.6-2.6 3.4-3.8 5.1-1.6 1.2-1.5 3.4-1.1 3.9.8.8 3.1-4 5-4 5s-5.7-1.2-5-4.2z" fill="rgba(240,184,200,.72)"/></svg>
+              Comer
+            </button>
+            <button class="pet-action-btn" type="button" onclick="petDoAction('pet')">
+              <svg viewBox="0 0 28 28" fill="none"><path d="M14 24S5 18.5 5 10.8A5 5 0 0114 7a5 5 0 019 3.8C23 18.5 14 24 14 24z" fill="white" fill-opacity=".9"/><path d="M9.5 7.2c.9-2.2 3.1-3.1 4.5-1" stroke="rgba(255,190,210,.78)" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Cariño
+            </button>
+            <button class="pet-action-btn" type="button" onclick="petDoAction('play')">
+              <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="8.5" fill="white" fill-opacity=".9"/><path d="M14 5.5v17M5.5 14h17" stroke="rgba(165,42,80,.70)" stroke-width="1.6" stroke-linecap="round"/><path d="M8 8c3.3 2.2 8.7 2.2 12 0M8 20c3.3-2.2 8.7-2.2 12 0" stroke="rgba(165,42,80,.70)" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Jugar
+            </button>
+            <button class="pet-action-btn" type="button" onclick="petDoAction('sleep')" id="pet-sleep-btn">
+              <svg viewBox="0 0 28 28" fill="none"><path d="M20.5 18.5A8.5 8.5 0 019.5 7.5 8.5 8.5 0 1020.5 18.5z" fill="white" fill-opacity=".9"/><path d="M18.5 6h4l-4 4h4" stroke="rgba(255,190,210,.78)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Dormir
+            </button>
+          </div>
+          <div class="pet-footer-note" id="pet-footer-note">Cuando cierres la PWA, se guarda la última vez que lo viste y al volver simula el tiempo que pasó.</div>
+        </div>
+      </div>
+
     </div><!-- /phone-content -->
 
     <div class="ios-banner" id="ios-banner">
@@ -2557,6 +2713,7 @@ function buildGrid() {
     { cls:'ic-gallery', label:'Galería',       action:'gallery',     svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><rect x="4" y="5" width="21" height="18.5" rx="4" fill="white" fill-opacity=".9"/><circle cx="10" cy="10.5" r="2" fill="rgba(139,21,53,.72)"/><path d="M6.5 21l5.5-6.2 3.8 4 2.7-3.1 4.2 5.3" stroke="rgba(139,21,53,.72)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
     { cls:'ic-heartgame', label:'Corazones',   action:'heart-game',  svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M14.5 15.7s-6.2-4-6.2-8.7c0-2.2 1.7-3.8 3.7-3.8 1.4 0 2.4.7 2.5 1.2.2-.5 1.2-1.2 2.6-1.2 2 0 3.7 1.6 3.7 3.8 0 4.7-6.3 8.7-6.3 8.7z" fill="white" fill-opacity=".92"/><path d="M7.2 17.2h14.6l-2.5 7.2H9.7l-2.5-7.2z" fill="rgba(255,240,244,.82)"/><path d="M6.2 17.2h16.6" stroke="white" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/><path d="M10 17.1c.9-3 8.1-3 9 0" stroke="rgba(255,190,210,.68)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
     { cls:'ic-counter', label:'Contador',      action:'counter',     svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><circle cx="14.5" cy="15.3" r="8.7" fill="white" fill-opacity=".91"/><path d="M14.5 10.5v5.1l3.4 2.2" stroke="rgba(165,42,80,.78)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.2 5.7h8.6" stroke="white" stroke-opacity=".76" stroke-width="1.8" stroke-linecap="round"/><path d="M8 7.4l-1.6 1.7M21 7.4l1.6 1.7" stroke="rgba(255,190,210,.64)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+    { cls:'ic-pet',     label:'Ijito',         action:'pet',         svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M8.2 12.1C8.2 7.8 11 5 14.5 5s6.3 2.8 6.3 7.1v4.7c0 4.1-2.7 6.8-6.3 6.8s-6.3-2.7-6.3-6.8v-4.7z" fill="white" fill-opacity=".92"/><path d="M10 10.2l-3.4-2.9c-.8-.7-2 .2-1.5 1.2l2.2 4.4" fill="rgba(255,240,244,.78)"/><path d="M19 10.2l3.4-2.9c.8-.7 2 .2 1.5 1.2l-2.2 4.4" fill="rgba(255,240,244,.78)"/><circle cx="12.1" cy="15.2" r="1.2" fill="rgba(122,26,53,.86)"/><circle cx="16.9" cy="15.2" r="1.2" fill="rgba(122,26,53,.86)"/><path d="M12.1 18.4c1.5 1.2 3.3 1.2 4.8 0" stroke="rgba(122,26,53,.78)" stroke-width="1.5" stroke-linecap="round"/><path d="M14.5 3.9c1.4-1.7 4-.5 3.6 1.7-.3 2-3.6 3.8-3.6 3.8s-3.3-1.8-3.6-3.8c-.4-2.2 2.2-3.4 3.6-1.7z" fill="rgba(255,190,210,.80)"/></svg>` },
     { cls:'ic-vault',   label:'Caja',          action:'vault',       svg:`<svg width="29" height="29" viewBox="0 0 29 29" fill="none"><path d="M10 12.2V9.8a4.5 4.5 0 019 0v2.4" stroke="white" stroke-opacity=".86" stroke-width="1.8" stroke-linecap="round"/><rect x="7" y="11.5" width="15" height="11.5" rx="3.5" fill="white" fill-opacity=".92"/><circle cx="14.5" cy="16.9" r="1.8" fill="rgba(122,26,53,.86)"/><path d="M14.5 16.9v2.6" stroke="rgba(122,26,53,.86)" stroke-width="1.5" stroke-linecap="round"/></svg>` },
   ];
   grid.innerHTML = '';
@@ -3794,6 +3951,7 @@ function goHome() {
   if (currentView === 'view-heart-game') stopHeartGame();
   if (currentView === 'view-counter') stopRelationshipCounter();
   if (currentView === 'view-vault') resetVault(true);
+  if (currentView === 'view-pet') stopPetApp();
   showView('view-home', 'backward');
 }
 function openApp(a) {
@@ -3802,7 +3960,8 @@ function openApp(a) {
   if (a !== 'heart-game' && currentView === 'view-heart-game') stopHeartGame();
   if (a !== 'counter' && currentView === 'view-counter') stopRelationshipCounter();
   if (a !== 'vault' && currentView === 'view-vault') resetVault(true);
-  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', voice:'view-voice-notes', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', secret:'view-secret-message', gallery:'view-gallery', 'heart-game':'view-heart-game', counter:'view-counter', vault:'view-vault' };
+  if (a !== 'pet' && currentView === 'view-pet') stopPetApp();
+  const map = { contacts:'view-contacts', 'contact-detail':'view-contact-detail', 'phone-app':'view-phone-app', music:'view-music', voice:'view-voice-notes', notes:'view-notes', reasons:'view-reasons', chat:'view-chat-list', secret:'view-secret-message', gallery:'view-gallery', 'heart-game':'view-heart-game', counter:'view-counter', vault:'view-vault', pet:'view-pet' };
   if (a === 'music') buildMusic();
   if (a === 'voice') buildVoiceNotes();
   if (a === 'notes') buildNotes();
@@ -3811,6 +3970,7 @@ function openApp(a) {
   if (a === 'heart-game') initHeartGame();
   if (a === 'counter') startRelationshipCounter();
   if (a === 'vault') resetVault(true);
+  if (a === 'pet') startPetApp();
   if (map[a]) showView(map[a], 'forward');
 }
 
@@ -4468,6 +4628,237 @@ function vaultPress(key) {
     else setTimeout(rejectVault, 120);
   }
 }
+
+
+
+// ── PET APP: Nuestro ijito ──
+const PET_STORAGE_KEY = 'nuestroIjitoState_v1';
+let petState = null;
+let petTimer = null;
+let petLastTick = Date.now();
+
+function petClamp(v) { return Math.max(0, Math.min(100, Math.round(v))); }
+function petNow() { return Date.now(); }
+
+function createDefaultPetState() {
+  return {
+    love: 68,
+    food: 72,
+    energy: 74,
+    fun: 66,
+    level: 1,
+    carePoints: 0,
+    sleeping: false,
+    lastSeen: petNow(),
+    createdAt: petNow(),
+    message: 'Hola. Soy Nuestro ijito. Prometo portarme bonito si me cuidan.'
+  };
+}
+
+function loadPetState() {
+  try {
+    const raw = localStorage.getItem(PET_STORAGE_KEY);
+    petState = raw ? JSON.parse(raw) : createDefaultPetState();
+  } catch(e) {
+    petState = createDefaultPetState();
+  }
+  if (!petState || typeof petState !== 'object') petState = createDefaultPetState();
+  const base = createDefaultPetState();
+  petState = Object.assign(base, petState);
+  applyPetOfflineProgress();
+}
+
+function savePetState() {
+  if (!petState) return;
+  petState.lastSeen = petNow();
+  try { localStorage.setItem(PET_STORAGE_KEY, JSON.stringify(petState)); } catch(e) {}
+}
+
+function applyPetOfflineProgress() {
+  if (!petState) return;
+  const now = petNow();
+  const elapsedHours = Math.max(0, (now - Number(petState.lastSeen || now)) / 3600000);
+  if (elapsedHours <= 0) return;
+  if (petState.sleeping) {
+    petState.energy = petClamp(Number(petState.energy) + elapsedHours * 7);
+    petState.food = petClamp(Number(petState.food) - elapsedHours * 2.4);
+    petState.fun = petClamp(Number(petState.fun) - elapsedHours * 1.5);
+    petState.message = elapsedHours > 1 ? 'Estuve descansando. Ya me siento más tranquilo.' : petState.message;
+  } else {
+    petState.energy = petClamp(Number(petState.energy) - elapsedHours * 3.2);
+    petState.food = petClamp(Number(petState.food) - elapsedHours * 3.8);
+    petState.fun = petClamp(Number(petState.fun) - elapsedHours * 2.4);
+    petState.love = petClamp(Number(petState.love) - elapsedHours * .6);
+    if (elapsedHours > 5) petState.message = 'Te esperé un ratito. Me alegra que volvieras.';
+  }
+  savePetState();
+}
+
+function getPetMood() {
+  if (!petState) return 'normal';
+  if (petState.sleeping) return 'sleepy';
+  if (petState.food < 22 || petState.love < 22 || petState.fun < 20) return 'sad';
+  if (petState.energy < 18) return 'tired';
+  if (petState.love > 82 && petState.food > 60 && petState.fun > 58) return 'happy';
+  return 'normal';
+}
+
+function petSVG(mood) {
+  const eyes = mood === 'sleepy'
+    ? `<path d="M64 88c7 5 14 5 21 0M115 88c7 5 14 5 21 0" stroke="#4b1323" stroke-width="5" stroke-linecap="round"/>`
+    : mood === 'sad'
+      ? `<path d="M63 86c7-5 15-5 22 0M115 86c7-5 15-5 22 0" stroke="#4b1323" stroke-width="5" stroke-linecap="round"/><path d="M79 94c-5 9-11 9-11 16 0 5 4 8 8 8 5 0 8-3 8-8 0-7-5-8-5-16z" fill="#8cc8ff" opacity=".78"/>`
+      : `<circle cx="74" cy="88" r="6" fill="#4b1323"/><circle cx="126" cy="88" r="6" fill="#4b1323"/><circle cx="72" cy="86" r="2" fill="white" opacity=".8"/><circle cx="124" cy="86" r="2" fill="white" opacity=".8"/>`;
+  const mouth = mood === 'sad'
+    ? `<path d="M86 125c8-8 20-8 28 0" stroke="#4b1323" stroke-width="5" stroke-linecap="round" fill="none"/>`
+    : mood === 'sleepy'
+      ? `<path d="M92 116c5 4 11 4 16 0" stroke="#4b1323" stroke-width="5" stroke-linecap="round" fill="none"/>`
+      : `<path d="M83 116c9 12 25 12 34 0" stroke="#4b1323" stroke-width="5" stroke-linecap="round" fill="none"/>`;
+  const blush = mood === 'sad' ? '' : `<ellipse cx="54" cy="104" rx="12" ry="7" fill="#d87593" opacity=".30"/><ellipse cx="146" cy="104" rx="12" ry="7" fill="#d87593" opacity=".30"/>`;
+  const sleepyZ = mood === 'sleepy' ? `<path d="M142 41h22l-22 24h22M155 19h16l-16 17h16" stroke="#F0B8C8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>` : '';
+  const cheekStar = mood === 'happy' ? `<path d="M152 71l4 8 8 4-8 4-4 8-4-8-8-4 8-4 4-8z" fill="#F0B8C8" opacity=".72"/>` : '';
+  return `<svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
+    <path d="M52 65C40 43 47 26 63 27c13 1 24 20 28 31" fill="#F7DCE4" opacity=".92"/>
+    <path d="M148 65c12-22 5-39-11-38-13 1-24 20-28 31" fill="#F7DCE4" opacity=".92"/>
+    <path d="M43 91c0-40 24-67 57-67s57 27 57 67v24c0 38-24 62-57 62s-57-24-57-62V91z" fill="#FFF4F7"/>
+    <path d="M43 91c0-40 24-67 57-67s57 27 57 67v24c0 38-24 62-57 62s-57-24-57-62V91z" fill="url(#petShade)" opacity=".95"/>
+    <path d="M100 17c10-17 36-5 31 15-5 19-31 34-31 34S74 51 69 32c-5-20 21-32 31-15z" fill="#C03355" opacity=".92"/>
+    ${eyes}${mouth}${blush}${sleepyZ}${cheekStar}
+    <path d="M96 101c2 2 6 2 8 0" stroke="#4b1323" stroke-width="4" stroke-linecap="round"/>
+    <path d="M60 150c19 18 61 18 80 0" stroke="#E9B8C8" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+    <defs><linearGradient id="petShade" x1="55" y1="35" x2="148" y2="176"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#F0B8C8"/></linearGradient></defs>
+  </svg>`;
+}
+
+function petSetBar(id, value) {
+  const num = document.getElementById(id + '-num');
+  const bar = document.getElementById(id + '-bar');
+  if (num) num.textContent = String(petClamp(value));
+  if (bar) bar.style.width = petClamp(value) + '%';
+}
+
+function petCareLevel() {
+  if (!petState) return 1;
+  return Math.max(1, Math.floor(Number(petState.carePoints || 0) / 120) + 1);
+}
+
+function renderPetApp() {
+  if (!petState) return;
+  const mood = getPetMood();
+  const pet = document.getElementById('pet-creature');
+  const speech = document.getElementById('pet-speech');
+  const level = document.getElementById('pet-level-pill');
+  const sleepBtn = document.getElementById('pet-sleep-btn');
+  const footer = document.getElementById('pet-footer-note');
+  if (pet) {
+    pet.className = 'pet-creature ' + (mood === 'happy' ? 'happy' : mood === 'sleepy' ? 'sleepy' : mood === 'sad' || mood === 'tired' ? 'sad' : '');
+    pet.innerHTML = petSVG(mood);
+  }
+  const defaultMsg = mood === 'sleepy' ? 'Estoy dormidito. Cuando quieras, me despiertas.'
+    : mood === 'sad' ? 'Necesito un poquito de cuidado y cariño.'
+    : mood === 'tired' ? 'Tengo sueño, pero sigo aquí contigo.'
+    : mood === 'happy' ? 'Estoy muy feliz. Me gusta que vengas a verme.'
+    : 'Estoy tranquilito. ¿Qué hacemos ahora?';
+  if (speech) speech.textContent = petState.message || defaultMsg;
+  petSetBar('pet-love', petState.love);
+  petSetBar('pet-food', petState.food);
+  petSetBar('pet-energy', petState.energy);
+  petSetBar('pet-fun', petState.fun);
+  petState.level = petCareLevel();
+  if (level) level.textContent = 'Nivel ' + petState.level;
+  if (sleepBtn) sleepBtn.lastChild.textContent = petState.sleeping ? ' Despertar' : ' Dormir';
+  if (footer) footer.textContent = petState.sleeping ? 'Mientras duerme recupera energía, pero con el tiempo también puede darle hambre.' : 'Su estado se guarda en este iPhone aunque cierres la PWA.';
+}
+
+function petPop(text) {
+  const stage = document.getElementById('pet-stage');
+  if (!stage) return;
+  const pop = document.createElement('div');
+  pop.className = 'pet-pop';
+  pop.textContent = text;
+  stage.appendChild(pop);
+  setTimeout(() => pop.remove(), 850);
+}
+
+function petDoAction(action) {
+  if (!petState) loadPetState();
+  if (!petState) return;
+  if (action !== 'sleep' && petState.sleeping) {
+    petState.sleeping = false;
+    petState.message = 'Ya desperté. ¿Ahora qué hacemos?';
+  }
+  if (action === 'feed') {
+    petState.food = petClamp(petState.food + 22);
+    petState.love = petClamp(petState.love + 3);
+    petState.energy = petClamp(petState.energy + 2);
+    petState.carePoints = Number(petState.carePoints || 0) + 9;
+    petState.message = 'Gracias por darme comidita. Me siento mejor.';
+    petPop('+ Comida');
+  } else if (action === 'pet') {
+    petState.love = petClamp(petState.love + 16);
+    petState.fun = petClamp(petState.fun + 3);
+    petState.carePoints = Number(petState.carePoints || 0) + 7;
+    petState.message = 'Me gustan los cariñitos. Me hacen sentir querido.';
+    petPop('+ Cariño');
+  } else if (action === 'play') {
+    if (petState.energy < 12) {
+      petState.message = 'Quiero jugar, pero necesito descansar un poquito.';
+      petPop('Cansado');
+    } else {
+      petState.fun = petClamp(petState.fun + 20);
+      petState.love = petClamp(petState.love + 5);
+      petState.energy = petClamp(petState.energy - 12);
+      petState.food = petClamp(petState.food - 5);
+      petState.carePoints = Number(petState.carePoints || 0) + 11;
+      petState.message = 'Eso estuvo divertido. Jugar contigo es mi parte favorita.';
+      petPop('+ Diversión');
+    }
+  } else if (action === 'sleep') {
+    petState.sleeping = !petState.sleeping;
+    petState.message = petState.sleeping ? 'Me voy a dormir un ratito. No te vayas muy lejos.' : 'Ya desperté. Te extrañé mientras dormía.';
+    petPop(petState.sleeping ? 'Durmiendo' : 'Despierto');
+  }
+  savePetState();
+  renderPetApp();
+  try { if (navigator.vibrate) navigator.vibrate(12); } catch(e) {}
+}
+
+function petTick() {
+  if (!petState) return;
+  const now = petNow();
+  const elapsedMinutes = Math.max(0, (now - petLastTick) / 60000);
+  petLastTick = now;
+  if (elapsedMinutes <= 0) return;
+  if (petState.sleeping) {
+    petState.energy = petClamp(Number(petState.energy) + elapsedMinutes * .8);
+    petState.food = petClamp(Number(petState.food) - elapsedMinutes * .15);
+  } else {
+    petState.energy = petClamp(Number(petState.energy) - elapsedMinutes * .12);
+    petState.food = petClamp(Number(petState.food) - elapsedMinutes * .18);
+    petState.fun = petClamp(Number(petState.fun) - elapsedMinutes * .12);
+  }
+  savePetState();
+  renderPetApp();
+}
+
+function startPetApp() {
+  loadPetState();
+  petLastTick = petNow();
+  renderPetApp();
+  stopPetApp(false);
+  petTimer = setInterval(petTick, 15000);
+}
+
+function stopPetApp(save=true) {
+  if (petTimer) {
+    clearInterval(petTimer);
+    petTimer = null;
+  }
+  if (save) savePetState();
+}
+
+window.addEventListener('beforeunload', () => { try { savePetState(); } catch(e) {} });
+document.addEventListener('visibilitychange', () => { if (document.hidden) savePetState(); });
 
 // ════════════════════════════════════════════
 //  BOOT — runs after all functions are defined
