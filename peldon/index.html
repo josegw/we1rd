@@ -1808,6 +1808,40 @@ html,body{
 .counter-reset-btn.visible{display:block;}.counter-nav-btn:active,.counter-reset-btn:active{transform:scale(.985);}
 @media (max-height:720px){#view-counter .counter-wrap{padding-top:10px !important;padding-bottom:12px !important;gap:10px !important;justify-content:flex-start !important;overflow-y:auto !important;}.counter-swipe-title{font-size:1.05rem;}.counter-deck{height:330px;min-height:300px;max-height:none;}.counter-card-icon{width:62px;height:62px;border-radius:21px;margin-bottom:14px;}.counter-card-value-big{font-size:2.8rem;}}
 
+
+
+/* ══ FIX: contador con tarjetas opacas para que no se vean las de atrás ══ */
+.counter-swipe-card{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,240,244,.10),transparent 36%),
+    linear-gradient(145deg,#2A000B 0%,#170005 54%,#0B0003 100%) !important;
+  border:1px solid rgba(255,240,244,.18) !important;
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.72),
+    0 0 0 1px rgba(192,51,85,.18),
+    inset 0 1px 0 rgba(255,255,255,.11) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+.counter-swipe-card.active{
+  opacity:1 !important;
+  z-index:5 !important;
+}
+.counter-swipe-card.prev,
+.counter-swipe-card.next{
+  opacity:0 !important;
+  pointer-events:none !important;
+  filter:none !important;
+}
+.counter-swipe-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  border-radius:30px;
+  background:#0A0003;
+}
+
 </style>
 </head>
 <body>
