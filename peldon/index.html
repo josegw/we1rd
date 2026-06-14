@@ -1776,6 +1776,38 @@ html,body{
 .vault-video-screen.show{display:flex;}
 .vault-video-screen video{width:100%;height:100%;object-fit:contain;background:#000;}
 
+
+
+/* ══ FINAL: Contador con tarjetas swipe ══ */
+#view-counter{overflow:hidden !important;}
+#view-counter .counter-wrap{
+  flex:1 !important;min-height:0 !important;overflow:hidden !important;
+  padding:16px 14px 18px !important;display:flex !important;flex-direction:column !important;
+  justify-content:center !important;gap:14px !important;
+  background:radial-gradient(ellipse at 24% 8%,rgba(240,184,200,.14),transparent 42%),radial-gradient(ellipse at 80% 92%,rgba(158,30,58,.22),transparent 55%),linear-gradient(180deg,#0A0003 0%,#120005 100%) !important;
+}
+.counter-swipe-title{color:var(--cream);font-size:1.22rem;font-weight:900;line-height:1.22;letter-spacing:-.03em;text-align:center;max-width:300px;margin:0 auto 2px;text-shadow:0 8px 32px rgba(192,51,85,.32);}
+.counter-swipe-sub{color:rgba(255,240,244,.58);font-size:.76rem;line-height:1.42;text-align:center;margin-top:-6px;}
+.counter-deck{position:relative;width:100%;height:392px;max-height:58vh;min-height:330px;perspective:1200px;touch-action:pan-y;user-select:none;-webkit-user-select:none;}
+.counter-swipe-card{position:absolute;inset:0;border-radius:30px;padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 0%,rgba(255,240,244,.16),transparent 35%),linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035));border:1px solid rgba(255,240,244,.15);box-shadow:0 26px 70px rgba(0,0,0,.52),0 0 0 1px rgba(192,51,85,.12),inset 0 1px 0 rgba(255,255,255,.10);opacity:0;transform:translateX(42px) scale(.92) rotateY(-8deg);pointer-events:none;transition:transform .34s cubic-bezier(.2,.8,.2,1),opacity .28s ease,filter .28s ease;overflow:hidden;}
+.counter-swipe-card::before{content:'';position:absolute;inset:18px;border:1px solid rgba(255,240,244,.10);border-radius:24px;pointer-events:none;}
+.counter-swipe-card.active{opacity:1;transform:translateX(0) scale(1) rotateY(0);pointer-events:auto;z-index:3;}
+.counter-swipe-card.prev{opacity:.18;transform:translateX(-44px) scale(.9) rotateY(8deg);filter:blur(.2px);z-index:1;}
+.counter-swipe-card.next{opacity:.28;transform:translateX(44px) scale(.92) rotateY(-8deg);z-index:2;}
+.counter-card-icon{width:72px;height:72px;border-radius:24px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;background:linear-gradient(145deg,rgba(192,51,85,.30),rgba(255,255,255,.08));border:1px solid rgba(255,240,244,.16);box-shadow:0 12px 30px rgba(192,51,85,.22),inset 0 1px 0 rgba(255,255,255,.12);}
+.counter-card-value-big{color:#fff;font-size:3.45rem;line-height:.92;font-weight:950;letter-spacing:-.06em;font-variant-numeric:tabular-nums;text-shadow:0 10px 34px rgba(192,51,85,.30);max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+.counter-card-unit{margin-top:12px;color:var(--rose-pale);font-size:1rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+.counter-card-caption{margin-top:11px;color:rgba(255,240,244,.66);font-size:.82rem;line-height:1.45;max-width:235px;}
+.counter-progress-dots{display:flex;align-items:center;justify-content:center;gap:7px;min-height:12px;}
+.counter-dot{width:7px;height:7px;border-radius:999px;background:rgba(255,240,244,.20);transition:width .22s ease,background .22s ease,opacity .22s ease;}
+.counter-dot.active{width:24px;background:linear-gradient(90deg,var(--vino-bright),var(--vino-light));opacity:1;}
+.counter-nav-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.counter-nav-btn,.counter-reset-btn{height:44px;border:0;outline:0;border-radius:16px;cursor:pointer;color:var(--cream);font-size:.82rem;font-weight:850;background:rgba(255,255,255,.075);border:1px solid rgba(255,240,244,.12);box-shadow:0 7px 18px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.06);}
+.counter-nav-btn{width:46%;}.counter-nav-btn:disabled{opacity:.34;pointer-events:none;}
+.counter-reset-btn{display:none;width:100%;background:linear-gradient(135deg,var(--vino-bright),var(--vino-light));box-shadow:0 9px 24px rgba(192,51,85,.34),inset 0 1px 0 rgba(255,255,255,.18);}
+.counter-reset-btn.visible{display:block;}.counter-nav-btn:active,.counter-reset-btn:active{transform:scale(.985);}
+@media (max-height:720px){#view-counter .counter-wrap{padding-top:10px !important;padding-bottom:12px !important;gap:10px !important;justify-content:flex-start !important;overflow-y:auto !important;}.counter-swipe-title{font-size:1.05rem;}.counter-deck{height:330px;min-height:300px;max-height:none;}.counter-card-icon{width:62px;height:62px;border-radius:21px;margin-bottom:14px;}.counter-card-value-big{font-size:2.8rem;}}
+
 </style>
 </head>
 <body>
@@ -2336,38 +2368,17 @@ html,body{
           <div style="min-width:60px;"></div>
         </div>
         <div class="counter-wrap">
-          <div class="counter-hero">
-            <div class="counter-badge">Desde nuestro inicio</div>
-            <div class="counter-title">Nuestro contador</div>
-            <div class="counter-main" id="counter-main">Llevamos juntos <strong>0 días</strong>.</div>
-            <div class="counter-since">Desde el 25 de octubre de 2025</div>
+          <div class="counter-swipe-title">Tiempo que llevo siendo la persona mas feliz del universo</div>
+          <div class="counter-swipe-sub">Desliza las tarjetas de derecha a izquierda.</div>
+          <div class="counter-deck" id="counter-deck"></div>
+          <div class="counter-progress-dots" id="counter-progress-dots"></div>
+          <div class="counter-nav-row" id="counter-nav-row">
+            <button class="counter-nav-btn" type="button" id="counter-prev-btn" onclick="counterPrevCard()">Anterior</button>
+            <button class="counter-nav-btn" type="button" id="counter-next-btn" onclick="counterNextCard()">Siguiente</button>
           </div>
-          <div class="counter-grid">
-            <div class="counter-card">
-              <div class="counter-card-value" id="counter-total-days">0</div>
-              <div class="counter-card-label">Días</div>
-              <div class="counter-card-sub">a tu lado</div>
-            </div>
-            <div class="counter-card">
-              <div class="counter-card-value" id="counter-total-hours">0</div>
-              <div class="counter-card-label">Horas</div>
-              <div class="counter-card-sub">compartidas</div>
-            </div>
-            <div class="counter-card">
-              <div class="counter-card-value" id="counter-total-minutes">0</div>
-              <div class="counter-card-label">Minutos</div>
-              <div class="counter-card-sub">de amorcito</div>
-            </div>
-            <div class="counter-card">
-              <div class="counter-card-value" id="counter-next-anniv">0</div>
-              <div class="counter-card-label">Próximo 25</div>
-              <div class="counter-card-sub">días restantes</div>
-            </div>
-          </div>
-          <div class="counter-note" id="counter-note">Cargando contador…</div>
+          <button class="counter-reset-btn" type="button" id="counter-reset-btn" onclick="counterResetCards()">Reiniciar</button>
         </div>
       </div>
-
 
       <!-- VAULT -->
       <div class="phone-view hidden" id="view-vault">
@@ -4145,61 +4156,141 @@ function stopHeartGame() {
 // ── RELATIONSHIP COUNTER ──
 const RELATIONSHIP_START = new Date(2025, 9, 25, 0, 0, 0);
 let relationshipCounterTimer = null;
+let counterCardIndex = 0;
+let counterSwipeStartX = 0;
+let counterSwipeStartY = 0;
+let counterSwipeDragging = false;
 
-function getRelationshipYMD(from, to) {
-  let years = to.getFullYear() - from.getFullYear();
-  let months = to.getMonth() - from.getMonth();
-  let days = to.getDate() - from.getDate();
-  if (days < 0) {
-    const prevMonthDays = new Date(to.getFullYear(), to.getMonth(), 0).getDate();
-    days += prevMonthDays;
-    months -= 1;
-  }
-  if (months < 0) {
-    months += 12;
-    years -= 1;
-  }
-  return { years, months, days };
+function counterIconSvg(type) {
+  const common = 'stroke="rgba(255,240,244,.86)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+  if (type === 'months') return `<svg width="36" height="36" viewBox="0 0 36 36"><rect x="7" y="8" width="22" height="21" rx="5" ${common}/><path d="M12 6v5M24 6v5M8 15h20" ${common}/><path d="M12 20h4M20 20h4M12 25h4" stroke="rgba(240,184,200,.72)" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+  if (type === 'weeks') return `<svg width="36" height="36" viewBox="0 0 36 36"><path d="M8 18a10 10 0 102.9-7.1" ${common}/><path d="M8 10v7h7" ${common}/><path d="M18 12v7l4 2" stroke="rgba(240,184,200,.72)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+  if (type === 'days') return `<svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="9" stroke="rgba(255,240,244,.86)" stroke-width="1.8" fill="none"/><path d="M18 5v3M18 28v3M5 18h3M28 18h3M9.5 9.5l2.1 2.1M24.4 24.4l2.1 2.1M26.5 9.5l-2.1 2.1M11.6 24.4l-2.1 2.1" stroke="rgba(240,184,200,.72)" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+  if (type === 'hours') return `<svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="12" ${common}/><path d="M18 11v8l5 3" stroke="rgba(240,184,200,.76)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+  if (type === 'minutes') return `<svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="12" ${common}/><path d="M18 18l-5 5M18 18l6-8" stroke="rgba(240,184,200,.76)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18 6v3M18 27v3" ${common}/></svg>`;
+  return `<svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="12" ${common}/><path d="M18 18V9" stroke="rgba(240,184,200,.76)" stroke-width="2" stroke-linecap="round"/><path d="M18 18l5 4" stroke="rgba(240,184,200,.76)" stroke-width="2" stroke-linecap="round"/><path d="M15 4h6" ${common}/></svg>`;
 }
 
-function getDaysUntilNext25(now) {
-  const day = 25;
-  let target = new Date(now.getFullYear(), now.getMonth(), day, 0, 0, 0);
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const targetStart = new Date(target.getFullYear(), target.getMonth(), target.getDate());
-  if (todayStart > targetStart) target = new Date(now.getFullYear(), now.getMonth() + 1, day, 0, 0, 0);
-  const diff = target - todayStart;
-  return Math.round(diff / 86400000);
+function formatCounterNumber(value) {
+  return Math.max(0, Math.floor(value)).toLocaleString('es-MX');
+}
+
+function getCounterValues() {
+  const now = new Date();
+  const diff = Math.max(0, now - RELATIONSHIP_START);
+  const totalSeconds = Math.floor(diff / 1000);
+  const totalMinutes = Math.floor(diff / 60000);
+  const totalHours = Math.floor(diff / 3600000);
+  const totalDays = Math.floor(diff / 86400000);
+  const totalWeeks = Math.floor(totalDays / 7);
+  let totalMonths = (now.getFullYear() - RELATIONSHIP_START.getFullYear()) * 12 + (now.getMonth() - RELATIONSHIP_START.getMonth());
+  if (now.getDate() < RELATIONSHIP_START.getDate()) totalMonths -= 1;
+  totalMonths = Math.max(0, totalMonths);
+  return [
+    { type:'months',  unit:'Meses',    value:totalMonths,   caption:'La primera forma de medir todo este tiempo juntos.' },
+    { type:'weeks',   unit:'Semanas',  value:totalWeeks,    caption:'Cada semana sumando recuerdos contigo.' },
+    { type:'days',    unit:'Dias',     value:totalDays,     caption:'Dias completos siendo feliz desde nuestro inicio.' },
+    { type:'hours',   unit:'Horas',    value:totalHours,    caption:'Horas que se sienten mas bonitas por estar contigo.' },
+    { type:'minutes', unit:'Minutos',  value:totalMinutes,  caption:'Minutos que cuentan porque todos llevan algo de ti.' },
+    { type:'seconds', unit:'Segundos', value:totalSeconds,  caption:'Hasta los segundos cuentan desde que estas conmigo.' }
+  ];
+}
+
+function buildCounterCards() {
+  const deck = document.getElementById('counter-deck');
+  const dots = document.getElementById('counter-progress-dots');
+  if (!deck || !dots) return;
+  const cards = getCounterValues();
+  deck.innerHTML = cards.map((card, index) => `
+    <div class="counter-swipe-card" data-index="${index}">
+      <div class="counter-card-icon">${counterIconSvg(card.type)}</div>
+      <div class="counter-card-value-big" id="counter-value-${index}">${formatCounterNumber(card.value)}</div>
+      <div class="counter-card-unit">${card.unit}</div>
+      <div class="counter-card-caption">${card.caption}</div>
+    </div>
+  `).join('');
+  dots.innerHTML = cards.map((_, index) => `<div class="counter-dot" data-index="${index}"></div>`).join('');
+  deck.onpointerdown = counterPointerDown;
+  deck.onpointermove = counterPointerMove;
+  deck.onpointerup = counterPointerUp;
+  deck.onpointercancel = counterPointerUp;
+  renderCounterCards();
+}
+
+function renderCounterCards() {
+  const cards = document.querySelectorAll('.counter-swipe-card');
+  const dots = document.querySelectorAll('.counter-dot');
+  const prev = document.getElementById('counter-prev-btn');
+  const next = document.getElementById('counter-next-btn');
+  const row = document.getElementById('counter-nav-row');
+  const reset = document.getElementById('counter-reset-btn');
+  const last = cards.length - 1;
+  cards.forEach((card, index) => {
+    card.classList.remove('active','prev','next');
+    if (index === counterCardIndex) card.classList.add('active');
+    else if (index === counterCardIndex - 1) card.classList.add('prev');
+    else if (index === counterCardIndex + 1) card.classList.add('next');
+  });
+  dots.forEach((dot, index) => dot.classList.toggle('active', index === counterCardIndex));
+  if (prev) prev.disabled = counterCardIndex === 0;
+  if (next) next.disabled = counterCardIndex === last;
+  if (row) row.style.display = counterCardIndex === last ? 'none' : 'flex';
+  if (reset) reset.classList.toggle('visible', counterCardIndex === last);
 }
 
 function updateRelationshipCounter() {
-  const now = new Date();
-  const diff = Math.max(0, now - RELATIONSHIP_START);
-  const totalDays = Math.floor(diff / 86400000);
-  const totalHours = Math.floor(diff / 3600000);
-  const totalMinutes = Math.floor(diff / 60000);
-  const exact = getRelationshipYMD(RELATIONSHIP_START, now);
-  const next25 = getDaysUntilNext25(now);
-  const main = document.getElementById('counter-main');
-  const daysEl = document.getElementById('counter-total-days');
-  const hoursEl = document.getElementById('counter-total-hours');
-  const minutesEl = document.getElementById('counter-total-minutes');
-  const nextEl = document.getElementById('counter-next-anniv');
-  const noteEl = document.getElementById('counter-note');
-  if (main) main.innerHTML = `Llevamos juntos <strong>${exact.years} años, ${exact.months} meses y ${exact.days} días</strong>.`;
-  if (daysEl) daysEl.textContent = totalDays.toLocaleString('es-MX');
-  if (hoursEl) hoursEl.textContent = totalHours.toLocaleString('es-MX');
-  if (minutesEl) minutesEl.textContent = totalMinutes.toLocaleString('es-MX');
-  if (nextEl) nextEl.textContent = String(next25);
-  if (noteEl) {
-    if (next25 === 0) noteEl.innerHTML = '<b>Hoy es día 25</b>. Toca celebrar otro mes juntos.';
-    else if (next25 === 1) noteEl.innerHTML = 'Falta <b>1 día</b> para volver a llegar al 25.';
-    else noteEl.innerHTML = `Faltan <b>${next25} días</b> para volver a llegar al 25 y seguir sumando recuerdos.`;
+  const values = getCounterValues();
+  values.forEach((card, index) => {
+    const el = document.getElementById(`counter-value-${index}`);
+    if (el) el.textContent = formatCounterNumber(card.value);
+  });
+}
+
+function counterNextCard() {
+  const max = document.querySelectorAll('.counter-swipe-card').length - 1;
+  counterCardIndex = Math.min(max, counterCardIndex + 1);
+  renderCounterCards();
+}
+
+function counterPrevCard() {
+  counterCardIndex = Math.max(0, counterCardIndex - 1);
+  renderCounterCards();
+}
+
+function counterResetCards() {
+  counterCardIndex = 0;
+  renderCounterCards();
+}
+
+function counterPointerDown(e) {
+  counterSwipeDragging = true;
+  counterSwipeStartX = e.clientX;
+  counterSwipeStartY = e.clientY;
+  try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err) {}
+}
+
+function counterPointerMove(e) {
+  if (!counterSwipeDragging) return;
+  const dx = e.clientX - counterSwipeStartX;
+  const dy = e.clientY - counterSwipeStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) e.preventDefault();
+}
+
+function counterPointerUp(e) {
+  if (!counterSwipeDragging) return;
+  counterSwipeDragging = false;
+  const dx = e.clientX - counterSwipeStartX;
+  const dy = e.clientY - counterSwipeStartY;
+  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) counterNextCard();
+    else counterPrevCard();
   }
 }
 
 function startRelationshipCounter() {
   stopRelationshipCounter();
+  counterCardIndex = 0;
+  buildCounterCards();
   updateRelationshipCounter();
   relationshipCounterTimer = setInterval(updateRelationshipCounter, 1000);
 }
@@ -4209,8 +4300,8 @@ function stopRelationshipCounter() {
     clearInterval(relationshipCounterTimer);
     relationshipCounterTimer = null;
   }
+  counterSwipeDragging = false;
 }
-
 
 // ── VAULT ──
 const VAULT_PIN = '67210410';
