@@ -1725,6 +1725,7 @@ html,body{
 .heart-game-overlay,.heart-pause-menu{
   position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-direction:column;
   text-align:center;padding:24px;background:rgba(8,0,2,.70);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  pointer-events:auto !important;
 }
 .heart-game-overlay.hidden,.heart-pause-menu.hidden{display:none !important;}
 .heart-panel{
@@ -2302,7 +2303,7 @@ html,body{
                 <h3>Atrapa los corazones</h3>
                 <p>Mueve el dedo de izquierda a derecha para controlar la canasta y recoger los corazones que caen.</p>
                 <div class="heart-panel-actions">
-                  <button class="heart-btn-main" type="button" onclick="startHeartGame()">Empezar</button>
+                  <button class="heart-btn-main" type="button" onclick="startHeartGame()" data-heart-action="start">Empezar</button>
                 </div>
               </div>
             </div>
@@ -3926,7 +3927,14 @@ function setCatcherPosition(clientX) {
 
 function bindHeartControls() {
   const stage = document.getElementById('heart-game-stage');
-  if (!stage || stage.dataset.bound === '1') return;
+  if (!stage) return;
+  stage.querySelectorAll('[data-heart-action="start"]').forEach(btn => {
+    if (btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', startHeartGame);
+    btn.addEventListener('touchend', ev => { ev.preventDefault(); startHeartGame(); }, {passive:false});
+  });
+  if (stage.dataset.bound === '1') return;
   stage.dataset.bound = '1';
   const move = ev => {
     if (!heartGameRunning || heartGamePaused) return;
@@ -3958,7 +3966,7 @@ function resetHeartIntro() {
         </div>
         <h3>Atrapa los corazones</h3>
         <p>Mueve el dedo de izquierda a derecha para controlar la canasta y recoger los corazones que caen.</p>
-        <div class="heart-panel-actions"><button class="heart-btn-main" type="button" onclick="startHeartGame()">Empezar</button></div>
+        <div class="heart-panel-actions"><button class="heart-btn-main" type="button" onclick="startHeartGame()" data-heart-action="start">Empezar</button></div>
       </div>`;
   }
   if (menu) menu.classList.add('hidden');
@@ -3974,6 +3982,7 @@ function initHeartGame() {
   if (catcher) catcher.style.left = '50%';
   updateHeartHUD();
   resetHeartIntro();
+  bindHeartControls();
 }
 
 function spawnFallingHeart() {
