@@ -4629,9 +4629,44 @@ function vaultPress(key) {
 // ── ROULETTE APP ──
 let rouletteRotation = 0;
 let rouletteSpinning = false;
+let rouletteTimers = [];
+let rouletteSpinCount = 0;
+
+function clearRouletteTimers() {
+  rouletteTimers.forEach(id => clearTimeout(id));
+  rouletteTimers = [];
+}
+
+function rouletteAfter(ms, fn) {
+  const id = window.setTimeout(() => {
+    rouletteTimers = rouletteTimers.filter(t => t !== id);
+    fn();
+  }, ms);
+  rouletteTimers.push(id);
+  return id;
+}
+
+function setRouletteMotion(wheel, deg, duration, curve) {
+  wheel.style.transition = `transform ${duration}ms ${curve}`;
+  wheel.style.transform = `rotate(${deg}deg)`;
+}
+
+function finishRouletteSpin() {
+  rouletteSpinning = false;
+  clearRouletteTimers();
+  const btn = document.getElementById('roulette-spin-btn');
+  const result = document.getElementById('roulette-result');
+  if (btn) btn.disabled = false;
+  if (result) {
+    result.classList.add('show');
+    result.textContent = 'La ruleta decidió: Sí.';
+  }
+  try { if (navigator.vibrate) navigator.vibrate([18, 35, 18]); } catch(e) {}
+}
 
 function resetRoulette(opening=false) {
   rouletteSpinning = false;
+  clearRouletteTimers();
   const wheel = document.getElementById('roulette-wheel');
   const btn = document.getElementById('roulette-spin-btn');
   const result = document.getElementById('roulette-result');
@@ -4644,7 +4679,7 @@ function resetRoulette(opening=false) {
     wheel.style.transition = 'none';
     rouletteRotation = 0;
     wheel.style.transform = 'rotate(0deg)';
-    requestAnimationFrame(() => { wheel.style.transition = 'transform 3.05s cubic-bezier(.12,.78,.08,1)'; });
+    requestAnimationFrame(() => { wheel.style.transition = 'transform 300ms ease'; });
   }
 }
 
@@ -4654,27 +4689,81 @@ function spinRoulette() {
   const btn = document.getElementById('roulette-spin-btn');
   const result = document.getElementById('roulette-result');
   if (!wheel || !btn) return;
+
   rouletteSpinning = true;
+  rouletteSpinCount += 1;
+  clearRouletteTimers();
   btn.disabled = true;
   if (result) {
     result.classList.remove('show');
     result.textContent = 'Girando...';
   }
+
   const normalized = ((rouletteRotation % 360) + 360) % 360;
   const backToYes = (360 - normalized) % 360;
-  const extraTurns = 4 + Math.floor(Math.random() * 2);
-  rouletteRotation += extraTurns * 360 + backToYes;
-  wheel.style.transition = 'transform 3.05s cubic-bezier(.12,.78,.08,1)';
-  wheel.style.transform = `rotate(${rouletteRotation}deg)`;
-  window.setTimeout(() => {
-    rouletteSpinning = false;
-    if (btn) btn.disabled = false;
-    if (result) {
-      result.classList.add('show');
-      result.textContent = 'La ruleta decidió: Sí.';
-    }
-    try { if (navigator.vibrate) navigator.vibrate([18, 35, 18]); } catch(e) {}
-  }, 3150);
+  const extraTurns = 4 + Math.floor(Math.random() * 3);
+  const finalTarget = rouletteRotation + extraTurns * 360 + backToYes;
+
+  // 4 estilos distintos para que no se sienta la misma vuelta.
+  // Todos terminan exactamente en el centro del "Sí".
+  const pattern = (rouletteSpinCount + Math.floor(Math.random() * 4)) % 4;
+
+  if (pattern === 0) {
+    // Casi cae en el "No" de al lado, se queda dudando y se acomoda en "Sí".
+    const nearNo = finalTarget - (37 + Math.random() * 9);
+    setRouletteMotion(wheel, nearNo, 2450, 'cubic-bezier(.10,.78,.13,1)');
+    rouletteAfter(2480, () => {
+      if (result) result.textContent = 'Uy... casi.';
+      setRouletteMotion(wheel, finalTarget, 760, 'cubic-bezier(.18,.92,.18,1)');
+    });
+    rouletteAfter(3320, () => {
+      rouletteRotation = finalTarget;
+      finishRouletteSpin();
+    });
+    return;
+  }
+
+  if (pattern === 1) {
+    // Parece que se va a un "No" lejano y al final avanza de golpe hasta "Sí".
+    const farNoOffset = [132, 177, 222][Math.floor(Math.random() * 3)];
+    const farNo = finalTarget - farNoOffset;
+    setRouletteMotion(wheel, farNo, 2350, 'cubic-bezier(.08,.82,.16,1)');
+    rouletteAfter(2380, () => {
+      if (result) result.textContent = 'Espera...';
+      setRouletteMotion(wheel, finalTarget, 820, 'cubic-bezier(.05,.88,.10,1)');
+    });
+    rouletteAfter(3280, () => {
+      rouletteRotation = finalTarget;
+      finishRouletteSpin();
+    });
+    return;
+  }
+
+  if (pattern === 2) {
+    // Frenado con mini rebote: se pasa tantito y regresa al "Sí".
+    const overshoot = finalTarget + (10 + Math.random() * 8);
+    setRouletteMotion(wheel, overshoot, 2850, 'cubic-bezier(.09,.78,.10,1)');
+    rouletteAfter(2880, () => {
+      setRouletteMotion(wheel, finalTarget, 420, 'cubic-bezier(.20,.75,.20,1)');
+    });
+    rouletteAfter(3380, () => {
+      rouletteRotation = finalTarget;
+      finishRouletteSpin();
+    });
+    return;
+  }
+
+  // Giro rápido al inicio, luego suspense lento hasta "Sí".
+  const almostYes = finalTarget - (18 + Math.random() * 10);
+  setRouletteMotion(wheel, almostYes, 2100, 'cubic-bezier(.06,.72,.16,1)');
+  rouletteAfter(2130, () => {
+    if (result) result.textContent = 'Ya casi...';
+    setRouletteMotion(wheel, finalTarget, 980, 'cubic-bezier(.22,.98,.18,1)');
+  });
+  rouletteAfter(3200, () => {
+    rouletteRotation = finalTarget;
+    finishRouletteSpin();
+  });
 }
 
 // ════════════════════════════════════════════
