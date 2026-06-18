@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Horario Escolar</title>
+<style>
+:root{
+  --bg:#0b1020;
+  --panel:#11182b;
+  --panel2:#172036;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --line:#29344f;
+  --accent:#5b8cff;
+  --danger:#ff5d6c;
+  --success:#2dd4bf;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+body{overflow-x:hidden}
+.app{
+  min-height:100vh;
+  padding-top:env(safe-area-inset-top);
+  background:
+    radial-gradient(circle at top right,rgba(91,140,255,.16),transparent 28%),
+    linear-gradient(180deg,#0b1020,#0b1020 35%,#0d1324);
+}
+.topbar{
+  height:70px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 16px;
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(11,16,32,.86);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.menu-btn{
+  width:44px;height:44px;border:0;border-radius:14px;background:var(--panel2);color:#fff;
+  display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.2)
+}
+.menu-icon,.menu-icon::before,.menu-icon::after{
+  content:"";display:block;width:20px;height:2px;background:#fff;border-radius:99px;position:relative
+}
+.menu-icon::before{position:absolute;top:-6px}
+.menu-icon::after{position:absolute;top:6px}
+.title-wrap{min-width:0;flex:1}
+.title{font-size:20px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.clock{
+  font-size:14px;font-weight:800;padding:9px 11px;border-radius:12px;background:var(--panel2);white-space:nowrap
+}
+.main{padding:16px}
+.now-card{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:linear-gradient(135deg,rgba(91,140,255,.24),rgba(45,212,191,.12));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  padding:14px 16px;
+  margin-bottom:14px;
+}
+.now-label{font-size:11px;letter-spacing:.12em;color:#b7c3da;text-transform:uppercase;font-weight:800}
+.now-class{font-size:18px;font-weight:900;margin-top:4px}
+.now-meta{font-size:12px;color:#c5d0e4;margin-top:3px}
+.day-tabs{
+  display:flex;gap:8px;overflow:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none
+}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{
+  flex:0 0 auto;border:0;border-radius:999px;background:var(--panel2);color:var(--muted);
+  padding:10px 14px;font-weight:800;font-size:13px
+}
+.day-tab.active{background:var(--accent);color:#fff}
+.schedule-card{
+  background:rgba(17,24,43,.92);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.28)
+}
+.schedule-head{
+  display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--line)
+}
+.schedule-head strong{font-size:17px}
+.schedule-head span{font-size:12px;color:var(--muted)}
+.timeline{position:relative;padding:12px 12px 22px}
+.hour-row{
+  min-height:78px;
+  display:grid;
+  grid-template-columns:54px 1fr;
+  gap:10px;
+  position:relative;
+}
+.hour-label{
+  color:var(--muted);
+  font-size:12px;
+  text-align:right;
+  padding-top:2px;
+}
+.hour-line{
+  position:absolute;left:64px;right:0;top:0;height:1px;background:var(--line)
+}
+.block{
+  margin-top:4px;
+  border-radius:17px;
+  padding:12px 13px;
+  min-height:64px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 8px 20px rgba(0,0,0,.18)
+}
+.block::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(255,255,255,.75)
+}
+.block-title{font-size:15px;font-weight:900}
+.block-info{font-size:12px;margin-top:4px;opacity:.86}
+.block-time{font-size:11px;margin-top:6px;opacity:.74}
+.block.current{outline:2px solid #fff;outline-offset:2px}
+.empty-day{padding:40px 20px;text-align:center;color:var(--muted)}
+.now-line{
+  position:absolute;left:63px;right:12px;height:2px;background:var(--danger);z-index:5;pointer-events:none
+}
+.now-line::before{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:var(--danger);left:-4px;top:-4px}
+.drawer-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.2s;z-index:50
+}
+.drawer-backdrop.show{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;left:0;bottom:0;width:min(90vw,390px);
+  background:#0f1628;z-index:60;transform:translateX(-100%);transition:.25s ease;
+  box-shadow:24px 0 60px rgba(0,0,0,.4);padding-top:env(safe-area-inset-top);overflow:auto
+}
+.drawer.show{transform:translateX(0)}
+.drawer-head{
+  height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--line)
+}
+.drawer-title{font-size:18px;font-weight:900}
+.close-btn{width:40px;height:40px;border:0;border-radius:12px;background:var(--panel2);color:#fff;font-size:22px}
+.menu-section{padding:14px 16px;border-bottom:1px solid var(--line)}
+.menu-section h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.menu-list{display:grid;gap:8px}
+.menu-item{
+  width:100%;border:0;border-radius:14px;background:var(--panel2);color:#fff;text-align:left;padding:13px 14px;
+  display:flex;align-items:center;justify-content:space-between;font-weight:800
+}
+.menu-item span:last-child{color:var(--muted);font-size:18px}
+.small-note{font-size:12px;color:var(--muted);line-height:1.45;margin:10px 0 0}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;z-index:90;padding:12px
+}
+.modal.show{display:flex}
+.sheet{
+  width:min(640px,100%);max-height:88vh;overflow:auto;background:#11182b;border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:18px;box-shadow:0 20px 70px rgba(0,0,0,.45)
+}
+.sheet h2{margin:0 0 16px;font-size:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}
+input,select{
+  width:100%;border:1px solid var(--line);border-radius:13px;padding:12px;background:#0d1424;color:#fff;outline:none
+}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,140,255,.15)}
+.sheet-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.btn{border:0;border-radius:13px;padding:11px 14px;font-weight:900;background:var(--panel2);color:#fff}
+.btn.primary{background:var(--accent)}
+.btn.danger{background:#3a1720;color:#ff9fab}
+.list{display:grid;gap:9px}
+.list-item{
+  display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#0d1424
+}
+.list-main{flex:1;min-width:0}
+.list-title{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.icon-btn{border:0;border-radius:10px;padding:8px 10px;background:var(--panel2);color:#fff}
+@media(max-width:580px){
+  .form-grid{grid-template-columns:1fr}
+  .main{padding:12px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="menu-btn" id="openMenu" aria-label="Abrir menú"><span class="menu-icon"></span></button>
+    <div class="title-wrap">
+      <div class="title" id="scheduleName">Horario 4° Semestre</div>
+      <div class="sub" id="dateText">Cargando...</div>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </header>
+
+  <main class="main">
+    <section class="now-card">
+      <div>
+        <div class="now-label">Ahora</div>
+        <div class="now-class" id="currentClass">Sin clase</div>
+        <div class="now-meta" id="currentMeta">Fuera del horario</div>
+      </div>
+      <div style="text-align:right">
+        <div class="now-label">Siguiente</div>
+        <div class="now-class" id="nextClass" style="font-size:15px">No hay</div>
+        <div class="now-meta" id="nextMeta">—</div>
+      </div>
+    </section>
+
+    <div class="day-tabs" id="dayTabs"></div>
+
+    <section class="schedule-card">
+      <div class="schedule-head">
+        <strong id="selectedDayTitle">Lunes</strong>
+        <span id="blockCount">0 bloques</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+  </main>
+</div>
+
+<div class="drawer-backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="drawer-title">Configurar horario</div>
+    <button class="close-btn" id="closeMenu">×</button>
+  </div>
+
+  <section class="menu-section">
+    <h3>Horario actual</h3>
+    <div class="menu-list">
+      <button class="menu-item" id="renameSchedule"><span>Cambiar nombre</span><span>›</span></button>
+      <button class="menu-item" id="manageHours"><span>Agregar bloque de horario</span><span>›</span></button>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h3>Contenido</h3>
+    <div class="menu-list">
+      <button class="menu-item" id="manageSubjects"><span>Materias</span><span>›</span></button>
+      <button class="menu-item" id="manageTeachers"><span>Maestros</span><span>›</span></button>
+      <button class="menu-item" id="manageTasks"><span>Tareas</span><span>›</span></button>
+      <button class="menu-item" id="manageBreaks"><span>Recesos y otros</span><span>›</span></button>
+    </div>
+  </section>
+
+  <section class="menu-section">
+    <h3>Datos</h3>
+    <div class="menu-list">
+      <button class="menu-item" id="resetDemo"><span>Restablecer ejemplo</span><span>↻</span></button>
+    </div>
+    <p class="small-note">Todos los cambios se guardan automáticamente en este navegador.</p>
+  </section>
+</aside>
+
+<div class="modal" id="blockModal">
+  <div class="sheet">
+    <h2>Agregar bloque al horario</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>Día</label>
+        <select id="blockDay"></select>
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="blockType">
+          <option value="class">Materia</option>
+          <option value="break">Receso</option>
+          <option value="other">Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Materia o nombre</label>
+        <select id="blockSubject"></select>
+      </div>
+      <div class="field">
+        <label>Maestro</label>
+        <select id="blockTeacher"></select>
+      </div>
+      <div class="field">
+        <label>Inicio</label>
+        <input id="blockStart" type="time" value="07:00">
+      </div>
+      <div class="field">
+        <label>Final</label>
+        <input id="blockEnd" type="time" value="08:00">
+      </div>
+      <div class="field">
+        <label>Salón</label>
+        <input id="blockRoom" placeholder="Ej. A-12">
+      </div>
+      <div class="field">
+        <label>Color</label>
+        <select id="blockColor">
+          <option value="#3b82f6">Azul</option>
+          <option value="#22c55e">Verde</option>
+          <option value="#a855f7">Morado</option>
+          <option value="#f97316">Naranja</option>
+          <option value="#ec4899">Rosa</option>
+          <option value="#eab308">Amarillo</option>
+        </select>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn" data-close="blockModal">Cancelar</button>
+      <button class="btn primary" id="saveBlock">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="simpleModal">
+  <div class="sheet">
+    <h2 id="simpleTitle">Administrar</h2>
+    <div id="simpleContent"></div>
+    <div class="sheet-actions">
+      <button class="btn" data-close="simpleModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TZ="America/Monterrey";
+const KEY="horario-hamburguesa-v2";
+const DAYS=["Lunes","Martes","Miércoles","Jueves","Viernes"];
+
+const demo={
+  name:"Horario 4° Semestre",
+  subjects:[
+    {id:1,name:"Matemáticas",color:"#3b82f6"},
+    {id:2,name:"Inglés",color:"#22c55e"},
+    {id:3,name:"Contabilidad",color:"#a855f7"},
+    {id:4,name:"Historia",color:"#f97316"},
+    {id:5,name:"Química",color:"#ec4899"}
+  ],
+  teachers:[
+    {id:1,name:"Profa. García"},
+    {id:2,name:"Prof. Ramírez"},
+    {id:3,name:"Profa. Lara"},
+    {id:4,name:"Prof. Salazar"},
+    {id:5,name:"Profa. Moreno"}
+  ],
+  blocks:[
+    {id:1,day:1,name:"Matemáticas",teacher:"Profa. García",start:"07:00",end:"08:20",room:"A-12",type:"class",color:"#3b82f6"},
+    {id:2,day:1,name:"Inglés",teacher:"Prof. Ramírez",start:"08:20",end:"09:40",room:"B-03",type:"class",color:"#22c55e"},
+    {id:3,day:1,name:"Receso",teacher:"",start:"09:40",end:"10:10",room:"Patio",type:"break",color:"#eab308"},
+    {id:4,day:1,name:"Contabilidad",teacher:"Profa. Lara",start:"10:10",end:"11:30",room:"C-05",type:"class",color:"#a855f7"},
+    {id:5,day:2,name:"Química",teacher:"Profa. Moreno",start:"07:00",end:"08:20",room:"Lab. 2",type:"class",color:"#ec4899"},
+    {id:6,day:2,name:"Historia",teacher:"Prof. Salazar",start:"08:20",end:"09:40",room:"A-08",type:"class",color:"#f97316"},
+    {id:7,day:2,name:"Receso",teacher:"",start:"09:40",end:"10:10",room:"Patio",type:"break",color:"#eab308"},
+    {id:8,day:3,name:"Matemáticas",teacher:"Profa. García",start:"07:00",end:"08:20",room:"A-12",type:"class",color:"#3b82f6"},
+    {id:9,day:3,name:"Contabilidad",teacher:"Profa. Lara",start:"08:20",end:"09:40",room:"C-05",type:"class",color:"#a855f7"},
+    {id:10,day:4,name:"Inglés",teacher:"Prof. Ramírez",start:"07:00",end:"08:20",room:"B-03",type:"class",color:"#22c55e"},
+    {id:11,day:5,name:"Historia",teacher:"Prof. Salazar",start:"07:00",end:"08:20",room:"A-08",type:"class",color:"#f97316"}
+  ],
+  tasks:[
+    {id:1,title:"Entregar ejercicio",subject:"Contabilidad",date:new Date(Date.now()+86400000*2).toISOString().slice(0,10),done:false}
+  ]
+};
+let data=load();
+let selectedDay=getNow().weekday>=1&&getNow().weekday<=5?getNow().weekday:1;
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(demo)}catch{return structuredClone(demo)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function mins(t){const [h,m]=t.split(":").map(Number);return h*60+m}
+function getNow(){
+  const p=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,weekday:"short",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).formatToParts(new Date());
+  const m={};p.forEach(x=>m[x.type]=x.value);
+  return {weekday:{Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:0}[m.weekday],hour:+m.hour,minute:+m.minute,second:+m.second}
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[x]))}
+function openDrawer(){drawer.classList.add("show");backdrop.classList.add("show")}
+function closeDrawer(){drawer.classList.remove("show");backdrop.classList.remove("show")}
+function openModal(id){document.getElementById(id).classList.add("show")}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+
+function renderTabs(){
+  dayTabs.innerHTML="";
+  DAYS.forEach((d,i)=>{
+    const b=document.createElement("button");
+    b.className="day-tab"+(selectedDay===i+1?" active":"");
+    b.textContent=d.slice(0,3);
+    b.onclick=()=>{selectedDay=i+1;renderAll()};
+    dayTabs.appendChild(b);
+  });
+}
+function renderTimeline(){
+  selectedDayTitle.textContent=DAYS[selectedDay-1];
+  const blocks=data.blocks.filter(b=>b.day===selectedDay).sort((a,b)=>mins(a.start)-mins(b.start));
+  blockCount.textContent=`${blocks.length} bloque${blocks.length===1?"":"s"}`;
+  timeline.innerHTML="";
+  if(!blocks.length){
+    timeline.innerHTML='<div class="empty-day">Este día todavía no tiene bloques.</div>';
+    return;
+  }
+  const startHour=Math.min(7,Math.floor(mins(blocks[0].start)/60));
+  const endHour=Math.max(14,Math.ceil(mins(blocks.at(-1).end)/60));
+  const pxPerMin=1;
+  timeline.style.minHeight=((endHour-startHour)*60+30)+"px";
+
+  for(let h=startHour;h<=endHour;h++){
+    const row=document.createElement("div");
+    row.className="hour-row";
+    row.style.position="absolute";
+    row.style.left="12px";
+    row.style.right="12px";
+    row.style.top=((h-startHour)*60+12)+"px";
+    row.innerHTML=`<div class="hour-label">${String(h).padStart(2,"0")}:00</div><div class="hour-line"></div>`;
+    timeline.appendChild(row);
+  }
+
+  blocks.forEach(b=>{
+    const top=(mins(b.start)-startHour*60)+16;
+    const height=Math.max(46,mins(b.end)-mins(b.start)-4);
+    const el=document.createElement("div");
+    el.className="block";
+    const n=getNow();
+    if(n.weekday===selectedDay && n.hour*60+n.minute>=mins(b.start) && n.hour*60+n.minute<mins(b.end)) el.classList.add("current");
+    el.style.position="absolute";
+    el.style.left="76px";
+    el.style.right="12px";
+    el.style.top=top+"px";
+    el.style.height=height+"px";
+    el.style.background=`linear-gradient(135deg,${b.color},${shade(b.color,-20)})`;
+    el.innerHTML=`<div class="block-title">${esc(b.name)}</div>
+      <div class="block-info">${esc(b.teacher||"")} ${b.room?`· ${esc(b.room)}`:""}</div>
+      <div class="block-time">${esc(b.start)} – ${esc(b.end)}</div>`;
+    el.ondblclick=()=>{if(confirm(`¿Eliminar "${b.name}"?`)){data.blocks=data.blocks.filter(x=>x.id!==b.id);save();renderAll()}};
+    timeline.appendChild(el);
+  });
+
+  const n=getNow();
+  const current=n.hour*60+n.minute+n.second/60;
+  if(n.weekday===selectedDay && current>=startHour*60 && current<=endHour*60){
+    const line=document.createElement("div");
+    line.className="now-line";
+    line.style.top=(current-startHour*60+16)+"px";
+    timeline.appendChild(line);
+  }
+}
+function shade(hex,amt){
+  let c=hex.replace("#","");
+  if(c.length===3)c=c.split("").map(x=>x+x).join("");
+  let num=parseInt(c,16),r=Math.max(0,Math.min(255,(num>>16)+amt)),g=Math.max(0,Math.min(255,((num>>8)&255)+amt)),b=Math.max(0,Math.min(255,(num&255)+amt));
+  return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+function renderStatus(){
+  const n=getNow(), nowm=n.hour*60+n.minute;
+  clock.textContent=`${String(n.hour).padStart(2,"0")}:${String(n.minute).padStart(2,"0")}`;
+  dateText.textContent=new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(new Date());
+  scheduleName.textContent=data.name;
+  const today=data.blocks.filter(b=>b.day===n.weekday).sort((a,b)=>mins(a.start)-mins(b.start));
+  const cur=today.find(b=>nowm>=mins(b.start)&&nowm<mins(b.end));
+  const next=today.find(b=>mins(b.start)>nowm);
+  currentClass.textContent=cur?cur.name:"Sin clase";
+  currentMeta.textContent=cur?`Termina a las ${cur.end}`:"Fuera del horario";
+  nextClass.textContent=next?next.name:"No hay";
+  nextMeta.textContent=next?`Empieza ${next.start}`:"—";
+}
+function fillBlockForm(){
+  blockDay.innerHTML=DAYS.map((d,i)=>`<option value="${i+1}">${d}</option>`).join("");
+  blockDay.value=selectedDay;
+  blockSubject.innerHTML=data.subjects.map(s=>`<option value="${esc(s.name)}" data-color="${s.color}">${esc(s.name)}</option>`).join("")+`<option value="Receso">Receso</option><option value="Otro">Otro</option>`;
+  blockTeacher.innerHTML='<option value="">Sin maestro</option>'+data.teachers.map(t=>`<option value="${esc(t.name)}">${esc(t.name)}</option>`).join("");
+}
+function renderSimple(type){
+  simpleContent.innerHTML="";
+  if(type==="subjects"){
+    simpleTitle.textContent="Materias";
+    simpleContent.innerHTML=`<div class="form-grid"><div class="field"><label>Nueva materia</label><input id="newSubject" placeholder="Ej. Física"></div><div class="field"><label>Color</label><input id="newSubjectColor" type="color" value="#3b82f6"></div></div><button class="btn primary" id="addSubject">Agregar materia</button><div class="list" id="subjectList" style="margin-top:14px"></div>`;
+    renderSubjectList();
+    addSubject.onclick=()=>{if(newSubject.value.trim()){data.subjects.push({id:Date.now(),name:newSubject.value.trim(),color:newSubjectColor.value});save();renderSubjectList();newSubject.value=""}};
+  }
+  if(type==="teachers"){
+    simpleTitle.textContent="Maestros";
+    simpleContent.innerHTML=`<div class="field"><label>Nuevo maestro</label><input id="newTeacher" placeholder="Ej. Profa. Martínez"></div><button class="btn primary" id="addTeacher">Agregar maestro</button><div class="list" id="teacherList" style="margin-top:14px"></div>`;
+    renderTeacherList();
+    addTeacher.onclick=()=>{if(newTeacher.value.trim()){data.teachers.push({id:Date.now(),name:newTeacher.value.trim()});save();renderTeacherList();newTeacher.value=""}};
+  }
+  if(type==="tasks"){
+    simpleTitle.textContent="Tareas";
+    simpleContent.innerHTML=`<div class="form-grid"><div class="field"><label>Tarea</label><input id="newTaskTitle" placeholder="Ej. Entregar proyecto"></div><div class="field"><label>Materia</label><input id="newTaskSubject" placeholder="Ej. Historia"></div><div class="field"><label>Fecha</label><input id="newTaskDate" type="date"></div><div class="field"><label>Hora</label><input id="newTaskTime" type="time" value="23:59"></div></div><button class="btn primary" id="addTask">Agregar tarea</button><div class="list" id="taskList" style="margin-top:14px"></div>`;
+    newTaskDate.value=new Date(Date.now()+86400000).toISOString().slice(0,10);
+    renderTaskList();
+    addTask.onclick=()=>{if(newTaskTitle.value.trim()&&newTaskDate.value){data.tasks.push({id:Date.now(),title:newTaskTitle.value.trim(),subject:newTaskSubject.value.trim()||"Sin materia",date:newTaskDate.value,time:newTaskTime.value,done:false});save();renderTaskList();newTaskTitle.value="";newTaskSubject.value=""}};
+  }
+  if(type==="breaks"){
+    simpleTitle.textContent="Recesos y otros";
+    simpleContent.innerHTML='<p class="small-note">Los recesos y bloques especiales se agregan desde “Agregar bloque de horario”, eligiendo el tipo Receso u Otro.</p>';
+  }
+  openModal("simpleModal");
+}
+function renderSubjectList(){
+  subjectList.innerHTML=data.subjects.map(s=>`<div class="list-item"><div style="width:14px;height:14px;border-radius:50%;background:${s.color}"></div><div class="list-main"><div class="list-title">${esc(s.name)}</div></div><button class="icon-btn" onclick="deleteSubject(${s.id})">×</button></div>`).join("");
+}
+function renderTeacherList(){
+  teacherList.innerHTML=data.teachers.map(t=>`<div class="list-item"><div class="list-main"><div class="list-title">${esc(t.name)}</div></div><button class="icon-btn" onclick="deleteTeacher(${t.id})">×</button></div>`).join("");
+}
+function renderTaskList(){
+  taskList.innerHTML=data.tasks.length?data.tasks.map(t=>`<div class="list-item"><div class="list-main"><div class="list-title">${esc(t.title)}</div><div class="list-meta">${esc(t.subject)} · ${t.date}${t.time?` · ${t.time}`:""}</div></div><button class="icon-btn" onclick="deleteTask(${t.id})">×</button></div>`).join(""):'<div class="empty-day">No hay tareas.</div>';
+}
+window.deleteSubject=id=>{data.subjects=data.subjects.filter(x=>x.id!==id);save();renderSubjectList()}
+window.deleteTeacher=id=>{data.teachers=data.teachers.filter(x=>x.id!==id);save();renderTeacherList()}
+window.deleteTask=id=>{data.tasks=data.tasks.filter(x=>x.id!==id);save();renderTaskList()}
+function renderAll(){renderTabs();renderTimeline();renderStatus()}
+
+openMenu.onclick=openDrawer;closeMenu.onclick=closeDrawer;backdrop.onclick=closeDrawer;
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+document.querySelectorAll(".modal").forEach(m=>m.onclick=e=>{if(e.target===m)closeModal(m.id)});
+renameSchedule.onclick=()=>{const n=prompt("Nombre del horario:",data.name);if(n?.trim()){data.name=n.trim();save();renderAll();closeDrawer()}};
+manageHours.onclick=()=>{fillBlockForm();closeDrawer();openModal("blockModal")};
+manageSubjects.onclick=()=>{closeDrawer();renderSimple("subjects")};
+manageTeachers.onclick=()=>{closeDrawer();renderSimple("teachers")};
+manageTasks.onclick=()=>{closeDrawer();renderSimple("tasks")};
+manageBreaks.onclick=()=>{closeDrawer();renderSimple("breaks")};
+resetDemo.onclick=()=>{if(confirm("¿Restablecer el ejemplo?")){data=structuredClone(demo);save();renderAll();closeDrawer()}};
+
+blockSubject.onchange=()=>{
+  const opt=blockSubject.selectedOptions[0];
+  if(opt?.dataset.color)blockColor.value=opt.dataset.color;
+  if(blockSubject.value==="Receso"){blockType.value="break";blockColor.value="#eab308"}
+};
+saveBlock.onclick=()=>{
+  const start=blockStart.value,end=blockEnd.value;
+  if(!start||!end||mins(end)<=mins(start)){alert("Revisa las horas.");return}
+  data.blocks.push({
+    id:Date.now(),day:+blockDay.value,name:blockSubject.value,teacher:blockTeacher.value,
+    start,end,room:blockRoom.value.trim(),type:blockType.value,color:blockColor.value
+  });
+  save();closeModal("blockModal");selectedDay=+blockDay.value;renderAll();blockRoom.value="";
+};
+
+renderAll();
+setInterval(()=>{renderStatus();renderTimeline()},30000);
+</script>
+</body>
+</html>
