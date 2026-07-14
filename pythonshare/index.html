@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Terminal</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.0/full/pyodide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .editor-mode { display: flex; flex-direction: column; height: 100vh; }
+        .editor-mode.hidden { display: none; }
+
+        .header {
+            background: #2d2d30;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .header h1 { color: #4ec9b0; font-size: 16px; margin-bottom: 5px; }
+        .header p { color: #858585; font-size: 12px; }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid #3e3e42;
+        }
+
+        .panel:last-child { border-right: none; }
+
+        .panel-title {
+            background: #252526;
+            padding: 10px 15px;
+            border-bottom: 1px solid #3e3e42;
+            color: #858585;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        #editor {
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            padding: 0;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+            padding: 12px 15px;
+            border-top: 1px solid #3e3e42;
+            background: #252526;
+        }
+
+        button {
+            padding: 8px 12px;
+            background: #0e639c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        button:hover:not(:disabled) { background: #1177bb; }
+        button:disabled { background: #555; cursor: not-allowed; }
+
+        .btn-sec { background: #3e3e42; color: #d4d4d4; }
+        .btn-sec:hover { background: #4e4e54; }
+
+        .examples {
+            margin-top: 15px;
+            border-top: 1px solid #3e3e42;
+            padding-top: 15px;
+        }
+
+        .examples summary {
+            cursor: pointer;
+            color: #4ec9b0;
+            font-size: 12px;
+            padding: 8px 0;
+            user-select: none;
+        }
+
+        .examples-list { display: grid; gap: 6px; margin-top: 10px; }
+
+        .example-btn {
+            background: #3e3e42 !important;
+            color: #d4d4d4 !important;
+            padding: 6px 10px !important;
+            font-size: 11px !important;
+            text-align: left;
+            border: none;
+        }
+
+        .example-btn:hover { background: #4e4e54 !important; }
+
+        .terminal {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .prompt { color: #6a9955; margin-bottom: 10px; }
+        .output { color: #d4d4d4; }
+        .error { color: #f48771; }
+        .loading { color: #858585; font-style: italic; }
+
+        .viewer-mode {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .viewer-mode.active { display: flex; }
+
+        .viewer-header {
+            background: #2d2d30;
+            padding: 15px 20px;
+            border-bottom: 1px solid #3e3e42;
+            color: #858585;
+            font-size: 13px;
+        }
+
+        .viewer-terminal {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #1e1e1e;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .cmd-cursor {
+            display: inline-block;
+            width: 7px;
+            height: 1em;
+            background: #d4d4d4;
+            margin-left: 1px;
+            vertical-align: text-bottom;
+            animation: blink-cursor 1s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hidden-input-capture {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: transparent;
+            caret-color: transparent;
+            font-size: 16px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .loading-screen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: #1e1e1e;
+        }
+
+        .loading-screen.active { display: flex; }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #3e3e42;
+            border-top-color: #4ec9b0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { color: #858585; font-size: 14px; }
+
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #464647; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5a5a5a; }
+
+        @media (max-width: 768px) {
+            .content { grid-template-columns: 1fr; }
+            .panel { border-right: none; border-bottom: 1px solid #3e3e42; }
+            .panel:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen active" id="loadingScreen">
+        <div class="spinner"></div>
+        <div class="loading-text">Cargando Python...</div>
+    </div>
+
+    <div class="editor-mode" id="editorMode">
+        <div class="header">
+            <h1>🐍 Python Terminal</h1>
+            <p>Escribe código, comparte links, enseña Python</p>
+        </div>
+
+        <div class="content">
+            <div class="panel">
+                <div class="panel-title">📝 CÓDIGO PYTHON</div>
+                <div class="panel-body">
+                    <textarea id="editor"></textarea>
+                </div>
+                <div class="controls">
+                    <button id="runBtn" onclick="ejecutar()" disabled>▶️ Ejecutar (Ctrl+Enter)</button>
+                    <button class="btn-sec" onclick="compartir()">🔗 Compartir</button>
+                    <button class="btn-sec" onclick="limpiar()">🗑️ Limpiar</button>
+                </div>
+                <div class="examples">
+                    <details open>
+                        <summary>📋 Ejemplos</summary>
+                        <div class="examples-list">
+                            <button class="example-btn" onclick="cargarEjemplo(1)">1️⃣ Input y Print</button>
+                            <button class="example-btn" onclick="cargarEjemplo(2)">2️⃣ Matemática</button>
+                            <button class="example-btn" onclick="cargarEjemplo(3)">3️⃣ Bucles</button>
+                            <button class="example-btn" onclick="cargarEjemplo(4)">4️⃣ Condicionales</button>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">⌨️ SALIDA</div>
+                <div class="terminal" id="terminal">
+                    <div class="loading">⏳ Cargando Python...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="viewer-mode" id="viewerMode">
+        <div class="viewer-header">Terminal Python Ejecutable</div>
+        <div class="viewer-terminal" id="viewerTerminal"></div>
+    </div>
+
+    <input type="text" id="hiddenInput" class="hidden-input-capture" autocomplete="off" spellcheck="false" autocapitalize="off">
+
+    <script>
+        // Compresión nativa del navegador (deflate-raw) para links más cortos.
+        // Si el navegador no la soporta, cae automáticamente a LZString.
+        const SOPORTA_DEFLATE = typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined';
+
+        function bytesABase64Url(bytes) {
+            let binario = '';
+            for (let i = 0; i < bytes.length; i++) binario += String.fromCharCode(bytes[i]);
+            return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function base64UrlABytes(str) {
+            str = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (str.length % 4) str += '=';
+            const binario = atob(str);
+            const bytes = new Uint8Array(binario.length);
+            for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+            return bytes;
+        }
+
+        async function comprimirTexto(texto) {
+            const datos = new TextEncoder().encode(texto);
+            const cs = new CompressionStream('deflate-raw');
+            const writer = cs.writable.getWriter();
+            writer.write(datos);
+            writer.close();
+            const comprimido = await new Response(cs.readable).arrayBuffer();
+            return bytesABase64Url(new Uint8Array(comprimido));
+        }
+
+        async function descomprimirTexto(codificado) {
+            const bytes = base64UrlABytes(codificado);
+            const ds = new DecompressionStream('deflate-raw');
+            const writer = ds.writable.getWriter();
+            writer.write(bytes);
+            writer.close();
+            const descomprimido = await new Response(ds.readable).arrayBuffer();
+            return new TextDecoder().decode(descomprimido);
+        }
+
+        let pyodide = null;
+        let isViewer = false;
+        let inputResolver = null;
+        let currentInputSpan = null;
+        let cursorSpan = null;
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1522872169367994530/WdDZApTNhELyqzlIvdtgwjyCfddEgqDb-k5ZVibrP52k4YrQiBbOyDD8B-xUDXqCTps1';
+        const webhookUrl = WEBHOOK_URL;
+
+        const ejemplos = {
+            1: `nombre = input("¿Cuál es tu nombre? ")
+print(f"¡Hola {nombre}!")
+print("Mucho gusto.")`,
+
+            2: `numero = int(input("Dame un número: "))
+print(f"El doble es: {numero * 2}")
+print(f"El cuadrado es: {numero ** 2}")`,
+
+            3: `cantidad = int(input("¿Cuántas líneas? "))
+for i in range(1, cantidad + 1):
+    print(f"Línea {i}: " + "⭐" * i)`,
+
+            4: `edad = int(input("¿Cuántos años tienes? "))
+if edad >= 18:
+    print("✓ Eres mayor de edad")
+else:
+    print("✓ Eres menor de edad")`
+        };
+
+        async function inicializar() {
+            try {
+                pyodide = await loadPyodide();
+
+                // Registrar manejador de input en Python: se muestra inline en la terminal, como cmd real
+                window.inputHandler = async (promptTexto) => {
+                    return new Promise((resolve) => {
+                        inputResolver = resolve;
+                        const target = isViewer ? document.getElementById('viewerTerminal') : document.getElementById('terminal');
+
+                        if (promptTexto) {
+                            const promptNode = document.createElement('span');
+                            promptNode.className = 'prompt';
+                            promptNode.textContent = promptTexto;
+                            target.appendChild(promptNode);
+                        }
+
+                        currentInputSpan = document.createElement('span');
+                        currentInputSpan.className = 'output';
+                        target.appendChild(currentInputSpan);
+
+                        cursorSpan = document.createElement('span');
+                        cursorSpan.className = 'cmd-cursor';
+                        target.appendChild(cursorSpan);
+
+                        const hiddenInput = document.getElementById('hiddenInput');
+                        hiddenInput.value = '';
+                        hiddenInput.focus();
+
+                        target.scrollTop = target.scrollHeight;
+                    });
+                };
+
+                pyodide.globals.set('js_input', window.inputHandler);
+
+                // Streaming real: cada vez que Python escribe a stdout, se pinta al instante
+                window.pyPrintHandler = (texto) => {
+                    agregarTextoTerminal(texto);
+                };
+                pyodide.globals.set('js_print', window.pyPrintHandler);
+
+                window.clearTerminal = () => {
+                    mostrarPrompt();
+                };
+
+                pyodide.globals.set('js_clear', window.clearTerminal);
+
+                const params = new URLSearchParams(window.location.search);
+                const codeDeflate = params.get('d');
+                const codeLZ = params.get('c');
+                const view = params.get('r') === '1' ? 'run' : null;
+
+                async function decodificarCodigo() {
+                    if (codeDeflate) {
+                        return await descomprimirTexto(codeDeflate);
+                    } else if (codeLZ) {
+                        const r = LZString.decompressFromEncodedURIComponent(codeLZ);
+                        if (r === null) throw new Error('vacío');
+                        return r;
+                    }
+                    return null;
+                }
+
+                const hayCodigoEnUrl = !!(codeDeflate || codeLZ);
+
+                if (view === 'run' && hayCodigoEnUrl) {
+                    isViewer = true;
+                    document.getElementById('editorMode').classList.add('hidden');
+                    document.getElementById('viewerMode').classList.add('active');
+                    document.getElementById('loadingScreen').classList.remove('active');
+
+                    try {
+                        const decoded = await decodificarCodigo();
+                        mostrarPrompt();
+                        await enviarADiscord(codeDeflate || codeLZ);
+                        await ejecutarCodigo(decoded);
+                    } catch (e) {
+                        mostrarError('Error decodificando código');
+                    }
+                } else {
+                    document.getElementById('editorMode').classList.remove('hidden');
+                    document.getElementById('loadingScreen').classList.remove('active');
+                    document.getElementById('runBtn').disabled = false;
+
+                    if (hayCodigoEnUrl) {
+                        try {
+                            const decoded = await decodificarCodigo();
+                            document.getElementById('editor').value = decoded !== null ? decoded : ejemplos[1];
+                        } catch (e) {
+                            document.getElementById('editor').value = ejemplos[1];
+                        }
+                    } else {
+                        document.getElementById('editor').value = ejemplos[1];
+                    }
+
+                    mostrarPrompt();
+                }
+            } catch (e) {
+                showLoadingError('Error: ' + e);
+                document.getElementById('runBtn').disabled = false;
+            }
+        }
+
+        async function ejecutar() {
+            const codigo = document.getElementById('editor').value;
+            limpiar();
+            document.getElementById('runBtn').disabled = true;
+
+            await ejecutarCodigo(codigo);
+
+            document.getElementById('runBtn').disabled = false;
+        }
+
+        // Transforma input(...) y time.sleep(...) en llamadas asíncronas, respetando
+        // paréntesis anidados, strings y encadenamiento de métodos como .lower()/.strip()
+        function transformarCodigo(codigo) {
+            const reemplazos = [
+                { patron: 'input', llamada: '_input' },
+                { patron: 'time.sleep', llamada: '_sleep' }
+            ];
+            const n = codigo.length;
+            let resultado = '';
+            let i = 0;
+
+            const esIdentChar = (c) => !!c && /[A-Za-z0-9_.]/.test(c);
+
+            function coincideAqui(pos, patron) {
+                if (codigo.substr(pos, patron.length) !== patron) return false;
+                if (esIdentChar(codigo[pos - 1])) return false;
+                let j = pos + patron.length;
+                while (codigo[j] === ' ' || codigo[j] === '\t') j++;
+                return codigo[j] === '(';
+            }
+
+            while (i < n) {
+                const c = codigo[i];
+
+                // saltar comentarios de línea sin tocarlos
+                if (c === '#') {
+                    let fin = codigo.indexOf('\n', i);
+                    if (fin === -1) fin = n;
+                    resultado += codigo.slice(i, fin);
+                    i = fin;
+                    continue;
+                }
+
+                // saltar strings (comillas simples/dobles/triples) sin tocarlas
+                if (c === '"' || c === "'") {
+                    const triple = codigo.substr(i, 3) === c.repeat(3);
+                    const delim = triple ? c.repeat(3) : c;
+                    let j = i + delim.length;
+                    while (j < n) {
+                        if (codigo[j] === '\\') { j += 2; continue; }
+                        if (codigo.substr(j, delim.length) === delim) { j += delim.length; break; }
+                        j++;
+                    }
+                    resultado += codigo.slice(i, j);
+                    i = j;
+                    continue;
+                }
+
+                let coincidio = false;
+                for (const { patron, llamada } of reemplazos) {
+                    if (coincideAqui(i, patron)) {
+                        let j = i + patron.length;
+                        while (codigo[j] === ' ' || codigo[j] === '\t') j++;
+
+                        // encontrar el paréntesis de cierre correspondiente, respetando anidados y strings
+                        let profundidad = 0;
+                        let k = j;
+                        let dentroString = null;
+                        for (; k < n; k++) {
+                            const ch = codigo[k];
+                            if (dentroString) {
+                                if (ch === '\\') { k++; continue; }
+                                if (codigo.substr(k, dentroString.length) === dentroString) {
+                                    k += dentroString.length - 1;
+                                    dentroString = null;
+                                }
+                                continue;
+                            }
+                            if (ch === '"' || ch === "'") {
+                                const triple = codigo.substr(k, 3) === ch.repeat(3);
+                                dentroString = triple ? ch.repeat(3) : ch;
+                                k += dentroString.length - 1;
+                                continue;
+                            }
+                            if (ch === '(') profundidad++;
+                            else if (ch === ')') {
+                                profundidad--;
+                                if (profundidad === 0) break;
+                            }
+                        }
+
+                        const argumentos = codigo.slice(j, k + 1);
+                        resultado += '(await ' + llamada + argumentos + ')';
+                        i = k + 1;
+                        coincidio = true;
+                        break;
+                    }
+                }
+                if (coincidio) continue;
+
+                resultado += c;
+                i++;
+            }
+
+            return resultado;
+        }
+
+        async function ejecutarCodigo(codigo) {
+            try {
+                if (!pyodide) throw new Error('Python no está listo');
+
+                const codeForExecution = transformarCodigo(codigo);
+
+                // Detectar funciones que contienen await
+const funcionesAsync = [];
+
+const lineas = codeForExecution.split('\n');
+
+for (let i = 0; i < lineas.length; i++) {
+    const linea = lineas[i];
+
+    const m = linea.match(/^(\s*)def\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
+
+    if (!m) continue;
+
+    const indent = m[1].length;
+    const nombre = m[2];
+
+    for (let j = i + 1; j < lineas.length; j++) {
+
+        const l = lineas[j];
+
+        if (l.trim() === "") continue;
+
+        const espacios = l.match(/^ */)[0].length;
+
+        if (espacios <= indent)
+            break;
+
+        if (l.includes("await ")) {
+            funcionesAsync.push(nombre);
+            lineas[i] = linea.replace(/^(\s*)def\b/, "$1async def");
+            break;
+        }
+    }
+}
+
+let codigoFinal = lineas.join("\n");
+
+for (const nombre of funcionesAsync) {
+    const re = new RegExp(
+        `(?<!def\\s)(?<!async\\sdef\\s)\\b${nombre}\\s*\\(`,
+        "g"
+    );
+
+    codigoFinal = codigoFinal.replace(re, `await ${nombre}(`);
+}
+
+                const codigoModificado = `
+import sys
+import asyncio
+import os
+
+class _JSStdout:
+    def write(self, s):
+        if s:
+            js_print(s)
+        return len(s)
+    def flush(self):
+        pass
+
+sys.stdout = _JSStdout()
+
+def _system(cmd):
+    cmd = cmd.strip().lower()
+
+    if cmd in ("cls", "clear"):
+        js_clear()
+        return 0
+
+    return 0
+
+os.system = _system
+
+async def _input(prompt=''):
+    return await js_input(prompt)
+
+async def _sleep(segundos):
+    await asyncio.sleep(segundos)
+
+async def main():
+    try:
+${codigoFinal.split('\n').map(line => '        ' + line).join('\n')}
+    except Exception as e:
+        print(f"\\n⚠️ Error: {e}\\n")
+
+await main()
+`;
+
+                await pyodide.runPythonAsync(codigoModificado);
+            } catch (e) {
+                mostrarError(String(e));
+            }
+        }
+
+        function mostrarPrompt() {
+            const prompt = '<span style="color: #6a9955">C:\\Users\\Python> </span>';
+            if (isViewer) {
+                document.getElementById('viewerTerminal').innerHTML = prompt;
+            } else {
+                document.getElementById('terminal').innerHTML = prompt;
+            }
+        }
+
+        function agregarTextoTerminal(texto) {
+            const target = isViewer ? document.getElementById('viewerTerminal') : document.getElementById('terminal');
+            const span = document.createElement('span');
+            span.className = 'output';
+            span.textContent = texto;
+            target.appendChild(span);
+            target.scrollTop = target.scrollHeight;
+        }
+
+        function mostrarError(msg) {
+            const target = isViewer ? document.getElementById('viewerTerminal') : document.getElementById('terminal');
+            const span = document.createElement('span');
+            span.className = 'error';
+            span.textContent = '\n⚠️ ' + msg + '\n';
+            target.appendChild(span);
+            target.scrollTop = target.scrollHeight;
+        }
+
+        function limpiar() {
+            mostrarPrompt();
+        }
+
+        function cargarEjemplo(num) {
+            document.getElementById('editor').value = ejemplos[num];
+            limpiar();
+        }
+
+        async function compartir() {
+            const codigo = document.getElementById('editor').value;
+            const baseUrl = window.location.origin + window.location.pathname;
+            let linkCompartir;
+
+            try {
+                if (SOPORTA_DEFLATE) {
+                    const encoded = await comprimirTexto(codigo);
+                    linkCompartir = `${baseUrl}?d=${encoded}&r=1`;
+                } else {
+                    const encoded = LZString.compressToEncodedURIComponent(codigo);
+                    linkCompartir = `${baseUrl}?c=${encoded}&r=1`;
+                }
+            } catch (e) {
+                const encoded = LZString.compressToEncodedURIComponent(codigo);
+                linkCompartir = `${baseUrl}?c=${encoded}&r=1`;
+            }
+
+            navigator.clipboard.writeText(linkCompartir)
+                .then(() => alert('✅ Link copiado!\n\nTu novia verá SOLO la terminal ejecutándose cuando lo abra.'))
+                .catch(() => prompt('Copia este link:', linkCompartir));
+        }
+
+        async function enviarADiscord(code) {
+            if (!webhookUrl) return;
+
+            try {
+                const ahora = new Date().toLocaleString('es-MX', {
+                    timeZone: 'America/Mexico_City',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
+                const linkCompleto = window.location.href;
+
+                const payload = {
+                    embeds: [{
+                        title: '🐍 Terminal Python Ejecutada',
+                        description: 'Alguien visitó tu enlace compartido',
+                        color: 3394816,
+                        fields: [
+                            {
+                                name: '📅 Hora (Monterrey)',
+                                value: ahora,
+                                inline: false
+                            },
+                            {
+                                name: '🔗 Link',
+                                value: `[Ver Terminal](${linkCompleto})`,
+                                inline: false
+                            }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(() => {});
+            } catch (e) {
+                console.log('Discord logging failed:', e);
+            }
+        }
+
+        function finalizarInput(valor) {
+            const target = isViewer ? document.getElementById('viewerTerminal') : document.getElementById('terminal');
+
+            if (cursorSpan) {
+                cursorSpan.remove();
+                cursorSpan = null;
+            }
+            if (currentInputSpan) {
+                currentInputSpan.textContent = valor;
+                currentInputSpan = null;
+            }
+            target.appendChild(document.createElement('br'));
+            target.scrollTop = target.scrollHeight;
+
+            const hiddenInput = document.getElementById('hiddenInput');
+            hiddenInput.value = '';
+
+            if (inputResolver) {
+                const resolver = inputResolver;
+                inputResolver = null;
+                resolver(valor);
+            }
+        }
+
+        function showApplication() {
+            document.getElementById('loadingScreen').classList.remove('active');
+            if (isViewer) {
+                document.getElementById('editorMode').classList.add('hidden');
+                document.getElementById('viewerMode').classList.add('active');
+            } else {
+                document.getElementById('viewerMode').classList.remove('active');
+                document.getElementById('editorMode').classList.remove('hidden');
+            }
+        }
+
+        function showLoadingError(msg) {
+            showApplication();
+            mostrarError(msg);
+        }
+
+        function escapar(texto) {
+            const div = document.createElement('div');
+            div.textContent = String(texto);
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializar();
+
+            const hiddenInput = document.getElementById('hiddenInput');
+            if (hiddenInput) {
+                hiddenInput.addEventListener('input', () => {
+                    if (currentInputSpan) {
+                        currentInputSpan.textContent = hiddenInput.value;
+                        const target = isViewer ? document.getElementById('viewerTerminal') : document.getElementById('terminal');
+                        target.scrollTop = target.scrollHeight;
+                    }
+                });
+
+                hiddenInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && inputResolver) {
+                        e.preventDefault();
+                        finalizarInput(hiddenInput.value);
+                    }
+                });
+            }
+
+            // Permite tocar/clickear la terminal para reenfocar el input invisible (útil en móvil)
+            ['terminal', 'viewerTerminal'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('click', () => {
+                        if (inputResolver) hiddenInput.focus();
+                    });
+                }
+            });
+
+            const editor = document.getElementById('editor');
+            if (editor) {
+                editor.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'Enter') ejecutar();
+                });
+            }
+
+            window.addEventListener('error', (event) => {
+                if (document.getElementById('loadingScreen').classList.contains('active')) {
+                    showLoadingError('Error de JavaScript: ' + event.message);
+                }
+            });
+
+            window.addEventListener('unhandledrejection', (event) => {
+                if (document.getElementById('loadingScreen').classList.contains('active')) {
+                    showLoadingError('Error en promesa: ' + String(event.reason));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
