@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#ff174d" />
-  <title>¿Me amas?</title>
+  <title>sixsevener</title>
 
   <style>
     :root{
@@ -389,7 +389,7 @@
 
       <div class="content" id="content">
         <h1 id="question">¿Me amas?</h1>
-        <p class="sub" id="subtitle">Hay una respuesta correcta.</p>
+        <p class="sub" id="subtitle">con toda tu almita, vida y ser</p>
 
         <div class="buttons" id="buttons">
           <button class="choice yes" id="yesBtn">Sí</button>
@@ -428,7 +428,7 @@
         step = 1;
         transition(() => {
           question.textContent = "¿Segura?";
-          subtitle.textContent = "Esta vez sí piénsalo bien.";
+          subtitle.textContent = "segunrinchis pinchis?";
         });
         return;
       }
@@ -463,7 +463,7 @@
 
     function showPassword(){
       question.textContent = "Okidoki";
-      subtitle.textContent = "Entonces esto sí es para ti.";
+      subtitle.textContent = "toma cara de bola";
 
       buttons.outerHTML = `
         <div class="password-wrap">
@@ -477,7 +477,6 @@
             aria-label="Contraseña"
           >
           <button id="copyBtn" class="copy-btn">Copiar contraseña</button>
-          <div class="copy-status" id="copyStatus">Contraseña copiada ♥</div>
         </div>
       `;
 
