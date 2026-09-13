@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff174d" />
+  <title>¿Me amas?</title>
+
+  <style>
+    :root{
+      --bg:#16030b;
+      --bg2:#2a0613;
+      --pink:#ff2f78;
+      --pink2:#ff4f96;
+      --red:#ff174d;
+      --red2:#d9043d;
+      --deep:#8e002b;
+      --white:#fff8fb;
+      --muted:#ffc4d5;
+      --glass:rgba(255,255,255,.08);
+      --glass2:rgba(255,255,255,.13);
+      --line:rgba(255,255,255,.14);
+      --shadow:0 26px 80px rgba(255,23,77,.28);
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body{
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      padding:18px;
+      font-family:Inter, ui-rounded, "SF Pro Rounded", "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--white);
+      background:
+        radial-gradient(circle at 18% 15%, rgba(255,47,120,.35), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(255,23,77,.30), transparent 28%),
+        radial-gradient(circle at 50% 100%, rgba(217,4,61,.28), transparent 34%),
+        linear-gradient(145deg,#120208 0%,#24040f 45%,#130208 100%);
+      position:relative;
+    }
+
+    .noise{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size:28px 28px;
+      mask-image:linear-gradient(to bottom,transparent,black 20%,black 80%,transparent);
+    }
+
+    .blob{
+      position:fixed;
+      border-radius:999px;
+      filter:blur(18px);
+      pointer-events:none;
+      opacity:.62;
+      animation:float 8s ease-in-out infinite alternate;
+    }
+
+    .blob.a{
+      width:210px;
+      height:210px;
+      right:-65px;
+      top:-50px;
+      background:linear-gradient(135deg,var(--pink),var(--red));
+    }
+
+    .blob.b{
+      width:175px;
+      height:175px;
+      left:-60px;
+      bottom:-40px;
+      background:linear-gradient(135deg,var(--red),var(--deep));
+      animation-delay:-2s;
+    }
+
+    .shell{
+      width:min(100%,440px);
+      position:relative;
+    }
+
+    .card{
+      position:relative;
+      overflow:hidden;
+      border-radius:32px;
+      padding:30px 22px 24px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.055));
+      border:1px solid var(--line);
+      box-shadow:
+        var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,.10);
+      backdrop-filter:blur(24px) saturate(130%);
+      -webkit-backdrop-filter:blur(24px) saturate(130%);
+      animation:cardIdle 5s ease-in-out infinite;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius:inherit;
+      padding:1px;
+      background:linear-gradient(135deg,rgba(255,255,255,.35),rgba(255,47,120,.10),rgba(255,23,77,.25));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;
+      mask-composite:exclude;
+      pointer-events:none;
+    }
+
+    .halo{
+      position:absolute;
+      width:250px;
+      height:250px;
+      left:50%;
+      top:-150px;
+      transform:translateX(-50%);
+      border-radius:50%;
+      background:rgba(255,47,120,.22);
+      filter:blur(35px);
+      pointer-events:none;
+    }
+
+    .emblem-wrap{
+      width:86px;
+      height:86px;
+      margin:0 auto 20px;
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+
+    .emblem-wrap::before,
+    .emblem-wrap::after{
+      content:"";
+      position:absolute;
+      border-radius:24px;
+      inset:8px;
+      background:linear-gradient(145deg,var(--pink2),var(--red));
+      transform:rotate(45deg);
+      box-shadow:
+        0 12px 34px rgba(255,23,77,.32),
+        0 0 45px rgba(255,47,120,.22);
+      animation:gemPulse 2.8s ease-in-out infinite;
+    }
+
+    .emblem-wrap::after{
+      inset:17px;
+      background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.06));
+      box-shadow:none;
+      border:1px solid rgba(255,255,255,.28);
+      animation-direction:reverse;
+    }
+
+    .emblem{
+      width:42px;
+      height:42px;
+      z-index:2;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.22));
+      animation:emblemFloat 3s ease-in-out infinite;
+    }
+
+    .content{
+      transition:
+        opacity .22s ease,
+        transform .30s cubic-bezier(.22,.85,.2,1);
+    }
+
+    .content.out{
+      opacity:0;
+      transform:translateY(-10px) scale(.985);
+    }
+
+    .content.in{
+      animation:contentIn .46s cubic-bezier(.22,.9,.2,1);
+    }
+
+    h1{
+      margin:0;
+      text-align:center;
+      font-size:clamp(2.15rem,8vw,3rem);
+      line-height:1;
+      letter-spacing:-.055em;
+      font-weight:850;
+      text-wrap:balance;
+    }
+
+    .sub{
+      margin:12px auto 0;
+      min-height:22px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.97rem;
+      line-height:1.45;
+      max-width:300px;
+    }
+
+    .buttons{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:28px;
+    }
+
+    button{
+      border:0;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .choice,.copy-btn{
+      min-height:56px;
+      border-radius:18px;
+      font-size:1rem;
+      font-weight:800;
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        filter .18s ease,
+        background .18s ease;
+    }
+
+    .choice:active,.copy-btn:active{
+      transform:scale(.965);
+    }
+
+    .yes{
+      color:white;
+      background:linear-gradient(135deg,var(--pink) 0%,var(--red) 54%,var(--red2) 100%);
+      box-shadow:
+        0 14px 34px rgba(255,23,77,.33),
+        inset 0 1px 0 rgba(255,255,255,.18);
+      animation:yesIdle 2.8s ease-in-out infinite;
+    }
+
+    .no{
+      color:#ffd8e4;
+      background:rgba(255,255,255,.065);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .password-wrap{
+      margin-top:26px;
+    }
+
+    .password-label{
+      display:block;
+      margin:0 0 9px 2px;
+      color:#ffd7e3;
+      font-size:.78rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      text-align:left;
+    }
+
+    .password-box{
+      width:100%;
+      padding:17px 15px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.07);
+      color:white;
+      text-align:center;
+      font-size:.92rem;
+      letter-spacing:.01em;
+      outline:none;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 12px 28px rgba(0,0,0,.10);
+    }
+
+    .copy-btn{
+      width:100%;
+      margin-top:12px;
+      color:white;
+      background:linear-gradient(135deg,var(--pink),var(--red));
+      box-shadow:0 14px 34px rgba(255,23,77,.30);
+    }
+
+    .copy-btn.copied{
+      animation:copiedPop .5s cubic-bezier(.2,.9,.2,1);
+    }
+
+    .copy-status{
+      margin-top:12px;
+      text-align:center;
+      color:#ffc0d2;
+      font-size:.86rem;
+      opacity:0;
+      transform:translateY(6px);
+      transition:.24s ease;
+    }
+
+    .copy-status.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @keyframes float{
+      from{transform:translate3d(0,0,0) scale(1)}
+      to{transform:translate3d(0,18px,0) scale(1.07)}
+    }
+
+    @keyframes cardIdle{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-4px)}
+    }
+
+    @keyframes gemPulse{
+      0%,100%{transform:rotate(45deg) scale(1)}
+      50%{transform:rotate(45deg) scale(1.055)}
+    }
+
+    @keyframes emblemFloat{
+      0%,100%{transform:translateY(0) scale(1)}
+      50%{transform:translateY(-2px) scale(1.04)}
+    }
+
+    @keyframes yesIdle{
+      0%,100%{box-shadow:0 14px 34px rgba(255,23,77,.30), inset 0 1px 0 rgba(255,255,255,.18)}
+      50%{box-shadow:0 18px 44px rgba(255,23,77,.43), inset 0 1px 0 rgba(255,255,255,.22)}
+    }
+
+    @keyframes contentIn{
+      from{opacity:0;transform:translateY(14px) scale(.98)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+
+    @keyframes copiedPop{
+      0%{transform:scale(1)}
+      48%{transform:scale(1.035)}
+      100%{transform:scale(1)}
+    }
+
+    @media(max-width:420px){
+      body{padding:14px}
+      .card{border-radius:28px;padding:27px 18px 22px}
+      .emblem-wrap{width:80px;height:80px}
+      .buttons{gap:10px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{
+        animation-duration:.001ms!important;
+        animation-iteration-count:1!important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="noise"></div>
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+
+  <main class="shell">
+    <section class="card">
+      <div class="halo"></div>
+
+      <div class="emblem-wrap" aria-hidden="true">
+        <svg class="emblem" viewBox="0 0 64 64" fill="none">
+          <path d="M32 53.5C29.8 51.7 17.2 42.1 10.8 35.1C5 28.8 5.7 18.9 12.5 14.1C18.1 10.1 25.9 11 32 17.3C38.1 11 45.9 10.1 51.5 14.1C58.3 18.9 59 28.8 53.2 35.1C46.8 42.1 34.2 51.7 32 53.5Z"
+                fill="white"/>
+          <path d="M21.5 24.2C23.3 20.9 26.7 19.5 30.1 20.3"
+                stroke="#ff2f78"
+                stroke-width="4"
+                stroke-linecap="round"/>
+          <circle cx="45.8" cy="18.5" r="3.2" fill="#ffd3df"/>
+        </svg>
+      </div>
+
+      <div class="content" id="content">
+        <h1 id="question">¿Me amas?</h1>
+        <p class="sub" id="subtitle">Hay una respuesta correcta.</p>
+
+        <div class="buttons" id="buttons">
+          <button class="choice yes" id="yesBtn">Sí</button>
+          <button class="choice no" id="noBtn">No</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const PASSWORD = "sixsevenamoaminobiocontodamialma";
+
+    const content = document.getElementById("content");
+    const question = document.getElementById("question");
+    const subtitle = document.getElementById("subtitle");
+    const buttons = document.getElementById("buttons");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    let step = 0;
+
+    function transition(renderFn){
+      content.classList.add("out");
+
+      setTimeout(() => {
+        renderFn();
+        content.classList.remove("out");
+        content.classList.remove("in");
+        void content.offsetWidth;
+        content.classList.add("in");
+      }, 220);
+    }
+
+    function goYes(){
+      if(step === 0){
+        step = 1;
+        transition(() => {
+          question.textContent = "¿Segura?";
+          subtitle.textContent = "Esta vez sí piénsalo bien.";
+        });
+        return;
+      }
+
+      if(step === 1){
+        step = 2;
+        transition(showPassword);
+      }
+    }
+
+    function leaveSite(){
+      /*
+        document.referrer intenta recuperar la página desde la que se llegó.
+        location.replace() sustituye esta página en el historial en lugar
+        de añadir otra entrada, por lo que es la opción más cercana a
+        "volver y no poder regresar con Atrás".
+      */
+      const previous = document.referrer;
+
+      if(previous){
+        window.location.replace(previous);
+        return;
+      }
+
+      if(history.length > 1){
+        history.back();
+        return;
+      }
+
+      window.location.replace("about:blank");
+    }
+
+    function showPassword(){
+      question.textContent = "Okidoki";
+      subtitle.textContent = "Entonces esto sí es para ti.";
+
+      buttons.outerHTML = `
+        <div class="password-wrap">
+          <label class="password-label" for="passwordBox">Contraseña</label>
+          <input
+            id="passwordBox"
+            class="password-box"
+            type="text"
+            value="${PASSWORD}"
+            readonly
+            aria-label="Contraseña"
+          >
+          <button id="copyBtn" class="copy-btn">Copiar contraseña</button>
+          <div class="copy-status" id="copyStatus">Contraseña copiada ♥</div>
+        </div>
+      `;
+
+      const copyBtn = document.getElementById("copyBtn");
+      const copyStatus = document.getElementById("copyStatus");
+      const passwordBox = document.getElementById("passwordBox");
+
+      copyBtn.addEventListener("click", async () => {
+        try{
+          await navigator.clipboard.writeText(PASSWORD);
+        }catch{
+          passwordBox.select();
+          document.execCommand("copy");
+          window.getSelection()?.removeAllRanges();
+        }
+
+        copyBtn.textContent = "¡Copiada!";
+        copyBtn.classList.remove("copied");
+        void copyBtn.offsetWidth;
+        copyBtn.classList.add("copied");
+        copyStatus.classList.add("show");
+
+        setTimeout(() => {
+          copyBtn.textContent = "Copiar contraseña";
+          copyStatus.classList.remove("show");
+        }, 1800);
+      });
+    }
+
+    yesBtn.addEventListener("click", goYes);
+    noBtn.addEventListener("click", leaveSite);
+  </script>
+</body>
+</html>
