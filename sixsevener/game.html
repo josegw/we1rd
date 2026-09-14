@@ -1,0 +1,613 @@
+---
+permalink: /sixsevener/roblox_join/
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#16030b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Abrir en Roblox</title>
+
+  <style>
+    :root{
+      --bg:#16030b;
+      --bg2:#2a0613;
+      --pink:#ff2f78;
+      --pink2:#ff4f96;
+      --red:#ff174d;
+      --red2:#d9043d;
+      --deep:#8e002b;
+      --white:#fff8fb;
+      --muted:#ffc4d5;
+      --line:rgba(255,255,255,.14);
+      --glass:rgba(255,255,255,.075);
+      --black:#050505;
+      --black2:#101010;
+      --grey:#a5a5a8;
+      --hold:5000ms;
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; min-height:100%; background:var(--bg); }
+
+    body{
+      min-height:100svh;
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+      padding:
+        max(20px,env(safe-area-inset-top))
+        max(18px,env(safe-area-inset-right))
+        max(20px,env(safe-area-inset-bottom))
+        max(18px,env(safe-area-inset-left));
+      color:var(--white);
+      font-family:Inter,ui-rounded,"SF Pro Rounded","SF Pro Display",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      position:relative;
+      isolation:isolate;
+      background:
+        radial-gradient(circle at 16% 18%,rgba(255,47,120,.38),transparent 31%),
+        radial-gradient(circle at 84% 20%,rgba(255,23,77,.31),transparent 29%),
+        radial-gradient(circle at 52% 108%,rgba(217,4,61,.31),transparent 40%),
+        linear-gradient(145deg,#120208 0%,#260410 48%,#120208 100%);
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:-28%;
+      z-index:-3;
+      background:
+        radial-gradient(circle at 22% 30%,rgba(255,79,150,.32),transparent 21%),
+        radial-gradient(circle at 74% 36%,rgba(255,23,77,.30),transparent 22%),
+        radial-gradient(circle at 52% 76%,rgba(142,0,43,.42),transparent 27%);
+      filter:blur(22px) saturate(120%);
+      animation:bgDrift 14s ease-in-out infinite alternate;
+      will-change:transform;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      pointer-events:none;
+      opacity:.2;
+      background-image:
+        linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+      background-size:28px 28px;
+      mask-image:linear-gradient(to bottom,transparent,black 18%,black 82%,transparent);
+    }
+
+    .orb{
+      position:fixed;
+      border-radius:999px;
+      pointer-events:none;
+      filter:blur(24px);
+      opacity:.58;
+      z-index:-1;
+    }
+    .orb.one{
+      width:200px;height:200px;
+      top:-70px;right:-72px;
+      background:linear-gradient(135deg,var(--pink),var(--red));
+      animation:orbA 9s ease-in-out infinite alternate;
+    }
+    .orb.two{
+      width:185px;height:185px;
+      bottom:-72px;left:-74px;
+      background:linear-gradient(135deg,var(--red),var(--deep));
+      animation:orbB 11s ease-in-out infinite alternate;
+    }
+
+    .stage{
+      width:min(100%,430px);
+      opacity:0;
+      transform:translateY(22px) scale(.97);
+      animation:stageIn .85s .08s cubic-bezier(.16,1,.3,1) forwards;
+    }
+
+    .card{
+      position:relative;
+      overflow:hidden;
+      border-radius:32px;
+      padding:22px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.055));
+      box-shadow:
+        0 28px 85px rgba(255,23,77,.24),
+        inset 0 1px 0 rgba(255,255,255,.10);
+      backdrop-filter:blur(26px) saturate(132%);
+      -webkit-backdrop-filter:blur(26px) saturate(132%);
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius:inherit;
+      padding:1px;
+      background:linear-gradient(135deg,rgba(255,255,255,.36),rgba(255,47,120,.08),rgba(255,23,77,.28));
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;
+      mask-composite:exclude;
+      pointer-events:none;
+    }
+
+    .game-hero{
+      position:relative;
+      min-height:252px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-end;
+      text-align:center;
+      border-radius:25px;
+      padding:24px 20px 22px;
+      overflow:hidden;
+      background:rgba(255,255,255,.055);
+      border:1px solid rgba(255,255,255,.10);
+      isolation:isolate;
+    }
+
+    .hero-glow{
+      position:absolute;
+      inset:-20%;
+      z-index:-2;
+      background:
+        radial-gradient(circle at 50% 18%,rgba(255,255,255,.13),transparent 28%),
+        radial-gradient(circle at 50% 54%,rgba(255,47,120,.22),transparent 44%);
+    }
+
+    .hero-art{
+      position:absolute;
+      inset:-34px;
+      z-index:-3;
+      background-position:center;
+      background-size:cover;
+      opacity:.23;
+      filter:blur(34px) saturate(120%);
+      transform:scale(1.12);
+      transition:opacity .45s ease;
+    }
+
+    .game-icon-wrap{
+      width:118px;
+      height:118px;
+      border-radius:28px;
+      position:relative;
+      margin-bottom:18px;
+      padding:1px;
+      background:linear-gradient(145deg,rgba(255,255,255,.42),rgba(255,255,255,.08));
+      box-shadow:0 18px 45px rgba(0,0,0,.28),0 0 50px rgba(255,47,120,.14);
+      transform:translateY(8px) scale(.93);
+      opacity:0;
+      animation:itemIn .7s .36s cubic-bezier(.16,1,.3,1) forwards;
+    }
+
+    .game-icon{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      border-radius:27px;
+      background:linear-gradient(135deg,#2b2b2e,#111);
+    }
+
+    .icon-fallback{
+      position:absolute;
+      inset:1px;
+      border-radius:27px;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at 30% 30%,rgba(255,255,255,.12),transparent 28%),
+        linear-gradient(145deg,#3b1630,#15070d 65%,#0d0508);
+      color:#ffe1eb;
+      font-size:2rem;
+      font-weight:900;
+      letter-spacing:-.06em;
+    }
+
+    .meta{
+      transform:translateY(10px);
+      opacity:0;
+      animation:itemIn .72s .48s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(1.72rem,7vw,2.25rem);
+      line-height:1.04;
+      letter-spacing:-.045em;
+      font-weight:860;
+      text-wrap:balance;
+    }
+    .creator{
+      margin:9px 0 0;
+      color:var(--muted);
+      font-size:.98rem;
+      font-weight:680;
+    }
+
+    .join-wrap{
+      margin-top:15px;
+      display:flex;
+      justify-content:center;
+      opacity:0;
+      transform:translateY(12px);
+      animation:itemIn .75s .62s cubic-bezier(.16,1,.3,1) forwards;
+    }
+
+    .hold-button{
+      width:100%;
+      min-height:100px;
+      border:0;
+      border-radius:25px;
+      padding:12px 16px 12px 13px;
+      display:flex;
+      align-items:center;
+      gap:15px;
+      color:white;
+      background:linear-gradient(180deg,rgba(9,9,9,.96) 0%,rgba(3,3,3,.98) 100%);
+      box-shadow:
+        0 18px 38px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.075);
+      cursor:pointer;
+      font:inherit;
+      user-select:none;
+      -webkit-user-select:none;
+      -webkit-touch-callout:none;
+      touch-action:none;
+      transition:
+        transform .18s ease,
+        filter .18s ease,
+        box-shadow .22s ease,
+        width .32s cubic-bezier(.22,.8,.2,1),
+        min-height .32s cubic-bezier(.22,.8,.2,1),
+        border-radius .32s cubic-bezier(.22,.8,.2,1),
+        padding .32s cubic-bezier(.22,.8,.2,1),
+        background .24s ease,
+        opacity .2s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hold-button::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.055) 45%,transparent 65%);
+      transform:translateX(-120%);
+      animation:shine 4s 1.8s ease-in-out infinite;
+      pointer-events:none;
+      transition:opacity .18s ease;
+    }
+
+    .hold-button.pressing,
+    .hold-button.done{
+      width:94px;
+      min-height:94px;
+      border-radius:999px;
+      padding:0;
+      margin-inline:auto;
+      justify-content:center;
+      gap:0;
+      background:transparent;
+      box-shadow:none;
+      filter:none;
+    }
+
+    .hold-button.pressing::after,
+    .hold-button.done::after{
+      opacity:0;
+    }
+
+    .progress-icon{
+      width:76px;
+      height:76px;
+      flex:0 0 76px;
+      position:relative;
+      display:grid;
+      place-items:center;
+      transition:transform .22s ease;
+    }
+
+    .progress-icon .disc{
+      position:absolute;
+      inset:5px;
+      border-radius:50%;
+      background:linear-gradient(145deg,rgba(193,193,197,.78),rgba(137,137,142,.72));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+    }
+
+    .tap-icon{
+      position:relative;
+      z-index:2;
+      width:34px;
+      height:34px;
+      opacity:.98;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,.14));
+    }
+
+    .ring{
+      position:absolute;
+      inset:0;
+      width:76px;
+      height:76px;
+      transform:rotate(-90deg);
+      z-index:3;
+      opacity:0;
+      transition:opacity .14s ease;
+      filter:drop-shadow(0 0 8px rgba(255,255,255,.28));
+    }
+    .ring-base,.ring-progress{
+      fill:none;
+      stroke-width:5.2;
+    }
+    .ring-base{ stroke:rgba(255,255,255,.12); }
+    .ring-progress{
+      stroke:white;
+      stroke-linecap:round;
+      stroke-dasharray:213.63;
+      stroke-dashoffset:213.63;
+    }
+    .pressing .ring,
+    .done .ring{ opacity:1; }
+    .pressing .ring-progress{ animation:fillRing var(--hold) linear forwards; }
+
+    .button-copy{
+      min-width:0;
+      flex:1;
+      text-align:left;
+      position:relative;
+      z-index:1;
+      transition:opacity .18s ease,transform .24s ease,max-width .24s ease;
+      max-width:220px;
+      transform-origin:left center;
+    }
+    .button-kicker{
+      display:block;
+      font-size:.78rem;
+      font-weight:790;
+      letter-spacing:.01em;
+      color:rgba(255,255,255,.72);
+      margin-bottom:2px;
+    }
+    .button-title{
+      display:block;
+      font-size:1.53rem;
+      line-height:1.05;
+      letter-spacing:-.035em;
+      font-weight:870;
+      text-transform:lowercase;
+    }
+
+    .pressing .button-copy,
+    .done .button-copy{
+      opacity:0;
+      transform:translateX(14px) scale(.96);
+      max-width:0;
+      overflow:hidden;
+      pointer-events:none;
+    }
+
+    @keyframes bgDrift{
+      0%{ transform:translate3d(-2%,0,0) rotate(-2deg) scale(1); }
+      50%{ transform:translate3d(3%,2%,0) rotate(2deg) scale(1.04); }
+      100%{ transform:translate3d(0,-2%,0) rotate(-1deg) scale(1.02); }
+    }
+    @keyframes orbA{ to{ transform:translate(-18px,22px) scale(1.08); } }
+    @keyframes orbB{ to{ transform:translate(22px,-18px) scale(1.07); } }
+    @keyframes stageIn{ to{ opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes itemIn{ to{ opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes fillRing{ to{ stroke-dashoffset:0; } }
+    @keyframes shine{
+      0%,58%{ transform:translateX(-120%); }
+      80%,100%{ transform:translateX(120%); }
+    }
+
+    @media (max-width:420px){
+      body{ padding-left:14px; padding-right:14px; }
+      .card{ padding:16px; border-radius:28px; }
+      .game-hero{ min-height:236px; border-radius:23px; }
+      .game-icon-wrap{ width:108px; height:108px; border-radius:26px; }
+      .game-icon,.icon-fallback{ border-radius:25px; }
+      .hold-button{ min-height:96px; border-radius:23px; }
+      .progress-icon{ width:72px;height:72px;flex-basis:72px; }
+      .ring{ width:72px;height:72px; }
+      .tap-icon{ width:31px;height:31px; }
+      .button-title{ font-size:1.42rem; }
+      .hold-button.pressing,
+      .hold-button.done{ width:90px; min-height:90px; }
+    }
+
+    @media (max-height:620px){
+      .card{ padding:14px; }
+      .game-hero{ min-height:210px; padding-top:16px; padding-bottom:16px; }
+      .game-icon-wrap{ width:92px;height:92px;margin-bottom:12px; }
+      .hold-button{ min-height:88px; }
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      body::before,.orb,.stage,.game-icon-wrap,.meta,.join-wrap,.hold-button::after{ animation:none !important; }
+      .stage,.game-icon-wrap,.meta,.join-wrap{ opacity:1; transform:none; }
+      .pressing .ring-progress{ animation:fillRing var(--hold) linear forwards !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+
+  <main class="stage" aria-live="polite">
+    <section class="card">
+      <div class="game-hero">
+        <div class="hero-art" id="heroArt"></div>
+        <div class="hero-glow"></div>
+
+        <div class="game-icon-wrap">
+          <div class="icon-fallback" id="iconFallback" aria-hidden="true">A</div>
+          <img class="game-icon" id="gameIcon" alt="Icono del juego" hidden />
+        </div>
+
+        <div class="meta">
+          <h1 id="gameName">ailopiu</h1>
+          <p class="creator" id="creatorName">Creador: Experimentsj</p>
+        </div>
+      </div>
+
+      <div class="join-wrap">
+        <button class="hold-button" id="holdButton" type="button" aria-label="Mantén presionado 5 segundos para abrir el juego en Roblox">
+          <span class="progress-icon" aria-hidden="true">
+            <span class="disc"></span>
+            <svg class="tap-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+              <path d="M31.624 8.4c-2.282 0-4.132 1.85-4.132 4.131v21.105l-2.3-2.038c-3.034-2.688-7.693-2.407-10.381.627-2.688 3.034-2.407 7.692.627 10.38l11.008 9.748c3.139 2.779 7.187 4.315 11.38 4.315h4.356c7.426 0 13.447-6.021 13.447-13.447V31.505c0-2.282-1.85-4.132-4.132-4.132-1.632 0-3.042.946-3.714 2.321v-2.403c0-2.282-1.85-4.132-4.132-4.132-1.781 0-3.298 1.127-3.878 2.706-.595-1.418-1.997-2.414-3.632-2.414-1.787 0-3.309 1.134-3.884 2.722V12.53c0-2.282-1.85-4.131-4.133-4.131Z" fill="white"/>
+              <path d="M19.18 17.805c-3.403 1.695-6.182 4.474-7.877 7.877" stroke="white" stroke-width="4.4" stroke-linecap="round"/>
+              <path d="M13.362 8.83c-4.184 1.867-7.545 5.228-9.413 9.413" stroke="white" stroke-width="4.4" stroke-linecap="round" opacity=".92"/>
+            </svg>
+            <svg class="ring" viewBox="0 0 76 76">
+              <circle class="ring-base" cx="38" cy="38" r="34"></circle>
+              <circle class="ring-progress" cx="38" cy="38" r="34"></circle>
+            </svg>
+          </span>
+
+          <span class="button-copy">
+            <span class="button-kicker" id="buttonKicker">ailopiu</span>
+            <span class="button-title" id="buttonTitle">abrir juego</span>
+          </span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const PLACE_ID = "139817013244845";
+    const HOLD_MS = 5000;
+    const WEB_START = `https://www.roblox.com/games/start?placeId=${PLACE_ID}`;
+    const APP_LINK = `roblox://placeId=${PLACE_ID}`;
+
+    const gameName = document.getElementById("gameName");
+    const creatorName = document.getElementById("creatorName");
+    const gameIcon = document.getElementById("gameIcon");
+    const iconFallback = document.getElementById("iconFallback");
+    const heroArt = document.getElementById("heroArt");
+
+    const holdButton = document.getElementById("holdButton");
+    const buttonKicker = document.getElementById("buttonKicker");
+    const buttonTitle = document.getElementById("buttonTitle");
+
+    let holdTimer = null;
+    let holdStartedAt = 0;
+    let completed = false;
+
+    async function loadGameData(){
+      const imageUrl = "https://tr.rbxcdn.com/180DAY-6b8e29005c614135060bb0a4699f05d9/256/256/Image/Webp/noFilter";
+
+      creatorName.textContent = "Creador: Experimentsj";
+      gameIcon.src = imageUrl;
+      gameIcon.onload = () => {
+        gameIcon.hidden = false;
+        iconFallback.style.display = "none";
+        heroArt.style.backgroundImage = `url("${imageUrl}")`;
+      };
+
+      try{
+        const universeRes = await fetch(`https://apis.roblox.com/universes/v1/places/${PLACE_ID}/universe`, { cache:"no-store" });
+        if(!universeRes.ok) return;
+        const universe = await universeRes.json();
+        const universeId = universe.universeId;
+        if(!universeId) return;
+
+        const gameRes = await fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`, { cache:"no-store" });
+        if(!gameRes.ok) return;
+
+        const info = await gameRes.json();
+        const game = info?.data?.[0];
+        if(game?.name){
+          gameName.textContent = game.name;
+          buttonKicker.textContent = game.name;
+          iconFallback.textContent = (game.name.trim()[0] || "A").toUpperCase();
+        }
+      }catch(err){
+        console.warn("No se pudo actualizar el nombre del juego desde Roblox:", err);
+      }
+    }
+
+    function resetRing(){
+      const ring = holdButton.querySelector(".ring-progress");
+      ring.style.animation = "none";
+      void ring.getBoundingClientRect();
+      ring.style.animation = "";
+    }
+
+    function startHold(event){
+      if(completed) return;
+      if(event.pointerType === "mouse" && event.button !== 0) return;
+
+      event.preventDefault();
+      try{ holdButton.setPointerCapture(event.pointerId); }catch{}
+
+      clearTimeout(holdTimer);
+      holdStartedAt = performance.now();
+      holdButton.classList.add("pressing");
+      buttonTitle.textContent = "abriendo…";
+      if(navigator.vibrate) navigator.vibrate(18);
+      holdTimer = setTimeout(completeHold, HOLD_MS);
+    }
+
+    function cancelHold(){
+      if(completed || !holdStartedAt) return;
+      clearTimeout(holdTimer);
+      holdTimer = null;
+      holdStartedAt = 0;
+      holdButton.classList.remove("pressing");
+      resetRing();
+      buttonTitle.textContent = "abrir juego";
+    }
+
+    function completeHold(){
+      if(completed) return;
+      completed = true;
+      clearTimeout(holdTimer);
+      holdStartedAt = 0;
+      holdButton.classList.add("done");
+      buttonTitle.textContent = "abriendo…";
+
+      if(navigator.vibrate) navigator.vibrate([24,45,36]);
+
+      let fallbackTimer = setTimeout(() => {
+        window.location.href = WEB_START;
+      }, 1300);
+
+      const stopFallback = () => {
+        if(document.hidden){
+          clearTimeout(fallbackTimer);
+          document.removeEventListener("visibilitychange", stopFallback);
+        }
+      };
+      document.addEventListener("visibilitychange", stopFallback);
+
+      window.location.href = APP_LINK;
+    }
+
+    holdButton.addEventListener("pointerdown", startHold);
+    holdButton.addEventListener("pointerup", cancelHold);
+    holdButton.addEventListener("pointercancel", cancelHold);
+    holdButton.addEventListener("lostpointercapture", cancelHold);
+    holdButton.addEventListener("contextmenu", e => e.preventDefault());
+    holdButton.addEventListener("dragstart", e => e.preventDefault());
+
+    document.addEventListener("visibilitychange", () => {
+      if(document.hidden && !completed) cancelHold();
+    });
+
+    loadGameData();
+  </script>
+</body>
+</html>
