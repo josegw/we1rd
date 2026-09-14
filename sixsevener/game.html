@@ -1,6 +1,3 @@
----
-permalink: /sixsevener/game/
----
 <!doctype html>
 <html lang="es">
 <head>
@@ -232,74 +229,59 @@ permalink: /sixsevener/game/
       font-weight:680;
     }
 
-    .join-wrap{
-      margin-top:15px;
-      display:flex;
-      justify-content:center;
-      opacity:0;
-      transform:translateY(12px);
-      animation:itemIn .75s .62s cubic-bezier(.16,1,.3,1) forwards;
-    }
-
     .hold-button{
       width:100%;
+      height:100px;
       min-height:100px;
       border:0;
       border-radius:25px;
-      padding:12px 16px 12px 13px;
-      display:flex;
-      align-items:center;
-      gap:15px;
+      padding:0;
       color:white;
-      background:linear-gradient(180deg,rgba(9,9,9,.96) 0%,rgba(3,3,3,.98) 100%);
-      box-shadow:
-        0 18px 38px rgba(0,0,0,.31),
-        inset 0 1px 0 rgba(255,255,255,.075);
+      background:transparent;
       cursor:pointer;
       font:inherit;
       user-select:none;
       -webkit-user-select:none;
       -webkit-touch-callout:none;
       touch-action:none;
-      transition:
-        transform .18s ease,
-        filter .18s ease,
-        box-shadow .22s ease,
-        width .32s cubic-bezier(.22,.8,.2,1),
-        min-height .32s cubic-bezier(.22,.8,.2,1),
-        border-radius .32s cubic-bezier(.22,.8,.2,1),
-        padding .32s cubic-bezier(.22,.8,.2,1),
-        background .24s ease,
-        opacity .2s ease;
       position:relative;
       overflow:hidden;
+      isolation:isolate;
+    }
+
+    /* La parte negra es una sola capa que solo cambia opacidad.
+       Así evitamos recalcular ancho/alto durante el hold en móviles. */
+    .hold-button::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:0;
+      border-radius:inherit;
+      background:linear-gradient(180deg,#090909 0%,#030303 100%);
+      box-shadow:
+        0 18px 38px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.075);
+      opacity:1;
+      transition:opacity .18s linear;
+      will-change:opacity;
     }
 
     .hold-button::after{
       content:"";
       position:absolute;
       inset:0;
+      z-index:1;
+      border-radius:inherit;
       background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.055) 45%,transparent 65%);
-      transform:translateX(-120%);
+      transform:translate3d(-120%,0,0);
       animation:shine 4s 1.8s ease-in-out infinite;
       pointer-events:none;
-      transition:opacity .18s ease;
+      transition:opacity .12s linear;
+      will-change:transform,opacity;
     }
 
-    .hold-button.pressing,
-    .hold-button.done{
-      width:94px;
-      min-height:94px;
-      border-radius:999px;
-      padding:0;
-      margin-inline:auto;
-      justify-content:center;
-      gap:0;
-      background:transparent;
-      box-shadow:none;
-      filter:none;
-    }
-
+    .hold-button.pressing::before,
+    .hold-button.done::before,
     .hold-button.pressing::after,
     .hold-button.done::after{
       opacity:0;
@@ -308,22 +290,33 @@ permalink: /sixsevener/game/
     .progress-icon{
       width:76px;
       height:76px;
-      flex:0 0 76px;
-      position:relative;
+      position:absolute;
+      z-index:3;
+      left:13px;
+      top:50%;
+      transform:translate3d(0,-50%,0);
       display:grid;
       place-items:center;
-      transition:transform .22s ease;
+      transition:
+        left .22s cubic-bezier(.22,.8,.2,1),
+        transform .22s cubic-bezier(.22,.8,.2,1);
+      will-change:left,transform;
+      contain:layout paint style;
+    }
+
+    .pressing .progress-icon,
+    .done .progress-icon{
+      left:50%;
+      transform:translate3d(-50%,-50%,0);
     }
 
     .progress-icon .disc{
       position:absolute;
       inset:5px;
       border-radius:50%;
-      background:linear-gradient(145deg,rgba(193,193,197,.78),rgba(137,137,142,.72));
-      border:1px solid rgba(255,255,255,.16);
+      background:linear-gradient(145deg,#bababc,#8f8f93);
+      border:1px solid rgba(255,255,255,.18);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
-      backdrop-filter:blur(6px);
-      -webkit-backdrop-filter:blur(6px);
     }
 
     .tap-icon{
@@ -332,7 +325,7 @@ permalink: /sixsevener/game/
       width:34px;
       height:34px;
       opacity:.98;
-      filter:drop-shadow(0 2px 4px rgba(0,0,0,.14));
+      transform:translateZ(0);
     }
 
     .ring{
@@ -340,36 +333,41 @@ permalink: /sixsevener/game/
       inset:0;
       width:76px;
       height:76px;
-      transform:rotate(-90deg);
+      transform:rotate(-90deg) translateZ(0);
       z-index:3;
       opacity:0;
-      transition:opacity .14s ease;
-      filter:drop-shadow(0 0 8px rgba(255,255,255,.28));
+      transition:opacity .10s linear;
+      pointer-events:none;
     }
     .ring-base,.ring-progress{
       fill:none;
       stroke-width:5.2;
     }
-    .ring-base{ stroke:rgba(255,255,255,.12); }
+    .ring-base{ stroke:rgba(255,255,255,.15); }
     .ring-progress{
       stroke:white;
       stroke-linecap:round;
       stroke-dasharray:213.63;
       stroke-dashoffset:213.63;
+      will-change:stroke-dashoffset;
     }
     .pressing .ring,
     .done .ring{ opacity:1; }
     .pressing .ring-progress{ animation:fillRing var(--hold) linear forwards; }
+    .done .ring-progress{ stroke-dashoffset:0; }
 
     .button-copy{
-      min-width:0;
-      flex:1;
+      position:absolute;
+      z-index:3;
+      left:104px;
+      right:18px;
+      top:50%;
+      transform:translate3d(0,-50%,0);
       text-align:left;
-      position:relative;
-      z-index:1;
-      transition:opacity .18s ease,transform .24s ease,max-width .24s ease;
-      max-width:220px;
-      transform-origin:left center;
+      opacity:1;
+      transition:opacity .12s linear,transform .16s ease;
+      will-change:opacity,transform;
+      pointer-events:none;
     }
     .button-kicker{
       display:block;
@@ -391,12 +389,16 @@ permalink: /sixsevener/game/
     .pressing .button-copy,
     .done .button-copy{
       opacity:0;
-      transform:translateX(14px) scale(.96);
-      max-width:0;
-      overflow:hidden;
-      pointer-events:none;
+      transform:translate3d(10px,-50%,0);
     }
 
+    /* Mientras se llena el círculo pausamos animaciones decorativas pesadas.
+       El progreso queda como la única animación importante. */
+    body.holding::before,
+    body.holding .orb,
+    body.holding .hold-button::after{
+      animation-play-state:paused !important;
+    }
     @keyframes bgDrift{
       0%{ transform:translate3d(-2%,0,0) rotate(-2deg) scale(1); }
       50%{ transform:translate3d(3%,2%,0) rotate(2deg) scale(1.04); }
@@ -418,20 +420,21 @@ permalink: /sixsevener/game/
       .game-hero{ min-height:236px; border-radius:23px; }
       .game-icon-wrap{ width:108px; height:108px; border-radius:26px; }
       .game-icon,.icon-fallback{ border-radius:25px; }
-      .hold-button{ min-height:96px; border-radius:23px; }
-      .progress-icon{ width:72px;height:72px;flex-basis:72px; }
+      .join-wrap{ min-height:96px; }
+      .hold-button{ height:96px; min-height:96px; border-radius:23px; }
+      .progress-icon{ width:72px;height:72px;left:12px; }
       .ring{ width:72px;height:72px; }
       .tap-icon{ width:31px;height:31px; }
+      .button-copy{ left:99px; }
       .button-title{ font-size:1.42rem; }
-      .hold-button.pressing,
-      .hold-button.done{ width:90px; min-height:90px; }
     }
 
     @media (max-height:620px){
       .card{ padding:14px; }
       .game-hero{ min-height:210px; padding-top:16px; padding-bottom:16px; }
       .game-icon-wrap{ width:92px;height:92px;margin-bottom:12px; }
-      .hold-button{ min-height:88px; }
+      .join-wrap{ min-height:88px; }
+      .hold-button{ height:88px; min-height:88px; }
     }
 
     @media (prefers-reduced-motion:reduce){
@@ -453,7 +456,7 @@ permalink: /sixsevener/game/
 
         <div class="game-icon-wrap">
           <div class="icon-fallback" id="iconFallback" aria-hidden="true">A</div>
-          <img class="game-icon" id="gameIcon" alt="Icono del juego" hidden />
+          <img class="game-icon" id="gameIcon" src="https://tr.rbxcdn.com/180DAY-6b8e29005c614135060bb0a4699f05d9/256/256/Image/Webp/noFilter" alt="Icono de ailopiu" />
         </div>
 
         <div class="meta">
@@ -463,7 +466,7 @@ permalink: /sixsevener/game/
       </div>
 
       <div class="join-wrap">
-        <button class="hold-button" id="holdButton" type="button" aria-label="Mantén presionado 5 segundos para abrir el juego en Roblox">
+        <button class="hold-button" id="holdButton" type="button" aria-label="Mantén presionado 3 segundos para abrir el juego en Roblox">
           <span class="progress-icon" aria-hidden="true">
             <span class="disc"></span>
             <svg class="tap-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -488,117 +491,104 @@ permalink: /sixsevener/game/
 
   <script>
     const PLACE_ID = "139817013244845";
-    const HOLD_MS = 5000;
-    const WEB_START = `https://www.roblox.com/games/start?placeId=${PLACE_ID}`;
-    const APP_LINK = `roblox://placeId=${PLACE_ID}`;
+    const HOLD_MS = 3000;
 
-    const gameName = document.getElementById("gameName");
-    const creatorName = document.getElementById("creatorName");
+    // Roblox documenta este formato HTTPS como "web listing to app":
+    // abre la página de la experiencia y desde ahí lanza la app.
+    // Es más fiable en Safari/Chrome móvil después de un hold largo que
+    // intentar invocar roblox:// desde un setTimeout.
+    const ROBLOX_LAUNCH = `https://www.roblox.com/games/start?placeId=${PLACE_ID}`;
+
+    const holdButton = document.getElementById("holdButton");
+    const buttonTitle = document.getElementById("buttonTitle");
     const gameIcon = document.getElementById("gameIcon");
     const iconFallback = document.getElementById("iconFallback");
     const heroArt = document.getElementById("heroArt");
+    const ring = holdButton.querySelector(".ring-progress");
 
-    const holdButton = document.getElementById("holdButton");
-    const buttonKicker = document.getElementById("buttonKicker");
-    const buttonTitle = document.getElementById("buttonTitle");
-
-    let holdTimer = null;
-    let holdStartedAt = 0;
+    let holdTimer = 0;
+    let holding = false;
     let completed = false;
+    let activePointerId = null;
 
-    async function loadGameData(){
-      const imageUrl = "https://tr.rbxcdn.com/180DAY-6b8e29005c614135060bb0a4699f05d9/256/256/Image/Webp/noFilter";
-
-      creatorName.textContent = "Creador: Experimentsj";
-      gameIcon.src = imageUrl;
-      gameIcon.onload = () => {
-        gameIcon.hidden = false;
-        iconFallback.style.display = "none";
-        heroArt.style.backgroundImage = `url("${imageUrl}")`;
-      };
-
-      try{
-        const universeRes = await fetch(`https://apis.roblox.com/universes/v1/places/${PLACE_ID}/universe`, { cache:"no-store" });
-        if(!universeRes.ok) return;
-        const universe = await universeRes.json();
-        const universeId = universe.universeId;
-        if(!universeId) return;
-
-        const gameRes = await fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`, { cache:"no-store" });
-        if(!gameRes.ok) return;
-
-        const info = await gameRes.json();
-        const game = info?.data?.[0];
-        if(game?.name){
-          gameName.textContent = game.name;
-          buttonKicker.textContent = game.name;
-          iconFallback.textContent = (game.name.trim()[0] || "A").toUpperCase();
-        }
-      }catch(err){
-        console.warn("No se pudo actualizar el nombre del juego desde Roblox:", err);
-      }
+    // Datos fijos para no depender de llamadas API en móvil.
+    const ICON_URL = "https://tr.rbxcdn.com/180DAY-6b8e29005c614135060bb0a4699f05d9/256/256/Image/Webp/noFilter";
+    heroArt.style.backgroundImage = `url("${ICON_URL}")`;
+    gameIcon.addEventListener("load", () => {
+      iconFallback.style.display = "none";
+    }, { once:true });
+    if(gameIcon.complete && gameIcon.naturalWidth){
+      iconFallback.style.display = "none";
     }
 
-    function resetRing(){
-      const ring = holdButton.querySelector(".ring-progress");
+    function restartRing(){
       ring.style.animation = "none";
+      ring.style.strokeDashoffset = "213.63";
+      // Un único reflow controlado solo al comenzar/cancelar.
       void ring.getBoundingClientRect();
       ring.style.animation = "";
     }
 
     function startHold(event){
-      if(completed) return;
+      if(completed || holding) return;
       if(event.pointerType === "mouse" && event.button !== 0) return;
 
       event.preventDefault();
+      holding = true;
+      activePointerId = event.pointerId;
+      restartRing();
+
       try{ holdButton.setPointerCapture(event.pointerId); }catch{}
 
-      clearTimeout(holdTimer);
-      holdStartedAt = performance.now();
+      document.body.classList.add("holding");
       holdButton.classList.add("pressing");
       buttonTitle.textContent = "abriendo…";
-      if(navigator.vibrate) navigator.vibrate(18);
-      holdTimer = setTimeout(completeHold, HOLD_MS);
+
+      if(navigator.vibrate) navigator.vibrate(16);
+
+      holdTimer = window.setTimeout(completeHold, HOLD_MS);
     }
 
-    function cancelHold(){
-      if(completed || !holdStartedAt) return;
-      clearTimeout(holdTimer);
-      holdTimer = null;
-      holdStartedAt = 0;
+    function cancelHold(event){
+      if(completed || !holding) return;
+      if(event && activePointerId !== null && event.pointerId !== activePointerId) return;
+
+      window.clearTimeout(holdTimer);
+      holdTimer = 0;
+      holding = false;
+      activePointerId = null;
+
+      document.body.classList.remove("holding");
       holdButton.classList.remove("pressing");
-      resetRing();
       buttonTitle.textContent = "abrir juego";
+      restartRing();
     }
 
     function completeHold(){
-      if(completed) return;
+      if(completed || !holding) return;
+
       completed = true;
-      clearTimeout(holdTimer);
-      holdStartedAt = 0;
+      holding = false;
+      activePointerId = null;
+      window.clearTimeout(holdTimer);
+      holdTimer = 0;
+
+      holdButton.classList.remove("pressing");
       holdButton.classList.add("done");
-      buttonTitle.textContent = "abriendo…";
+      ring.style.animation = "none";
+      ring.style.strokeDashoffset = "0";
 
-      if(navigator.vibrate) navigator.vibrate([24,45,36]);
+      if(navigator.vibrate) navigator.vibrate([22,38,32]);
 
-      let fallbackTimer = setTimeout(() => {
-        window.location.href = WEB_START;
-      }, 1300);
-
-      const stopFallback = () => {
-        if(document.hidden){
-          clearTimeout(fallbackTimer);
-          document.removeEventListener("visibilitychange", stopFallback);
-        }
-      };
-      document.addEventListener("visibilitychange", stopFallback);
-
-      window.location.href = APP_LINK;
+      // Navegación HTTPS directa. A diferencia del esquema roblox://,
+      // esta navegación no depende de conservar la activación del gesto
+      // durante los 5 segundos del temporizador.
+      window.location.assign(ROBLOX_LAUNCH);
     }
 
-    holdButton.addEventListener("pointerdown", startHold);
-    holdButton.addEventListener("pointerup", cancelHold);
-    holdButton.addEventListener("pointercancel", cancelHold);
+    holdButton.addEventListener("pointerdown", startHold, { passive:false });
+    holdButton.addEventListener("pointerup", cancelHold, { passive:false });
+    holdButton.addEventListener("pointercancel", cancelHold, { passive:false });
     holdButton.addEventListener("lostpointercapture", cancelHold);
     holdButton.addEventListener("contextmenu", e => e.preventDefault());
     holdButton.addEventListener("dragstart", e => e.preventDefault());
@@ -606,8 +596,6 @@ permalink: /sixsevener/game/
     document.addEventListener("visibilitychange", () => {
       if(document.hidden && !completed) cancelHold();
     });
-
-    loadGameData();
   </script>
 </body>
 </html>
